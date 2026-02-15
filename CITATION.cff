@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: Eigenvue
+message: "If you use this software, please cite it as below."
+type: software
+license: MIT
+repository-code: "https://github.com/ashutoshm1771/eigenvue"
+url: "https://eigenvue.web.app/"
+authors:
+  - family-names: Mishra
+    given-names: Ashutosh
+    email: ashutoshm1771@gmail.com
+abstract: >-
+  The visual learning platform for understanding algorithms,
+  AI architectures, and quantum computing.
+keywords:
+  - algorithms
+  - visualization
+  - deep-learning
+  - generative-ai
+  - education

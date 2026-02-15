@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eigenvue.web.app/schemas/step-format.schema.json",
+  "title": "Step",
+  "description": "A single snapshot in an algorithm's execution trace produced by an Eigenvue engine.",
+  "type": "object",
+  "required": [
+    "index",
+    "id",
+    "title",
+    "explanation",
+    "state",
+    "visualActions",
+    "codeHighlight",
+    "isTerminal"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "index": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "0-based position in the sequence."
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Template ID that identifies the kind of step (e.g. \"compare_mid\", \"found\")."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Short human-readable title."
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Plain-language narration of what is happening."
+    },
+    "state": {
+      "type": "object",
+      "description": "All algorithm variables captured at this point in the execution.",
+      "additionalProperties": true
+    },
+    "visualActions": {
+      "type": "array",
+      "description": "Ordered list of visual directives for the renderer.",
+      "items": {
+        "$ref": "#/$defs/VisualAction"
+      }
+    },
+    "codeHighlight": {
+      "$ref": "#/$defs/CodeHighlight"
+    },
+    "isTerminal": {
+      "type": "boolean",
+      "description": "True when this is the final step of the trace."
+    },
+    "phase": {
+      "type": "string",
+      "description": "Optional grouping label (e.g. \"partition\", \"merge\")."
+    }
+  },
+  "$defs": {
+    "VisualAction": {
+      "type": "object",
+      "description": "A renderer directive describing one visual change. The 'type' field selects the handler; all other properties are passed through as parameters.",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The visual action handler name."
+        }
+      },
+      "additionalProperties": true
+    },
+    "CodeHighlight": {
+      "type": "object",
+      "description": "Identifies which lines of source code to highlight for a step.",
+      "required": ["language", "lines"],
+      "additionalProperties": false,
+      "properties": {
+        "language": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Programming language identifier (e.g. \"python\", \"javascript\")."
+        },
+        "lines": {
+          "type": "array",
+          "description": "1-based line numbers to highlight.",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+}
