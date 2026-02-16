@@ -1,0 +1,29 @@
+{
+  "description": "Target is the first element (leftmost edge case).",
+  "inputs": {
+    "array": [1, 3, 5, 7, 9, 11, 13],
+    "target": 1
+  },
+  "expected": {
+    "stepCount": 7,
+    "terminalStepId": "found",
+    "result": 0,
+    "stepIds": [
+      "initialize",
+      "calculate_mid",
+      "search_left",
+      "calculate_mid",
+      "search_left",
+      "calculate_mid",
+      "found"
+    ],
+    "keyStates": [
+      { "stepIndex": 1, "field": "mid", "value": 3 },
+      { "stepIndex": 2, "field": "right", "value": 2 },
+      { "stepIndex": 3, "field": "mid", "value": 1 },
+      { "stepIndex": 4, "field": "right", "value": 0 },
+      { "stepIndex": 5, "field": "mid", "value": 0 },
+      { "stepIndex": 6, "field": "result", "value": 0 }
+    ]
+  }
+}

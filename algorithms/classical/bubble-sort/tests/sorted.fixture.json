@@ -1,0 +1,10 @@
+{
+  "description": "Already-sorted array triggers early termination after one pass",
+  "inputs": {
+    "array": [1, 2, 3, 4, 5]
+  },
+  "expected": {
+    "terminalStepId": "early_termination",
+    "sortedArray": [1, 2, 3, 4, 5]
+  }
+}

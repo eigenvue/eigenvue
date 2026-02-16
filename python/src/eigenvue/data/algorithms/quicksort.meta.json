@@ -1,0 +1,82 @@
+{
+  "id": "quicksort",
+  "name": "QuickSort",
+  "category": "classical",
+  "description": {
+    "short": "Divide-and-conquer sort using pivot partitioning.",
+    "long": "QuickSort selects a pivot element, partitions the array so all elements less than the pivot come before it and all greater come after, then recursively sorts the sub-arrays. Average-case O(n log n) but worst-case O(n²) when the pivot is poorly chosen."
+  },
+  "complexity": {
+    "time": "O(n log n)",
+    "space": "O(log n)",
+    "level": "intermediate"
+  },
+  "visual": {
+    "layout": "array-comparison",
+    "theme": { "primary": "#38bdf8", "secondary": "#c084fc" },
+    "components": {}
+  },
+  "inputs": {
+    "schema": {
+      "array": {
+        "type": "array",
+        "items": { "type": "number" },
+        "minItems": 1,
+        "maxItems": 16,
+        "description": "The array to sort"
+      }
+    },
+    "defaults": { "array": [38, 27, 43, 3, 9, 82, 10] },
+    "examples": [
+      { "name": "Default unsorted", "values": { "array": [38, 27, 43, 3, 9, 82, 10] } },
+      { "name": "Already sorted (worst case)", "values": { "array": [1, 2, 3, 4, 5, 6, 7, 8] } },
+      { "name": "With duplicates", "values": { "array": [5, 3, 8, 3, 2, 5, 1] } },
+      { "name": "Reverse sorted", "values": { "array": [8, 7, 6, 5, 4, 3, 2, 1] } }
+    ]
+  },
+  "code": {
+    "implementations": {
+      "pseudocode": "function quickSort(array, low, high):\n  if low < high:\n    pivotIdx = partition(array, low, high)\n    quickSort(array, low, pivotIdx - 1)\n    quickSort(array, pivotIdx + 1, high)\n\nfunction partition(array, low, high):\n  pivot = array[high]\n  i = low - 1\n  for j = low to high - 1:\n    if array[j] <= pivot:\n      i++\n      swap(array[i], array[j])\n  swap(array[i + 1], array[high])\n  return i + 1",
+      "python": "def quicksort(arr, low=0, high=None):\n    if high is None:\n        high = len(arr) - 1\n    if low < high:\n        pi = partition(arr, low, high)\n        quicksort(arr, low, pi - 1)\n        quicksort(arr, pi + 1, high)\n\ndef partition(arr, low, high):\n    pivot = arr[high]\n    i = low - 1\n    for j in range(low, high):\n        if arr[j] <= pivot:\n            i += 1\n            arr[i], arr[j] = arr[j], arr[i]\n    arr[i + 1], arr[high] = arr[high], arr[i + 1]\n    return i + 1",
+      "javascript": "function quickSort(arr, low = 0, high = arr.length - 1) {\n  if (low < high) {\n    const pi = partition(arr, low, high);\n    quickSort(arr, low, pi - 1);\n    quickSort(arr, pi + 1, high);\n  }\n}\n\nfunction partition(arr, low, high) {\n  const pivot = arr[high];\n  let i = low - 1;\n  for (let j = low; j < high; j++) {\n    if (arr[j] <= pivot) {\n      i++;\n      [arr[i], arr[j]] = [arr[j], arr[i]];\n    }\n  }\n  [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];\n  return i + 1;\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+  "education": {
+    "keyConcepts": [
+      { "title": "Divide and Conquer", "description": "QuickSort divides the problem by partitioning around a pivot, conquers by recursively sorting sub-arrays, and combines trivially (the array is sorted in-place)." },
+      { "title": "Lomuto Partition", "description": "The Lomuto scheme picks the last element as pivot and maintains a boundary i: everything at or before i is ≤ pivot. Simple to implement but O(n²) on already-sorted input." },
+      { "title": "In-Place Sorting", "description": "QuickSort sorts in-place using O(log n) stack space for recursion. No auxiliary array is needed (unlike Merge Sort)." },
+      { "title": "Not Stable", "description": "QuickSort is not stable — the partition step can change the relative order of equal elements." }
+    ],
+    "pitfalls": [
+      { "title": "Worst-case O(n²)", "description": "With Lomuto partition and already-sorted input, each partition removes only one element, leading to O(n²). Randomized pivot or median-of-three avoids this in practice." },
+      { "title": "Off-by-one in partition", "description": "The boundary i starts at low - 1 (NOT low). The pivot swap goes to i + 1 (NOT i). Getting these wrong corrupts the invariant." }
+    ],
+    "quiz": [
+      {
+        "question": "What is the worst-case input for QuickSort with last-element pivot?",
+        "options": ["Random array", "Already sorted array", "Array with all equal elements", "Both B and C"],
+        "correctIndex": 3,
+        "explanation": "Both already-sorted and all-equal arrays cause the worst case with Lomuto partition. Each partition puts all elements on one side, giving n partitions of n-1 elements each → O(n²)."
+      },
+      {
+        "question": "Is QuickSort stable?",
+        "options": ["Yes", "No"],
+        "correctIndex": 1,
+        "explanation": "No. The partition step swaps non-adjacent elements, which can change the relative order of equal elements."
+      }
+    ],
+    "resources": [
+      { "title": "Wikipedia: QuickSort", "url": "https://en.wikipedia.org/wiki/Quicksort", "type": "article" }
+    ]
+  },
+  "seo": {
+    "keywords": ["quicksort", "quicksort visualization", "quicksort step by step", "partition algorithm", "sorting algorithm", "divide and conquer sort"],
+    "ogDescription": "Watch QuickSort partition and sort step by step. See pivot selection, Lomuto partition, and recursive sub-problems."
+  },
+  "prerequisites": ["binary-search"],
+  "related": ["bubble-sort", "merge-sort"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

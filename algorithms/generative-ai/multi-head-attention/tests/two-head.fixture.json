@@ -1,0 +1,33 @@
+{
+  "description": "Multi-head attention with 2 heads over 4 tokens (dim=8, d_k=4)",
+  "inputs": {
+    "tokens": ["The", "cat", "sat", "on"],
+    "embeddingDim": 8,
+    "numHeads": 2
+  },
+  "expectedStepCount": 13,
+  "keyStates": [
+    {
+      "stepId": "show-input",
+      "state": {
+        "tokens": ["The", "cat", "sat", "on"],
+        "embeddingDim": 8,
+        "numHeads": 2,
+        "d_k": 4
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["The", "cat", "sat", "on"],
+        "numHeads": 2
+      }
+    }
+  ],
+  "invariants": {
+    "attentionWeightRowsSumToOne": true,
+    "allWeightsNonNegative": true,
+    "noNaNOrInfinity": true,
+    "dModelDivisibleByHeads": true
+  }
+}

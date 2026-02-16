@@ -1,0 +1,208 @@
+---
+title: "Architecture Overview"
+description: "High-level system architecture."
+---
+
+Eigenvue is an interactive visual learning platform for algorithms, AI, and quantum computing. This document describes the high-level architecture that enables the platform to serve as both a standalone website and a Python package, while keeping algorithm implementations separate from rendering logic.
+
+---
+
+## Three-Layer Separation
+
+The architecture is organized into three distinct layers. Data flows in one direction: from generators, through the step format, to renderers.
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    GENERATORS                        │
+│  TypeScript generators    Python generators          │
+│  (web, real-time)         (package, Jupyter)         │
+│                                                      │
+│  Input: algorithm parameters                         │
+│  Output: Step[]                                      │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│                  STEP FORMAT                         │
+│                                                      │
+│  The universal data contract (version 1.0.0)         │
+│  JSON-serializable, language-agnostic                │
+│  Open vocabulary for visual actions                  │
+│                                                      │
+│  See: /api-reference/step-format                     │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│                   RENDERERS                          │
+│  Canvas rendering engine    Python IFrame viewer     │
+│  Layout system              Jupyter embedding        │
+│  Animation manager                                   │
+│                                                      │
+│  Input: Step[]                                       │
+│  Output: interactive visualization                   │
+└─────────────────────────────────────────────────────┘
+```
+
+### Layer 1: Generators
+
+Generators are functions that take algorithm inputs (e.g., an array and a target value for binary search) and produce an ordered array of `Step` objects. Each step represents a single "interesting moment" in the algorithm's execution -- a comparison, a swap, a pointer move, a node visit.
+
+Generators exist in two implementations:
+
+- **TypeScript generators** (`generator.ts` files) run in the browser for real-time, interactive visualization. They use JavaScript generator functions (`function*`) and yield steps via a provided step builder.
+- **Python generators** run in the Python package for programmatic access, Jupyter notebooks, and offline analysis.
+
+Both implementations produce the same step format. The generator is the algorithm's logic; it knows nothing about rendering.
+
+### Layer 2: Step Format
+
+The [Step Format](/docs/api-reference/step-format) is the stable API between generators and renderers. It defines the shape of a `Step` object: an index, an ID, a title, an explanation, a state snapshot, an array of visual actions, a code highlight, and terminal/phase metadata.
+
+The step format is:
+
+- **JSON-serializable**: Every value can be serialized to JSON and deserialized without loss.
+- **Language-agnostic**: The same format works for TypeScript and Python generators.
+- **Open vocabulary**: Visual action types are plain strings, not a closed enum. Renderers ignore types they do not recognize, allowing new action types to be added without breaking existing renderers.
+- **Versioned**: The format has a major version number. Renderers check the version before processing.
+
+### Layer 3: Renderers
+
+Renderers consume step arrays and produce interactive visualizations. The primary renderer is the canvas-based rendering engine in the web application, which includes:
+
+- A **layout system** that maps algorithm types to spatial arrangements.
+- An **animation manager** that handles transitions between steps.
+- A **canvas manager** that handles sizing, DPI scaling, and the render loop.
+
+The Python package provides a lightweight renderer that embeds the web visualization in an IFrame (for `show()` and `jupyter()`).
+
+---
+
+## Dual Distribution
+
+Eigenvue is distributed through two channels that share the same algorithm definitions and step format.
+
+### Web Application
+
+The web application is built with Next.js and serves as the primary distribution channel. It provides:
+
+- Interactive algorithm pages with real-time step generation.
+- Playback controls (play, pause, step forward, step backward).
+- Code panel with syntax highlighting and line-by-line correspondence.
+- Input editors for modifying algorithm parameters.
+- Educational content (key concepts, pitfalls, quizzes).
+- SEO-optimized standalone landing pages.
+
+TypeScript generators run directly in the browser. Steps are generated on-demand when the user loads a page or changes inputs.
+
+### Python Package
+
+The `eigenvue` Python package (`pip install eigenvue`) provides:
+
+- `eigenvue.list()` -- Discover available algorithms.
+- `eigenvue.steps()` -- Generate step sequences programmatically.
+- `eigenvue.show()` -- Launch interactive visualization in a browser.
+- `eigenvue.jupyter()` -- Embed visualization inline in Jupyter notebooks.
+
+Python generators run in the Python process. The `show()` and `jupyter()` functions serve the web visualization with pre-computed steps.
+
+See the [Python Public API](/docs/api-reference/python-api) for the complete reference.
+
+---
+
+## Algorithms Are Code, Not Config
+
+A core architectural principle is that algorithm logic lives in generator code (TypeScript and Python), not in configuration files. The `meta.json` file contains metadata -- display names, descriptions, input schemas, educational content -- but never algorithm logic.
+
+This means:
+
+- **Generators are plain functions.** No class hierarchies, no plugin systems, no declarative configuration languages. A generator is a function that receives inputs and yields steps.
+- **Full programming language power.** Generators can use loops, conditionals, recursion, data structures -- anything the language supports. There are no constraints imposed by a configuration schema.
+- **Testable in isolation.** Generators are pure functions (inputs in, steps out) that can be unit tested without a browser or rendering engine.
+
+The `meta.json` file and the `generator.ts` file are co-located in the same directory, but they serve fundamentally different purposes: `meta.json` is data; `generator.ts` is code.
+
+---
+
+## Pre-Computed Steps
+
+Steps can be generated at build time and served as static JSON files. This enables:
+
+- **Instant page loads.** The first visit to an algorithm page does not require running the generator -- pre-computed steps are served immediately.
+- **SEO indexing.** Search engine crawlers see complete, rendered pages.
+- **Reduced client computation.** Mobile devices and low-powered clients benefit from pre-computed steps.
+
+The `StepSequence` object includes a `generatedBy` field that distinguishes the source:
+
+```typescript
+readonly generatedBy: "typescript" | "python" | "precomputed";
+```
+
+Pre-computed steps use `"precomputed"`. The renderer treats all three sources identically -- it does not care how the steps were produced.
+
+When the user modifies input parameters, the web application falls back to real-time generation using the TypeScript generator. Pre-computed steps are only used for default inputs.
+
+---
+
+## Standalone Landing Pages
+
+Every algorithm page on the Eigenvue website is designed to function as a standalone landing page. This means:
+
+- **No navigation prerequisite.** A user arriving from a search engine directly on the binary search page sees a complete, self-contained experience -- not a blank page that requires navigating through a hierarchy.
+- **Full SEO metadata.** Each page has its own title, description, Open Graph tags, and structured data, all derived from `meta.json`.
+- **Complete educational content.** Key concepts, pitfalls, quizzes, and external resources are rendered directly on the page, not hidden behind navigation.
+- **Working visualization.** The algorithm visualization loads with default inputs and pre-computed steps, ready for interaction without any user configuration.
+
+This architecture supports organic search traffic as the primary growth channel. Each algorithm page is a potential entry point to the platform.
+
+---
+
+## Directory Structure
+
+```
+eigenvue/
+├── algorithms/                    # Algorithm definitions
+│   ├── classical/
+│   │   ├── binary-search/
+│   │   │   ├── meta.json          # Metadata (data)
+│   │   │   ├── generator.ts       # TypeScript generator (code)
+│   │   │   └── tests/
+│   │   │       └── generator.test.ts
+│   │   ├── bubble-sort/
+│   │   ├── quicksort/
+│   │   ├── merge-sort/
+│   │   ├── bfs/
+│   │   ├── dfs/
+│   │   └── dijkstra/
+│   └── generative-ai/
+│       ├── tokenization-bpe/
+│       ├── token-embeddings/
+│       ├── self-attention/
+│       ├── multi-head-attention/
+│       └── transformer-block/
+├── shared/
+│   └── types/
+│       └── step.ts                # Step format type definitions
+├── web/                           # Next.js web application
+│   └── src/
+│       └── engine/
+│           └── generator/         # Generator runner and types
+│               ├── index.ts
+│               ├── types.ts
+│               └── GeneratorRunner.ts
+├── python/                        # Python package
+│   └── src/
+│       └── eigenvue/
+│           └── __init__.py
+└── docs/                          # Documentation site (Starlight)
+```
+
+---
+
+## Data Flow Summary
+
+1. **Author time**: A contributor writes a `meta.json` and a `generator.ts` (and optionally a Python generator) in the `algorithms/` directory.
+2. **Build time**: The build system validates `meta.json`, runs generators with default inputs, and writes pre-computed step JSON files. The web application is built with Next.js.
+3. **Request time**: A user visits an algorithm page. The pre-computed steps are served. The visualization renders immediately.
+4. **Interaction time**: The user modifies inputs. The TypeScript generator runs in the browser and produces new steps in real time. The visualization updates.
+5. **Python time**: A developer calls `eigenvue.steps()` or `eigenvue.show()` in Python. The Python generator runs and produces steps. For `show()` and `jupyter()`, the web visualization is served with the generated steps.

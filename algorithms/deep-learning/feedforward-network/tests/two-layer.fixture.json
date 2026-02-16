@@ -1,0 +1,14 @@
+{
+  "description": "2-3-1 network with sigmoid activation, seed eigenvue-ff",
+  "inputs": {
+    "inputValues": [0.5, 0.8],
+    "layerSizes": [2, 3, 1],
+    "activationFunction": "sigmoid",
+    "seed": "eigenvue-ff"
+  },
+  "expectedStepCount": 4,
+  "keyStates": [
+    { "stepId": "architecture", "state": { "layerSizes": [2, 3, 1] } }
+  ],
+  "notes": "2 layers of forward propagation: input→hidden→output. 4 steps total: architecture + 2 propagation + output."
+}

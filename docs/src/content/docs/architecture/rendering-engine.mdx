@@ -1,0 +1,267 @@
+---
+title: "Rendering Engine"
+description: "Technical docs for the rendering engine."
+---
+
+The rendering engine is the component that transforms step sequences into interactive visualizations. It is responsible for drawing visual primitives on a canvas, managing layouts, animating transitions between steps, and handling canvas sizing and DPI scaling.
+
+---
+
+## Visual Primitives
+
+The rendering engine provides five categories of visual primitives. Layouts compose these primitives to create algorithm-specific visualizations.
+
+### Element
+
+An element is a discrete, addressable visual unit -- an array cell, a graph node, a neuron, a token, a grid cell.
+
+| Property      | Type                | Description                                                              |
+| ------------- | ------------------- | ------------------------------------------------------------------------ |
+| `id`          | `string`            | Unique identifier within the layout (e.g., `"cell-3"`, `"node-A"`).     |
+| `x`           | `number`            | Horizontal position (canvas coordinates).                                |
+| `y`           | `number`            | Vertical position (canvas coordinates).                                  |
+| `width`       | `number`            | Element width in pixels.                                                 |
+| `height`      | `number`            | Element height in pixels.                                                |
+| `value`       | `string \| number \| null` | Display value inside the element.                                 |
+| `label`       | `string \| null`    | Optional label (e.g., index label below an array cell).                  |
+| `color`       | `string`            | Fill color (hex or semantic name resolved by the theme).                 |
+| `borderColor` | `string`            | Border/stroke color.                                                     |
+| `opacity`     | `number`            | Opacity in `[0, 1]`. Used for dimming.                                   |
+| `shape`       | `string`            | Rendering shape: `"rect"`, `"circle"`, `"roundedRect"`.                 |
+| `state`       | `string`            | Semantic state: `"default"`, `"highlighted"`, `"active"`, `"dimmed"`, `"found"`. |
+
+### Connection
+
+A connection is a visual link between two elements -- a graph edge, a neural network weight line, a data flow arrow.
+
+| Property      | Type                | Description                                                              |
+| ------------- | ------------------- | ------------------------------------------------------------------------ |
+| `id`          | `string`            | Unique identifier (e.g., `"edge-A-B"`, `"weight-0-1-2-0"`).            |
+| `fromId`      | `string`            | ID of the source element.                                                |
+| `toId`        | `string`            | ID of the target element.                                                |
+| `color`       | `string`            | Line color.                                                              |
+| `width`       | `number`            | Line width in pixels.                                                    |
+| `style`       | `string`            | Line style: `"solid"`, `"dashed"`, `"dotted"`.                          |
+| `directed`    | `boolean`           | Whether to draw an arrowhead at the target end.                          |
+| `label`       | `string \| null`    | Optional label (e.g., edge weight, connection weight value).             |
+| `opacity`     | `number`            | Opacity in `[0, 1]`.                                                     |
+| `curvature`   | `number`            | Curvature amount for curved connections. `0` is straight.                |
+
+### Container
+
+A container groups elements visually -- a layer column in a neural network, a sublayer block in a transformer, a partition boundary in quicksort.
+
+| Property      | Type                | Description                                                              |
+| ------------- | ------------------- | ------------------------------------------------------------------------ |
+| `id`          | `string`            | Unique identifier (e.g., `"layer-1"`, `"sublayer-ffn"`).               |
+| `x`           | `number`            | Top-left x position.                                                     |
+| `y`           | `number`            | Top-left y position.                                                     |
+| `width`       | `number`            | Container width.                                                         |
+| `height`      | `number`            | Container height.                                                        |
+| `label`       | `string \| null`    | Optional label displayed above or inside the container.                  |
+| `color`       | `string`            | Background fill color.                                                   |
+| `borderColor` | `string`            | Border color.                                                            |
+| `borderStyle` | `string`            | Border style: `"solid"`, `"dashed"`, `"dotted"`, `"none"`.             |
+| `padding`     | `number`            | Internal padding in pixels.                                              |
+
+### Annotation
+
+An annotation is a text label, tooltip, or callout that provides additional information -- a pointer label, a value annotation, a formula display.
+
+| Property      | Type                | Description                                                              |
+| ------------- | ------------------- | ------------------------------------------------------------------------ |
+| `id`          | `string`            | Unique identifier.                                                       |
+| `x`           | `number`            | Horizontal position.                                                     |
+| `y`           | `number`            | Vertical position.                                                       |
+| `text`        | `string`            | Display text.                                                            |
+| `fontSize`    | `number`            | Font size in pixels.                                                     |
+| `fontWeight`  | `string`            | Font weight: `"normal"`, `"bold"`.                                      |
+| `color`       | `string`            | Text color.                                                              |
+| `anchor`      | `string`            | Text anchor: `"start"`, `"middle"`, `"end"`.                            |
+| `baseline`    | `string`            | Text baseline: `"top"`, `"middle"`, `"bottom"`.                         |
+| `targetId`    | `string \| null`    | If set, the annotation is attached to this element and moves with it.    |
+| `offset`      | `{x: number, y: number}` | Offset from the anchor point or target element.                    |
+
+### Overlay
+
+An overlay is a full-canvas or region-scoped visual effect -- a message banner, a heatmap background, a gradient arrow field.
+
+| Property      | Type                | Description                                                              |
+| ------------- | ------------------- | ------------------------------------------------------------------------ |
+| `id`          | `string`            | Unique identifier.                                                       |
+| `type`        | `string`            | Overlay type: `"message"`, `"heatmap"`, `"arrowField"`, `"highlight"`.  |
+| `region`      | `{x, y, width, height} \| null` | Scoped region, or `null` for full-canvas.                  |
+| `data`        | `unknown`           | Type-specific data (e.g., message text, heatmap values, arrow vectors).  |
+| `opacity`     | `number`            | Opacity in `[0, 1]`.                                                     |
+| `zIndex`      | `number`            | Stacking order. Higher values render on top.                             |
+
+---
+
+## Layout System
+
+The layout system maps algorithm types to spatial arrangements of visual primitives. See the [Layout System reference](/docs/api-reference/layout-system) for the complete layout catalog and configuration options.
+
+The rendering engine interacts with layouts through a simple contract:
+
+1. **Initialize**: The engine creates a layout instance, passing the `LayoutConfig` (components, theme, canvas dimensions).
+2. **Render**: For each step, the engine calls the layout's render function with the step data. The layout reads `step.state` and `step.visualActions`, creates/updates visual primitives, and returns the drawing commands.
+3. **Dispose**: When the visualization is torn down, the engine calls the layout's dispose function to release resources.
+
+The layout is the only component that understands the semantics of specific visual action types. The rendering engine itself is action-type agnostic -- it draws primitives, not algorithm-specific concepts.
+
+---
+
+## Animation Manager
+
+The animation manager handles smooth transitions between steps. When the user advances from step N to step N+1, the animation manager interpolates visual primitive properties over a configurable duration.
+
+### Step Transitions
+
+When a new step is rendered, the animation manager:
+
+1. **Captures the current state** of all visual primitives (positions, colors, opacities).
+2. **Computes the target state** by running the layout's render function for the new step.
+3. **Generates a transition plan** that maps each primitive from its current state to its target state.
+4. **Executes the transition** using `requestAnimationFrame`, interpolating properties frame by frame.
+
+Primitives that exist in the current step but not the next are faded out. Primitives that exist in the next step but not the current are faded in. Primitives that exist in both are smoothly transitioned.
+
+### Interpolation
+
+The animation manager supports the following interpolation strategies:
+
+| Property Type | Interpolation                                                                |
+| ------------- | ---------------------------------------------------------------------------- |
+| Position      | Linear interpolation between `(x, y)` coordinates with easing.              |
+| Color         | Interpolation in HSL color space for perceptually smooth color transitions.  |
+| Opacity       | Linear interpolation in `[0, 1]`.                                            |
+| Size          | Linear interpolation of `width` and `height`.                                |
+| Value/Label   | Discrete swap at the midpoint of the transition (no gradual text morphing).  |
+
+The default easing function is `ease-in-out` (cubic bezier). The default transition duration is 300ms, configurable per-layout.
+
+### Playback Control
+
+The animation manager integrates with the playback controls:
+
+| Control        | Behavior                                                                   |
+| -------------- | -------------------------------------------------------------------------- |
+| Step forward   | Animate from current step to next step.                                    |
+| Step backward   | Animate from current step to previous step (reverse transition).          |
+| Play           | Auto-advance through steps at a configurable interval (default: 1000ms).  |
+| Pause          | Halt auto-advance. Current animation completes.                            |
+| Seek           | Jump directly to a target step. No intermediate transitions.               |
+
+---
+
+## Canvas Manager
+
+The canvas manager handles the physical canvas element: sizing, DPI scaling, resize handling, and the render loop.
+
+### Sizing
+
+The canvas occupies a designated region of the algorithm page (the "canvas slot"). Its dimensions are determined by the parent container and communicated to the layout system.
+
+```typescript
+interface CanvasDimensions {
+  /** CSS pixel width of the canvas. */
+  readonly width: number;
+  /** CSS pixel height of the canvas. */
+  readonly height: number;
+  /** Device pixel ratio (window.devicePixelRatio). */
+  readonly dpr: number;
+  /** Physical pixel width (width * dpr). */
+  readonly physicalWidth: number;
+  /** Physical pixel height (height * dpr). */
+  readonly physicalHeight: number;
+}
+```
+
+### DPI Scaling
+
+On high-DPI displays (Retina, 4K), the canvas manager scales the canvas to match the device pixel ratio:
+
+1. The canvas element's `width` and `height` attributes are set to `cssWidth * dpr` and `cssHeight * dpr`.
+2. The canvas element's CSS `width` and `height` are set to the CSS dimensions.
+3. The 2D rendering context is scaled by `dpr` so that all drawing operations use CSS-pixel coordinates.
+
+This produces crisp rendering on all display densities without requiring layouts to handle DPI manually.
+
+### Resize Handling
+
+When the browser window is resized:
+
+1. A `ResizeObserver` detects the change in the canvas slot's dimensions.
+2. The canvas manager debounces resize events (100ms).
+3. The canvas is resized to match the new dimensions.
+4. The layout is notified of the new dimensions and re-renders the current step.
+5. No animation is applied during resize -- the new layout is rendered immediately.
+
+### Render Loop
+
+The canvas manager does not run a continuous render loop. Rendering is event-driven:
+
+1. **Step change**: When the active step changes (via user interaction or auto-play), the canvas manager triggers a render.
+2. **Animation frame**: During a step transition, the animation manager requests frames via `requestAnimationFrame`. Each frame triggers a render.
+3. **Resize**: Canvas resize triggers a single render.
+
+Between events, no rendering occurs. This minimizes CPU and GPU usage when the visualization is idle.
+
+---
+
+## Canvas Slot Architecture
+
+The algorithm page layout designates a rectangular region -- the canvas slot -- for the visualization. The canvas slot is embedded in the page alongside other UI components.
+
+```
+┌──────────────────────────────────────────────────┐
+│  Algorithm Title & Description                    │
+├──────────────────────────────────────────────────┤
+│                                                   │
+│  ┌───────────────────────┐  ┌──────────────────┐ │
+│  │                       │  │                  │ │
+│  │    Canvas Slot        │  │   Code Panel     │ │
+│  │    (visualization)    │  │   (syntax        │ │
+│  │                       │  │    highlighted)   │ │
+│  │                       │  │                  │ │
+│  └───────────────────────┘  └──────────────────┘ │
+│                                                   │
+│  ┌──────────────────────────────────────────────┐ │
+│  │  Playback Controls                            │ │
+│  │  [|<] [<] [>] [>|] [Play] ──────○──── 3/12  │ │
+│  └──────────────────────────────────────────────┘ │
+│                                                   │
+│  ┌──────────────────────────────────────────────┐ │
+│  │  Step Explanation                             │ │
+│  │  "mid = floor((0 + 9) / 2) = 4.             │ │
+│  │   array[4] = 9. Since 9 < 13, search right." │ │
+│  └──────────────────────────────────────────────┘ │
+│                                                   │
+│  ┌──────────────────────────────────────────────┐ │
+│  │  State Inspector                              │ │
+│  │  array: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19] │ │
+│  │  target: 13  left: 5  right: 9  mid: 4       │ │
+│  └──────────────────────────────────────────────┘ │
+│                                                   │
+│  Educational Content, Quiz, Related Algorithms    │
+└──────────────────────────────────────────────────┘
+```
+
+The canvas slot is:
+
+- **Responsive**: It adapts to the available width, maintaining a minimum aspect ratio.
+- **Isolated**: The canvas manager owns the canvas element entirely. No other component writes to it.
+- **Lazy-rendered**: The canvas is initialized when the page loads but does not render until the first step is available (either pre-computed or freshly generated).
+
+The canvas slot communicates with surrounding UI components through a shared step state:
+
+| UI Component       | Reads From Step                              | Writes To                |
+| ------------------- | -------------------------------------------- | ------------------------ |
+| Canvas Slot         | `visualActions`, `state` (via layout)        | --                       |
+| Code Panel          | `codeHighlight.language`, `codeHighlight.lines` | --                    |
+| Step Explanation    | `title`, `explanation`                       | --                       |
+| State Inspector     | `state`                                      | --                       |
+| Playback Controls   | `index`, total step count, `isTerminal`      | Active step index        |
+| Phase Indicator     | `phase`                                      | --                       |
+
+All components react to the same active step. When the playback controls change the active step index, all components update simultaneously.

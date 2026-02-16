@@ -1,0 +1,232 @@
+# =============================================================================
+# Eigenvue PyPI Publishing — Trusted Publishing (OIDC)
+#
+# Triggers: push of a version tag (e.g., v1.0.0, v1.2.3).
+# Process:  Validate tag -> Full test suite -> Build -> Publish to PyPI ->
+#           Create GitHub Release.
+#
+# AUTHENTICATION:
+#   Uses PyPI Trusted Publishing via OpenID Connect (OIDC).
+#   No API tokens are stored as GitHub secrets.
+#   Configuration required in PyPI:
+#     https://pypi.org/manage/project/eigenvue/settings/publishing/
+#
+# VERSION MANAGEMENT:
+#   The version in pyproject.toml MUST match the tag being pushed.
+#   For example, if the tag is v1.2.3, pyproject.toml must say version = "1.2.3".
+#   The workflow validates this and fails if they don't match.
+#
+# Author: Ashutosh Mishra
+# =============================================================================
+
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ===========================================================================
+  # JOB 1: Validate, Test, and Build
+  # ===========================================================================
+  build:
+    name: "Validate, Test & Build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install build tools
+        run: pip install build
+
+      - name: Install package with dev dependencies
+        run: cd python && pip install -e ".[dev]"
+
+      # -----------------------------------------------------------------------
+      # VERSION VALIDATION
+      # Ensures the git tag matches the version in pyproject.toml.
+      # This prevents accidental publishes of mismatched versions.
+      #
+      # Example:
+      #   Tag: v1.2.3  ->  expected version: 1.2.3
+      #   pyproject.toml: version = "1.2.3"  ->  match
+      # -----------------------------------------------------------------------
+      - name: Validate version matches tag
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PACKAGE_VERSION=$(python -c "
+          import tomllib
+          with open('python/pyproject.toml', 'rb') as f:
+              data = tomllib.load(f)
+          print(data['project']['version'])
+          ")
+          echo "Tag version:     ${TAG_VERSION}"
+          echo "Package version: ${PACKAGE_VERSION}"
+          if [ "${TAG_VERSION}" != "${PACKAGE_VERSION}" ]; then
+            echo "::error::Version mismatch: tag=${TAG_VERSION} != pyproject.toml=${PACKAGE_VERSION}"
+            exit 1
+          fi
+          echo "Version match confirmed."
+
+      # -----------------------------------------------------------------------
+      # FULL TEST SUITE
+      # Runs all tests before publishing. Even though CI already ran on the
+      # PR, we run again here because the tag may be on a different commit.
+      # -----------------------------------------------------------------------
+      - name: Lint
+        run: cd python && ruff check . && ruff format --check .
+
+      - name: Type check
+        run: cd python && mypy --strict src/eigenvue
+
+      - name: Run tests
+        run: cd python && pytest -v --cov=eigenvue
+
+      # -----------------------------------------------------------------------
+      # BUILD
+      # Creates the source distribution (sdist) and wheel (bdist_wheel).
+      # The output goes to python/dist/.
+      # -----------------------------------------------------------------------
+      - name: Build package
+        run: cd python && python -m build
+
+      # -----------------------------------------------------------------------
+      # VERIFY BUILD
+      # Quick sanity checks on the built package.
+      # -----------------------------------------------------------------------
+      - name: Verify wheel contents
+        run: |
+          pip install check-wheel-contents
+          check-wheel-contents python/dist/*.whl
+
+      - name: Verify package installs cleanly
+        run: |
+          python -m venv /tmp/test-install
+          /tmp/test-install/bin/pip install python/dist/*.whl
+          /tmp/test-install/bin/python -c "import eigenvue; print(eigenvue.list())"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-dist
+          path: python/dist/
+
+  # ===========================================================================
+  # JOB 2: Publish to PyPI
+  # ===========================================================================
+  publish:
+    name: "Publish to PyPI"
+    runs-on: ubuntu-latest
+    needs: build
+    environment: production
+
+    # OIDC permissions required for Trusted Publishing.
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-dist
+          path: dist/
+
+      # -----------------------------------------------------------------------
+      # PYPI PUBLISH via Trusted Publishing (OIDC)
+      # No API tokens needed. PyPI verifies the GitHub Actions identity
+      # via OpenID Connect and checks that this repository and workflow
+      # are authorized to publish the 'eigenvue' package.
+      # -----------------------------------------------------------------------
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+
+  # ===========================================================================
+  # JOB 3: Create GitHub Release
+  # ===========================================================================
+  github-release:
+    name: "Create GitHub Release"
+    runs-on: ubuntu-latest
+    needs: publish
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for changelog generation.
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-dist
+          path: dist/
+
+      # -----------------------------------------------------------------------
+      # CHANGELOG GENERATION
+      # Generates release notes from conventional commit messages since
+      # the previous tag. Groups by type: feat, fix, docs, etc.
+      # -----------------------------------------------------------------------
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git tag --sort=-v:refname | head -n 2 | tail -n 1)
+          if [ -z "$PREV_TAG" ]; then
+            PREV_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+          echo "Previous tag: $PREV_TAG"
+
+          {
+            echo "CHANGELOG<<EOF"
+            echo "## What's Changed"
+            echo ""
+
+            # Features
+            FEATS=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s" --grep="^feat" 2>/dev/null || true)
+            if [ -n "$FEATS" ]; then
+              echo "### Features"
+              echo "$FEATS"
+              echo ""
+            fi
+
+            # Fixes
+            FIXES=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s" --grep="^fix" 2>/dev/null || true)
+            if [ -n "$FIXES" ]; then
+              echo "### Bug Fixes"
+              echo "$FIXES"
+              echo ""
+            fi
+
+            # Docs
+            DOCS=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s" --grep="^docs" 2>/dev/null || true)
+            if [ -n "$DOCS" ]; then
+              echo "### Documentation"
+              echo "$DOCS"
+              echo ""
+            fi
+
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${{ github.ref_name }}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Eigenvue ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.CHANGELOG }}
+          files: dist/*
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}

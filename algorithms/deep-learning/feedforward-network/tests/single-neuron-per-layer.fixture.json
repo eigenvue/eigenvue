@@ -1,0 +1,14 @@
+{
+  "description": "2-1-1 minimal network, sigmoid, seed minimal",
+  "inputs": {
+    "inputValues": [1.0, 0.0],
+    "layerSizes": [2, 1, 1],
+    "activationFunction": "sigmoid",
+    "seed": "minimal"
+  },
+  "expectedStepCount": 4,
+  "keyStates": [
+    { "stepId": "architecture", "state": { "layerSizes": [2, 1, 1] } }
+  ],
+  "notes": "Minimal network with single neuron per hidden and output layer."
+}

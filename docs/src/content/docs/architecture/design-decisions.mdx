@@ -1,0 +1,137 @@
+---
+title: "Design Decisions"
+description: "Core architectural decisions and rationale."
+---
+
+This document records the six core architectural decisions that shape Eigenvue. For each decision, we describe what was decided, why, and what consequences follow.
+
+---
+
+## 1. Algorithms Are Code, Not Config
+
+### Decision
+
+Algorithm logic lives in generator functions written in TypeScript (and Python), not in declarative configuration files or domain-specific languages. The `meta.json` file stores metadata only -- display names, descriptions, input schemas, educational content, SEO keywords -- never algorithm logic.
+
+### Rationale
+
+- **Expressiveness.** Algorithms require loops, conditionals, recursion, and data structures. Expressing this in a configuration language would require inventing a Turing-complete DSL, which is just a worse programming language.
+- **Familiarity.** Contributors already know TypeScript and Python. There is no new language to learn.
+- **Tooling.** Generators get full IDE support: type checking, autocompletion, debugging, testing. Configuration files get none of this.
+- **Testability.** A generator is a pure function (inputs in, steps out) that can be unit tested with standard testing frameworks. No rendering engine needed.
+
+### Consequences
+
+- Every algorithm requires a `generator.ts` file with actual code, not just a `meta.json`.
+- Contributors must understand the generator API (the `step()` builder, the `StepInput` shape, the visual action vocabulary).
+- The barrier to contribution is slightly higher than a purely declarative system, but the expressiveness gained is substantial.
+- Algorithms can implement genuinely complex logic (e.g., recursive merge sort, transformer attention with matrix operations) that would be impractical in a configuration format.
+
+---
+
+## 2. Step Format Is the Stable API
+
+### Decision
+
+The `Step` interface is the stable contract between generators and renderers. Generators produce `Step[]`. Renderers consume `Step[]`. Neither side depends on the other's internals.
+
+### Rationale
+
+- **Decoupling.** Generators can be rewritten, optimized, or replaced without affecting renderers, and vice versa. The only shared surface is the step format.
+- **Multi-language support.** Both TypeScript and Python generators produce the same step format. Renderers do not care which language produced the steps.
+- **Pre-computation.** Steps can be generated at build time and serialized to JSON files. The renderer loads and renders them identically to real-time generated steps.
+- **Testability.** Generators can be tested by asserting on the shape and content of their output steps, without involving the rendering engine.
+
+### Consequences
+
+- The step format must be carefully designed and versioned. Breaking changes to the step format affect both generators and renderers.
+- All step data must be JSON-serializable. No functions, no class instances, no circular references.
+- Visual actions use an open string vocabulary (not a closed enum) so that new action types can be added without changing the format version.
+- The step format carries some redundancy (e.g., state snapshots at every step) in exchange for simplicity and debuggability.
+
+---
+
+## 3. Visual Primitives Over Bespoke Layouts
+
+### Decision
+
+The rendering engine provides a set of reusable visual primitives (elements, connections, containers, annotations, overlays) and a layout system that composes them. Algorithm visualizations are built from these primitives, not from bespoke, per-algorithm rendering code.
+
+### Rationale
+
+- **Reuse.** Multiple algorithms share the same layout. Binary search, bubble sort, and quicksort all use `array-with-pointers`. BFS, DFS, and Dijkstra all use `graph-network`. Sharing layouts eliminates duplicated rendering logic.
+- **Consistency.** All algorithm visualizations have a consistent look, feel, and interaction model because they are built from the same primitives.
+- **Maintainability.** Improvements to a layout (e.g., better animation, accessibility, responsive sizing) automatically benefit every algorithm that uses it.
+- **Scalability.** Adding a new algorithm in an existing domain (e.g., a new sorting algorithm) requires only a generator and a `meta.json` -- the layout already exists.
+
+### Consequences
+
+- New domains (e.g., quantum computing) require implementing new layouts before algorithms can be added.
+- There is a design tension between layout generality and algorithm-specific customization. The `visual.components` field in `meta.json` provides per-algorithm configuration within a layout.
+- Some highly specialized visualizations may not fit cleanly into the primitives model. The architecture accommodates this through the extensible layout registry, but it requires more work than adding a standard algorithm.
+- The 10 built-in layouts cover classical algorithms, deep learning, and generative AI. Additional domains will require additional layouts.
+
+---
+
+## 4. Pre-Computed Steps as First-Class
+
+### Decision
+
+Step sequences can be generated at build time, serialized as static JSON, and served directly to the client. The renderer treats pre-computed steps identically to real-time generated steps.
+
+### Rationale
+
+- **Performance.** The first page load does not require running the generator. Pre-computed steps are served as static files, resulting in near-instant visualization.
+- **SEO.** Search engine crawlers receive complete, rendered pages with all educational content and visualization data. There is no client-side generation required for indexing.
+- **Reliability.** Pre-computed steps are validated at build time. If a generator has a bug, it is caught during the build, not when a user visits the page.
+- **Low-powered clients.** Mobile devices, tablets, and older machines do not need to run complex generators. They receive pre-computed steps and only run the renderer.
+
+### Consequences
+
+- The build system must generate steps for each algorithm's default inputs and write them as JSON files.
+- The `StepSequence` type includes a `generatedBy` field (`"typescript"`, `"python"`, or `"precomputed"`) so the source can be identified, but the renderer does not branch on this field.
+- When users modify input parameters, the web application falls back to real-time TypeScript generation. Pre-computed steps only cover default inputs.
+- Storage cost scales linearly with the number of algorithms and default input sets. Step sequences are typically 10--100 KB when gzipped.
+
+---
+
+## 5. Every Page Is a Standalone Landing Page
+
+### Decision
+
+Every algorithm page on the Eigenvue website is designed to function as a complete, self-contained landing page. A user arriving from a search engine sees a fully working visualization, educational content, and navigation -- not a skeleton that requires further clicks.
+
+### Rationale
+
+- **SEO as primary growth channel.** Organic search traffic is the most scalable acquisition channel for educational content. Each algorithm page targets specific search queries (e.g., "binary search visualization", "how self-attention works").
+- **Zero-click value.** The user gets value (a working visualization, a clear explanation) immediately upon landing. There is no onboarding flow, no sign-up wall, no "click here to start."
+- **Shareability.** Every page has a clean URL, Open Graph metadata, and a self-contained experience. When shared on social media or in a classroom, the link works without context.
+- **Bounce rate reduction.** If the first thing a user sees is complete and useful, they are more likely to explore further.
+
+### Consequences
+
+- Every algorithm page must include: a working visualization (with pre-computed steps), educational content (key concepts, pitfalls), a code panel, and navigation to related algorithms.
+- The `meta.json` file must contain complete SEO metadata (`seo.keywords`, `seo.ogDescription`), educational content (`education.keyConcepts`, `education.pitfalls`, `education.quiz`), and cross-references (`prerequisites`, `related`).
+- Page weight must be managed carefully. Each page loads its own visualization, educational content, and potentially pre-computed steps. Lazy loading and code splitting are essential.
+- The URL structure must be stable. Changing an algorithm's URL breaks inbound links from search engines and external sites.
+
+---
+
+## 6. Architecture Supports Future Paid Tiers
+
+### Decision
+
+The architecture is designed from the beginning to support future paid tiers (e.g., premium algorithms, classroom features, advanced tools) without requiring architectural changes. The free tier is complete and valuable on its own.
+
+### Rationale
+
+- **Sustainability.** An open educational platform needs a sustainable business model. The architecture should not constrain future monetization options.
+- **Minimal refactoring.** Adding paid features should be additive (new code, new endpoints, new components), not a restructuring of existing code.
+- **Clean separation.** The generator/step-format/renderer architecture already separates concerns cleanly. Access control can be layered on top without modifying the core.
+
+### Consequences
+
+- The algorithm registry supports metadata that can be used for access control (category, difficulty level, tags) without currently enforcing any restrictions.
+- The Python package API is designed so that additional functions (e.g., `eigenvue.export()`, `eigenvue.compare()`) can be added without breaking the existing public API.
+- The `meta.json` schema is extensible. New fields can be added without breaking existing algorithms.
+- All current algorithms and features are free. The paid tier is a future addition, not a current restriction. The architecture simply avoids painting itself into a corner.

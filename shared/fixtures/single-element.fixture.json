@@ -1,0 +1,56 @@
+{
+  "description": "Binary search: single-element array [42], searching for 42. Edge case.",
+  "formatVersion": 1,
+  "algorithmId": "binary-search",
+  "inputs": {
+    "array": [42],
+    "target": 42
+  },
+  "generatedAt": "2026-02-14T00:00:00.000Z",
+  "generatedBy": "precomputed",
+  "steps": [
+    {
+      "index": 0,
+      "id": "initialize",
+      "title": "Initialize Pointers",
+      "explanation": "Searching for 42 in a sorted array of 1 element. Setting left=0, right=0.",
+      "state": { "array": [42], "target": 42, "left": 0, "right": 0 },
+      "visualActions": [
+        { "type": "highlightRange", "from": 0, "to": 0 },
+        { "type": "movePointer", "id": "left", "to": 0 },
+        { "type": "movePointer", "id": "right", "to": 0 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [2, 3] },
+      "isTerminal": false,
+      "phase": "initialization"
+    },
+    {
+      "index": 1,
+      "id": "calculate_mid",
+      "title": "Calculate Middle",
+      "explanation": "mid = floor((0 + 0) / 2) = 0. Checking array[0] = 42.",
+      "state": { "array": [42], "target": 42, "left": 0, "right": 0, "mid": 0 },
+      "visualActions": [
+        { "type": "highlightElement", "index": 0, "color": "highlight" },
+        { "type": "movePointer", "id": "mid", "to": 0 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [5, 6] },
+      "isTerminal": false,
+      "phase": "search"
+    },
+    {
+      "index": 2,
+      "id": "found",
+      "title": "Target Found!",
+      "explanation": "array[0] = 42 equals target 42. Found at index 0!",
+      "state": { "array": [42], "target": 42, "left": 0, "right": 0, "mid": 0, "result": 0 },
+      "visualActions": [
+        { "type": "markFound", "index": 0 },
+        { "type": "showMessage", "text": "Target 42 found at index 0!", "messageType": "success" }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [8] },
+      "isTerminal": true,
+      "phase": "result"
+    }
+  ]
+}

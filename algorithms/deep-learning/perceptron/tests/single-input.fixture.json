@@ -1,0 +1,16 @@
+{
+  "description": "Single input sigmoid: input [0.5], weight [0.6], bias 0.1",
+  "inputs": {
+    "inputs": [0.5],
+    "weights": [0.6],
+    "bias": 0.1,
+    "activationFunction": "sigmoid"
+  },
+  "expectedStepCount": 6,
+  "keyStates": [
+    { "stepId": "show-inputs", "state": { "inputs": [0.5], "n": 1 } },
+    { "stepId": "weighted-inputs", "state": { "weightedInputs": [0.3] } },
+    { "stepId": "pre-activation", "state": { "z": 0.4 } }
+  ],
+  "notes": "z = 0.5×0.6 + 0.1 = 0.4. sigmoid(0.4) ≈ 0.5987."
+}

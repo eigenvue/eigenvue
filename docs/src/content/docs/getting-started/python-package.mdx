@@ -1,0 +1,105 @@
+---
+title: "Getting Started — Python Package"
+description: "Install the eigenvue Python package and use its four public functions to list algorithms, launch visualizations, and access step data programmatically."
+---
+
+The `eigenvue` Python package lets you launch the same interactive
+visualizations you see on [eigenvue.web.app](https://eigenvue.web.app) -- directly from
+your terminal, scripts, or notebooks.
+
+## Installation
+
+Install from PyPI:
+
+```bash
+pip install eigenvue
+```
+
+**Requirements:**
+
+- Python 3.10 or later
+- The only runtime dependency is **Flask**, which is installed automatically
+
+Verify the installation:
+
+```python
+import eigenvue
+
+print(eigenvue.__version__)  # "0.1.0"
+```
+
+## Quick Start -- Listing Algorithms
+
+Use `eigenvue.list()` to see every algorithm the package ships with:
+
+```python
+import eigenvue
+
+algorithms = eigenvue.list()
+
+for algo in algorithms:
+    print(f"{algo['id']:30s} {algo['category']:20s} {algo['name']}")
+```
+
+`list()` returns a list of dictionaries. Each dictionary contains at minimum
+the keys `id`, `name`, and `category` (`"classical"`, `"deep_learning"`, or
+`"generative_ai"`).
+
+## Quick Start -- Opening a Visualization
+
+Call `eigenvue.show()` with an algorithm ID to launch the visualizer in your
+default browser:
+
+```python
+import eigenvue
+
+eigenvue.show("bubble-sort", data=[5, 3, 8, 1, 2])
+```
+
+A local Flask server starts in the background and serves the interactive
+three-panel visualizer. The browser tab opens automatically. Press `Ctrl+C` in
+the terminal to stop the server when you are done.
+
+You can pass algorithm-specific keyword arguments (like `data` above) to
+customise the input. If you omit them, sensible defaults are used.
+
+## Programmatic Step Access
+
+When you need raw step data -- for analysis, testing, or integration with other
+tools -- use `eigenvue.steps()`:
+
+```python
+import eigenvue
+
+frames = eigenvue.steps("binary-search", data=[1, 2, 3, 4, 5, 6, 7], target=4)
+
+print(f"Total steps: {len(frames)}")
+
+for i, frame in enumerate(frames):
+    print(f"Step {i}: {frame['description']}")
+    print(f"  State: {frame['state']}")
+```
+
+`steps()` returns a list of frame dictionaries. Each frame includes:
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `description` | `str` | Plain-language explanation of the step |
+| `state` | `dict` | A snapshot of all relevant variables at this point |
+| `code_line` | `int` | The highlighted line number in the pseudocode |
+
+This makes it straightforward to write assertions in tests, collect metrics, or
+feed step data into your own visualisation pipeline.
+
+## Type Safety
+
+The package ships with a `py.typed` marker and full type hints on every public
+function. If you use a type checker such as **mypy** or **Pyright**, you get
+autocompletion and static analysis out of the box:
+
+```python
+# Your editor will infer the return type automatically.
+frames: list[dict[str, object]] = eigenvue.steps("merge-sort", data=[9, 4, 7])
+```
+
+Type stubs are bundled inside the package -- no extra install is required.

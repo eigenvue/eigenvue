@@ -44,6 +44,18 @@ coverage/
 # Firebase
 .firebase/
 
+# Paper (not ready for publication yet)
+paper.md
+paper.bib
+CITATION.cff
+
+# Dev tools
+.claude/
+
+# Node package build output
+node/dist/
+node/data/
+
 # Misc
 *.log
 npm-debug.log*

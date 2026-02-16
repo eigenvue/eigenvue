@@ -1,0 +1,20 @@
+{
+  "description": "Minimal valid step sequence — 1 step, terminal, no visual actions.",
+  "formatVersion": 1,
+  "algorithmId": "test-algorithm",
+  "inputs": {},
+  "generatedAt": "2026-02-14T00:00:00.000Z",
+  "generatedBy": "precomputed",
+  "steps": [
+    {
+      "index": 0,
+      "id": "only-step",
+      "title": "The Only Step",
+      "explanation": "This is a minimal one-step algorithm.",
+      "state": {},
+      "visualActions": [],
+      "codeHighlight": { "language": "pseudocode", "lines": [1] },
+      "isTerminal": true
+    }
+  ]
+}

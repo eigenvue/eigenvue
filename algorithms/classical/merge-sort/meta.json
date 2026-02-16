@@ -1,0 +1,71 @@
+{
+  "id": "merge-sort",
+  "name": "Merge Sort",
+  "category": "classical",
+  "description": {
+    "short": "Stable divide-and-conquer sort that merges sorted sub-arrays.",
+    "long": "Merge Sort divides the array into halves recursively until each sub-array has one element, then merges them back in sorted order. It guarantees O(n log n) time in all cases but requires O(n) extra space for the merge buffer."
+  },
+  "complexity": { "time": "O(n log n)", "space": "O(n)", "level": "intermediate" },
+  "visual": {
+    "layout": "array-comparison",
+    "theme": { "primary": "#38bdf8", "secondary": "#818cf8" },
+    "components": {}
+  },
+  "inputs": {
+    "schema": {
+      "array": { "type": "array", "items": { "type": "number" }, "minItems": 1, "maxItems": 16, "description": "The array to sort" }
+    },
+    "defaults": { "array": [38, 27, 43, 3, 9, 82, 10] },
+    "examples": [
+      { "name": "Default unsorted", "values": { "array": [38, 27, 43, 3, 9, 82, 10] } },
+      { "name": "Power of two (8 elements)", "values": { "array": [8, 3, 6, 1, 5, 2, 7, 4] } },
+      { "name": "Already sorted", "values": { "array": [1, 2, 3, 4, 5, 6] } },
+      { "name": "Single element", "values": { "array": [42] } }
+    ]
+  },
+  "code": {
+    "implementations": {
+      "pseudocode": "function mergeSort(array):\n  if length(array) <= 1:\n    return array\n  for size = 1, 2, 4, ... while size < n:\n    for left = 0, 2*size, 4*size, ...:\n      mid = min(left + size - 1, n - 1)\n      right = min(left + 2*size - 1, n - 1)\n      merge(array, left, mid, right)\n\nfunction merge(array, left, mid, right):\n  aux = copy of array[left..right]\n  i = left, j = mid + 1, k = left\n  while i <= mid and j <= right:\n    if aux[i] <= aux[j]: array[k] = aux[i]; i++\n    else: array[k] = aux[j]; j++\n    k++\n  copy remaining elements",
+      "python": "def merge_sort(arr):\n    n = len(arr)\n    size = 1\n    while size < n:\n        for left in range(0, n, 2 * size):\n            mid = min(left + size - 1, n - 1)\n            right = min(left + 2 * size - 1, n - 1)\n            merge(arr, left, mid, right)\n        size *= 2\n\ndef merge(arr, left, mid, right):\n    temp = arr[left:right + 1]\n    i, j, k = 0, mid - left + 1, left\n    while i <= mid - left and j < len(temp):\n        if temp[i] <= temp[j]:\n            arr[k] = temp[i]; i += 1\n        else:\n            arr[k] = temp[j]; j += 1\n        k += 1\n    while i <= mid - left:\n        arr[k] = temp[i]; i += 1; k += 1\n    while j < len(temp):\n        arr[k] = temp[j]; j += 1; k += 1"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+  "education": {
+    "keyConcepts": [
+      { "title": "Divide and Conquer", "description": "Merge Sort divides the problem into smaller sub-problems (halving), solves them, and combines (merges) the results." },
+      { "title": "Stability", "description": "When equal elements appear, we always take from the left half first, preserving their original relative order." },
+      { "title": "Guaranteed O(n log n)", "description": "Unlike QuickSort, Merge Sort always runs in O(n log n) regardless of input order. The trade-off is O(n) extra space." },
+      { "title": "Auxiliary Space", "description": "The merge step requires a temporary buffer of size n. This is the main disadvantage compared to in-place sorting algorithms." }
+    ],
+    "pitfalls": [
+      { "title": "Forgetting to copy back", "description": "After merging into the auxiliary buffer, the values must be copied back into the main array. Forgetting this means subsequent merges operate on stale data." },
+      { "title": "Off-by-one in merge boundaries", "description": "The mid index belongs to the LEFT sub-array [left..mid], and the right starts at mid+1. Getting this wrong duplicates or skips elements." }
+    ],
+    "quiz": [
+      {
+        "question": "What is the space complexity of Merge Sort?",
+        "options": ["O(1)", "O(log n)", "O(n)", "O(n log n)"],
+        "correctIndex": 2,
+        "explanation": "Merge Sort needs O(n) auxiliary space for the merge buffer, plus O(log n) for the recursion stack. The dominant term is O(n)."
+      },
+      {
+        "question": "Is Merge Sort stable?",
+        "options": ["Yes", "No"],
+        "correctIndex": 0,
+        "explanation": "Yes. When two elements are equal, the merge takes from the left sub-array first, preserving original relative order."
+      }
+    ],
+    "resources": [
+      { "title": "Wikipedia: Merge Sort", "url": "https://en.wikipedia.org/wiki/Merge_sort", "type": "article" }
+    ]
+  },
+  "seo": {
+    "keywords": ["merge sort", "merge sort visualization", "merge sort animation", "divide and conquer", "stable sorting"],
+    "ogDescription": "Watch Merge Sort divide and merge step by step. See the auxiliary buffer and merge operations with interactive controls."
+  },
+  "prerequisites": ["binary-search"],
+  "related": ["bubble-sort", "quicksort"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

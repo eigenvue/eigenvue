@@ -1,0 +1,151 @@
+{
+  "id": "transformer-block",
+  "name": "Transformer Block",
+  "category": "generative-ai",
+
+  "description": {
+    "short": "Follow data through a complete transformer encoder block step by step.",
+    "long": "A transformer block is the fundamental building unit of models like BERT, GPT, and LLaMA. It processes input embeddings through a sequence of sublayers: Multi-Head Self-Attention → Add & Layer Norm → Feed-Forward Network → Add & Layer Norm. Residual connections (skip connections) add the input of each sublayer to its output before normalization, preserving the original signal and enabling deep networks. This visualization shows every computation: attention scores, residual additions, layer normalization, and the two-layer FFN with ReLU activation."
+  },
+
+  "complexity": {
+    "time": "O(n² × d + n × d × d_ff)",
+    "space": "O(n² + n × d_ff)",
+    "level": "advanced"
+  },
+
+  "visual": {
+    "layout": "layer-diagram",
+    "theme": {
+      "primary": "#7c3aed",
+      "secondary": "#a78bfa"
+    },
+    "components": {}
+  },
+
+  "inputs": {
+    "schema": {
+      "tokens": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Token sequence to process"
+      },
+      "embeddingDim": {
+        "type": "number",
+        "description": "Embedding dimension (d_model). Must be divisible by numHeads.",
+        "minimum": 2,
+        "maximum": 16
+      },
+      "ffnDim": {
+        "type": "number",
+        "description": "Feed-forward hidden dimension (d_ff). Typically 4× d_model.",
+        "minimum": 4,
+        "maximum": 64
+      },
+      "numHeads": {
+        "type": "number",
+        "description": "Number of attention heads.",
+        "minimum": 1,
+        "maximum": 8
+      }
+    },
+    "defaults": {
+      "tokens": ["The", "cat", "sat"],
+      "embeddingDim": 4,
+      "ffnDim": 8,
+      "numHeads": 1
+    },
+    "examples": [
+      {
+        "name": "3 tokens, 1 head (dim=4, ffn=8)",
+        "values": {
+          "tokens": ["The", "cat", "sat"],
+          "embeddingDim": 4,
+          "ffnDim": 8,
+          "numHeads": 1
+        }
+      },
+      {
+        "name": "4 tokens, 2 heads (dim=8, ffn=16)",
+        "values": {
+          "tokens": ["The", "cat", "sat", "down"],
+          "embeddingDim": 8,
+          "ffnDim": 16,
+          "numHeads": 2
+        }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function TransformerBlock(X, W_attn, W_ffn):\n  // Sublayer 1: Self-Attention + Add & Norm\n  attn_output = MultiHeadAttention(X)\n  residual_1 = X + attn_output          // residual connection\n  norm_1 = LayerNorm(residual_1)\n\n  // Sublayer 2: FFN + Add & Norm\n  ffn_output = FFN(norm_1)\n    = ReLU(norm_1 × W₁ + b₁) × W₂ + b₂\n  residual_2 = norm_1 + ffn_output       // residual connection\n  norm_2 = LayerNorm(residual_2)\n\n  return norm_2",
+      "python": "def transformer_block(X, attn_params, ffn_params):\n    # Self-Attention + Add & Norm\n    attn_out = multi_head_attention(X, **attn_params)\n    residual_1 = X + attn_out\n    norm_1 = layer_norm(residual_1)\n    \n    # FFN + Add & Norm\n    ffn_out = relu(norm_1 @ W1 + b1) @ W2 + b2\n    residual_2 = norm_1 + ffn_out\n    norm_2 = layer_norm(residual_2)\n    return norm_2"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Residual Connections",
+        "description": "Each sublayer's output is added to its input: output = x + sublayer(x). This 'skip connection' ensures that gradients can flow directly through the network, enabling training of very deep models (100+ layers). Without residuals, deep transformers fail to train."
+      },
+      {
+        "title": "Layer Normalization",
+        "description": "After each residual addition, layer normalization normalizes each token's vector to have mean ≈ 0 and variance ≈ 1. This stabilizes the internal activations and helps the model train faster. Unlike batch normalization, layer norm operates on individual examples."
+      },
+      {
+        "title": "Feed-Forward Network",
+        "description": "The FFN applies two linear transformations with a ReLU activation: FFN(x) = max(0, x·W₁ + b₁)·W₂ + b₂. The hidden dimension (d_ff) is typically 4× the model dimension. This gives each token a nonlinear transformation independent of other tokens."
+      },
+      {
+        "title": "Block Stacking",
+        "description": "Real transformers stack 6 (original), 12 (BERT-base), 24 (GPT-2), or 96+ (GPT-4) identical blocks. Each block refines the representations. The output of one block is the input to the next."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Add Then Norm, Not Norm Then Add",
+        "description": "The original Transformer uses Post-Norm: LayerNorm(x + sublayer(x)). Some implementations use Pre-Norm: x + sublayer(LayerNorm(x)). This visualization uses Post-Norm as in the original paper."
+      },
+      {
+        "title": "FFN Is Per-Token",
+        "description": "Unlike attention which mixes information across tokens, the FFN processes each token independently with the same weights. Cross-token interaction only happens in the attention sublayer."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "What is the purpose of the residual connection in a transformer block?",
+        "options": [
+          "To reduce the number of parameters",
+          "To allow gradients to flow directly through the network",
+          "To increase the embedding dimension",
+          "To apply nonlinearity"
+        ],
+        "correctIndex": 1,
+        "explanation": "Residual connections create a direct path for gradients, preventing the vanishing gradient problem in deep networks. The identity mapping lets the network learn the 'delta' (what to add) rather than the full transformation."
+      },
+      {
+        "question": "If d_model = 512 and d_ff = 2048, how many parameters does the FFN have (ignoring biases)?",
+        "options": ["512 × 512", "512 × 2048", "2 × 512 × 2048", "512 × 2048 × 512"],
+        "correctIndex": 2,
+        "explanation": "The FFN has two weight matrices: W₁ [512, 2048] and W₂ [2048, 512]. Total parameters = 512×2048 + 2048×512 = 2 × 512 × 2048 = 2,097,152."
+      }
+    ],
+    "resources": [
+      { "title": "Vaswani et al. 2017 — Attention Is All You Need", "url": "https://arxiv.org/abs/1706.03762", "type": "paper" },
+      { "title": "The Annotated Transformer — Harvard NLP", "url": "https://nlp.seas.harvard.edu/2018/04/03/attention.html", "type": "tutorial" }
+    ]
+  },
+
+  "seo": {
+    "keywords": ["transformer block", "transformer architecture", "encoder block", "residual connection", "layer normalization", "feed-forward network", "transformer visualization"],
+    "ogDescription": "Interactive step-by-step visualization of a Transformer encoder block. Follow data through self-attention, residual connections, layer normalization, and the feed-forward network."
+  },
+
+  "prerequisites": ["multi-head-attention"],
+  "related": ["multi-head-attention", "self-attention"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

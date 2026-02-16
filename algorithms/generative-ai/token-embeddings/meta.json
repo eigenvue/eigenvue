@@ -1,0 +1,169 @@
+{
+  "id": "token-embeddings",
+  "name": "Token Embeddings",
+  "category": "generative-ai",
+
+  "description": {
+    "short": "Map tokens to dense numerical vectors using an embedding lookup table.",
+    "long": "Token embeddings are the first step in any transformer-based language model. Each token in the vocabulary is assigned a dense vector of real numbers — its embedding. These vectors are learned during training so that semantically similar tokens end up with similar vectors (high cosine similarity). This visualization shows the embedding lookup process step by step: given a sequence of tokens, each token is mapped to its embedding vector, and pairwise cosine similarities are computed to illustrate the geometric relationships between tokens in the embedding space."
+  },
+
+  "complexity": {
+    "time": "O(n × d)",
+    "space": "O(V × d)",
+    "level": "intermediate"
+  },
+
+  "visual": {
+    "layout": "token-sequence",
+    "theme": {
+      "primary": "#06b6d4",
+      "secondary": "#0891b2"
+    },
+    "components": {
+      "showTokenBorders": true,
+      "showEmbeddingVectors": true,
+      "showSimilarityMatrix": true,
+      "highlightColor": "#fbbf24",
+      "activeColor": "#06b6d4",
+      "similarityHighColor": "#22c55e",
+      "similarityLowColor": "#ef4444"
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "tokens": {
+        "type": "array",
+        "items": { "type": "string", "minLength": 1, "maxLength": 20 },
+        "minItems": 1,
+        "maxItems": 10,
+        "description": "A sequence of tokens to embed."
+      },
+      "embeddingDim": {
+        "type": "number",
+        "minimum": 2,
+        "maximum": 16,
+        "description": "The dimensionality of each embedding vector."
+      }
+    },
+    "defaults": {
+      "tokens": ["The", "cat", "sat"],
+      "embeddingDim": 4
+    },
+    "examples": [
+      {
+        "name": "Default — 3 tokens, dim 4",
+        "values": {
+          "tokens": ["The", "cat", "sat"],
+          "embeddingDim": 4
+        }
+      },
+      {
+        "name": "Similar words — 4 tokens, dim 6",
+        "values": {
+          "tokens": ["king", "queen", "man", "woman"],
+          "embeddingDim": 6
+        }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function embedTokens(tokens, embeddingTable, d):\n  embeddings = empty matrix [len(tokens), d]\n  for i = 0 to len(tokens) - 1:\n    tokenId = lookupId(tokens[i])\n    embeddings[i] = embeddingTable[tokenId]   // d-dimensional vector\n  return embeddings\n\n// Cosine similarity: cos(θ) = (A · B) / (‖A‖ × ‖B‖)",
+      "python": "import numpy as np\n\ndef embed_tokens(tokens: list[str], embedding_table: np.ndarray, token_to_id: dict[str, int]) -> np.ndarray:\n    \"\"\"Look up embeddings for a list of tokens.\"\"\"\n    ids = [token_to_id[t] for t in tokens]\n    return embedding_table[ids]  # shape: [len(tokens), d]\n\ndef cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:\n    \"\"\"Compute cosine similarity between two vectors.\"\"\"\n    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Embedding as Lookup",
+        "description": "An embedding layer is essentially a lookup table. Each token ID maps to a row in the embedding matrix. There is no computation involved — just an index-based retrieval of a pre-stored vector. The embedding matrix has shape [V, d] where V is the vocabulary size and d is the embedding dimension."
+      },
+      {
+        "title": "Cosine Similarity",
+        "description": "Cosine similarity measures the angle between two vectors, ignoring their magnitude. It is computed as cos(θ) = (A · B) / (‖A‖ × ‖B‖) and ranges from -1 (opposite directions) to +1 (same direction). In embedding space, high cosine similarity between two token vectors suggests semantic relatedness."
+      },
+      {
+        "title": "Embedding Dimensions",
+        "description": "The embedding dimension d determines the expressiveness of token representations. Small models use d=64 or d=128, while GPT-3 uses d=12288. Higher dimensions can capture more nuanced semantic relationships but require more memory and computation. The choice of d is a key architectural hyperparameter."
+      },
+      {
+        "title": "Learned Representations",
+        "description": "Embedding vectors are not hand-crafted — they are learned during model training via backpropagation. The training process adjusts vectors so that tokens appearing in similar contexts end up with similar embeddings. This is the distributional hypothesis: 'a word is characterized by the company it keeps.'"
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Embeddings are learned, not fixed",
+        "description": "A common misconception is that embeddings are predetermined or based on character similarity. In reality, the embedding for each token is learned during training. The token 'cat' and 'cat' (same string) will always have the same embedding, but 'cat' and 'bat' may have very different embeddings despite differing by one character."
+      },
+      {
+        "title": "Confusing embedding dimension with vocabulary size",
+        "description": "The embedding matrix has shape [V, d] where V is the vocabulary size (number of unique tokens) and d is the embedding dimension (vector length). These are independent parameters. A vocabulary of 50,000 tokens with 512-dimensional embeddings produces a 50,000 × 512 matrix."
+      },
+      {
+        "title": "Cosine similarity is not distance",
+        "description": "Cosine similarity measures the angle between vectors, not their Euclidean distance. Two vectors can have high cosine similarity (pointing in the same direction) but very different magnitudes. For some applications, L2 distance or dot product similarity may be more appropriate."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "What is the shape of an embedding matrix for a vocabulary of 10,000 tokens with embedding dimension 256?",
+        "options": ["[256, 10000]", "[10000, 256]", "[256, 256]", "[10000, 10000]"],
+        "correctIndex": 1,
+        "explanation": "The embedding matrix has shape [V, d] = [10000, 256]. Each of the 10,000 tokens has a 256-dimensional embedding vector, so each row corresponds to one token."
+      },
+      {
+        "question": "What does a cosine similarity of 0 between two embedding vectors indicate?",
+        "options": [
+          "The tokens are identical",
+          "The tokens are opposite in meaning",
+          "The embedding vectors are orthogonal (perpendicular)",
+          "One of the vectors is a zero vector"
+        ],
+        "correctIndex": 2,
+        "explanation": "A cosine similarity of 0 means the two vectors are orthogonal — they point in perpendicular directions in the embedding space. This suggests the tokens are unrelated in the learned representation. A similarity of +1 means identical direction, and -1 means opposite direction."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Word2Vec — Efficient Estimation of Word Representations (Mikolov et al., 2013)",
+        "url": "https://arxiv.org/abs/1301.3781",
+        "type": "article"
+      },
+      {
+        "title": "The Illustrated Word2Vec — Jay Alammar",
+        "url": "https://jalammar.github.io/illustrated-word2vec/",
+        "type": "article"
+      },
+      {
+        "title": "Embedding — PyTorch Documentation",
+        "url": "https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html",
+        "type": "reference"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "token embedding visualization",
+      "word embedding lookup",
+      "embedding vectors explained",
+      "cosine similarity visualization",
+      "transformer embeddings",
+      "how token embeddings work",
+      "embedding dimension",
+      "NLP embeddings step by step"
+    ],
+    "ogDescription": "Interactive step-by-step visualization of token embeddings. See how tokens are mapped to numerical vectors and explore cosine similarity between embeddings."
+  },
+
+  "prerequisites": ["tokenization-bpe"],
+  "related": ["self-attention", "tokenization-bpe"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

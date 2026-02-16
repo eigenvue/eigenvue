@@ -1,0 +1,342 @@
+---
+title: "Python Public API"
+description: "Complete reference for the eigenvue Python package."
+---
+
+The `eigenvue` Python package provides a high-level interface for listing algorithms, generating step sequences, launching interactive visualizations, and embedding them in Jupyter notebooks. All four public functions are importable directly from the top-level `eigenvue` module.
+
+```python
+import eigenvue
+```
+
+## Installation
+
+```bash
+pip install eigenvue
+```
+
+The package requires Python 3.10 or later.
+
+---
+
+## `eigenvue.list`
+
+Returns a list of all registered algorithms, optionally filtered by category.
+
+### Signature
+
+```python
+def list(category: str | None = None) -> list[dict]
+```
+
+### Parameters
+
+| Parameter  | Type             | Required | Default | Description                                                                                                           |
+| ---------- | ---------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
+| `category` | `str \| None`    | No       | `None`  | Filter by algorithm category. Valid values: `"classical"`, `"deep-learning"`, `"generative-ai"`, `"quantum"`. If `None`, returns all algorithms. |
+
+### Returns
+
+`list[dict]` -- A list of dictionaries, each containing the algorithm metadata fields `id`, `name`, `category`, `description`, and `complexity`.
+
+### Example
+
+```python
+import eigenvue
+
+# List all algorithms
+all_algorithms = eigenvue.list()
+for algo in all_algorithms:
+    print(f"{algo['id']}: {algo['name']} ({algo['category']})")
+
+# Filter by category
+classical = eigenvue.list(category="classical")
+genai = eigenvue.list(category="generative-ai")
+```
+
+### Example Return Value
+
+```python
+[
+    {
+        "id": "binary-search",
+        "name": "Binary Search",
+        "category": "classical",
+        "description": {
+            "short": "Efficiently find a target in a sorted array by halving the search space.",
+            "long": "Binary search is a divide-and-conquer algorithm..."
+        },
+        "complexity": {
+            "time": "O(log n)",
+            "space": "O(1)",
+            "level": "beginner"
+        }
+    },
+    # ... more algorithms
+]
+```
+
+### Exceptions
+
+| Exception      | Condition                                                    |
+| -------------- | ------------------------------------------------------------ |
+| `ValueError`   | `category` is not one of the recognized category strings.    |
+
+---
+
+## `eigenvue.show`
+
+Launches an interactive visualization of the specified algorithm in a local web browser. Starts a lightweight local server on the given port and opens the algorithm page.
+
+### Signature
+
+```python
+def show(
+    algorithm_id: str,
+    inputs: dict | None = None,
+    port: int | None = None,
+) -> None
+```
+
+### Parameters
+
+| Parameter      | Type            | Required | Default | Description                                                                                       |
+| -------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `algorithm_id` | `str`           | Yes      | --      | The URL-safe identifier of the algorithm (e.g., `"binary-search"`, `"self-attention"`).          |
+| `inputs`       | `dict \| None`  | No       | `None`  | Custom input parameters. Keys and values must match the algorithm's input schema. If `None`, the algorithm's default inputs from `meta.json` are used. |
+| `port`         | `int \| None`   | No       | `None`  | Port number for the local server. If `None`, an available port is selected automatically.        |
+
+### Returns
+
+`None` -- The function opens a browser window and blocks until the server is stopped (e.g., via Ctrl+C).
+
+### Example
+
+```python
+import eigenvue
+
+# Launch with default inputs
+eigenvue.show("binary-search")
+
+# Launch with custom inputs
+eigenvue.show("binary-search", inputs={
+    "array": [2, 4, 6, 8, 10, 12, 14, 16],
+    "target": 10,
+})
+
+# Specify a port
+eigenvue.show("dijkstra", port=8080)
+```
+
+### Exceptions
+
+| Exception        | Condition                                                                    |
+| ---------------- | ---------------------------------------------------------------------------- |
+| `ValueError`     | `algorithm_id` is not a recognized algorithm identifier.                     |
+| `ValueError`     | `inputs` does not conform to the algorithm's input schema.                   |
+| `OSError`        | The specified `port` is already in use.                                       |
+| `KeyboardInterrupt` | The user pressed Ctrl+C to stop the server (normal shutdown path).        |
+
+### Thread Safety
+
+The local server runs in a background thread. Calling `show()` from multiple threads concurrently is not supported. If you need multiple visualizations, open them sequentially or use `jupyter()` for notebook embedding.
+
+---
+
+## `eigenvue.steps`
+
+Generates the complete step sequence for an algorithm without launching a visualization. Useful for programmatic analysis, testing, and building custom integrations.
+
+### Signature
+
+```python
+def steps(
+    algorithm_id: str,
+    inputs: dict | None = None,
+) -> list[dict]
+```
+
+### Parameters
+
+| Parameter      | Type            | Required | Default | Description                                                                                       |
+| -------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `algorithm_id` | `str`           | Yes      | --      | The URL-safe identifier of the algorithm.                                                        |
+| `inputs`       | `dict \| None`  | No       | `None`  | Custom input parameters. If `None`, the algorithm's default inputs are used.                     |
+
+### Returns
+
+`list[dict]` -- A list of step dictionaries conforming to the [Step Format Specification](/docs/api-reference/step-format). Each dictionary uses snake_case keys (Python convention). The list is guaranteed to be non-empty, with the last step having `is_terminal: True`.
+
+### Example
+
+```python
+import eigenvue
+
+# Generate steps with default inputs
+result = eigenvue.steps("binary-search")
+print(f"Total steps: {len(result)}")
+
+# Inspect individual steps
+for s in result:
+    print(f"Step {s['index']}: {s['title']}")
+    print(f"  Phase: {s.get('phase', 'N/A')}")
+    print(f"  Actions: {len(s['visual_actions'])}")
+
+# Generate with custom inputs
+result = eigenvue.steps("bubble-sort", inputs={
+    "array": [5, 3, 8, 1, 2],
+})
+```
+
+### Example Return Value
+
+```python
+[
+    {
+        "index": 0,
+        "id": "init",
+        "title": "Initialize Binary Search",
+        "explanation": "Set left = 0, right = 9, searching for target 13.",
+        "state": {
+            "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+            "target": 13,
+            "left": 0,
+            "right": 9,
+            "mid": None,
+        },
+        "visual_actions": [
+            {"type": "highlightRange", "from": 0, "to": 9, "color": "highlight"},
+            {"type": "movePointer", "id": "left", "to": 0},
+            {"type": "movePointer", "id": "right", "to": 9},
+        ],
+        "code_highlight": {"language": "pseudocode", "lines": [2, 3]},
+        "is_terminal": False,
+        "phase": "initialization",
+    },
+    # ... more steps
+]
+```
+
+### Field Mapping
+
+The Python API returns snake_case keys. The mapping from the TypeScript camelCase wire format is:
+
+| TypeScript (camelCase) | Python (snake_case)  |
+| ---------------------- | -------------------- |
+| `visualActions`        | `visual_actions`     |
+| `codeHighlight`        | `code_highlight`     |
+| `isTerminal`           | `is_terminal`        |
+
+Note that fields within `visual_actions` items retain their camelCase names (e.g., `nodeId`, `queryIdx`) because they are part of the visual action vocabulary, not the Step envelope.
+
+### Exceptions
+
+| Exception      | Condition                                                    |
+| -------------- | ------------------------------------------------------------ |
+| `ValueError`   | `algorithm_id` is not a recognized algorithm identifier.     |
+| `ValueError`   | `inputs` does not conform to the algorithm's input schema.   |
+| `RuntimeError` | The generator produced an invalid step sequence.             |
+
+### Thread Safety
+
+`steps()` is stateless and safe to call from multiple threads concurrently, provided each call operates on independent inputs. No global state is modified.
+
+---
+
+## `eigenvue.jupyter`
+
+Renders an interactive visualization inline in a Jupyter notebook. Returns an `IPython.display.IFrame` that embeds the Eigenvue visualization.
+
+### Signature
+
+```python
+def jupyter(
+    algorithm_id: str,
+    inputs: dict | None = None,
+    width: int = 960,
+    height: int = 600,
+) -> IFrame
+```
+
+### Parameters
+
+| Parameter      | Type            | Required | Default | Description                                                                                       |
+| -------------- | --------------- | -------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `algorithm_id` | `str`           | Yes      | --      | The URL-safe identifier of the algorithm.                                                        |
+| `inputs`       | `dict \| None`  | No       | `None`  | Custom input parameters. If `None`, the algorithm's default inputs are used.                     |
+| `width`        | `int`           | No       | `960`   | Width of the embedded IFrame in pixels. Must be a positive integer.                              |
+| `height`       | `int`           | No       | `600`   | Height of the embedded IFrame in pixels. Must be a positive integer.                             |
+
+### Returns
+
+`IFrame` -- An `IPython.display.IFrame` object. In Jupyter notebooks, this renders automatically when returned as the last expression in a cell. It can also be displayed explicitly with `IPython.display.display()`.
+
+### Example
+
+```python
+import eigenvue
+
+# Basic usage -- returns an IFrame that renders in the notebook
+eigenvue.jupyter("binary-search")
+```
+
+```python
+# Custom inputs and dimensions
+eigenvue.jupyter(
+    "self-attention",
+    inputs={"tokens": ["The", "cat", "sat"]},
+    width=1200,
+    height=800,
+)
+```
+
+```python
+# Explicit display
+from IPython.display import display
+
+iframe = eigenvue.jupyter("bubble-sort", inputs={"array": [5, 3, 8, 1, 2]})
+display(iframe)
+```
+
+### Exceptions
+
+| Exception        | Condition                                                    |
+| ---------------- | ------------------------------------------------------------ |
+| `ValueError`     | `algorithm_id` is not a recognized algorithm identifier.     |
+| `ValueError`     | `inputs` does not conform to the algorithm's input schema.   |
+| `ValueError`     | `width` or `height` is not a positive integer.               |
+| `ImportError`    | IPython is not installed (required for IFrame support).       |
+
+### Environment Requirements
+
+This function requires a Jupyter-compatible environment (Jupyter Notebook, JupyterLab, Google Colab, or VS Code with the Jupyter extension). The `IPython` package must be installed. In non-Jupyter environments, use `show()` instead.
+
+---
+
+## Version
+
+The current package version is accessible via:
+
+```python
+import eigenvue
+print(eigenvue.__version__)  # "0.1.0"
+```
+
+---
+
+## Error Handling Summary
+
+All public functions validate their inputs eagerly and raise descriptive exceptions. The general pattern:
+
+```python
+import eigenvue
+
+try:
+    result = eigenvue.steps("nonexistent-algorithm")
+except ValueError as e:
+    print(f"Invalid input: {e}")
+except RuntimeError as e:
+    print(f"Generator failure: {e}")
+```
+
+All exceptions include the algorithm ID and a description of what went wrong.

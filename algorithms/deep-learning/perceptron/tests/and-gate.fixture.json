@@ -1,0 +1,17 @@
+{
+  "description": "AND gate with step activation: inputs [1, 1] → output 1",
+  "inputs": {
+    "inputs": [1, 1],
+    "weights": [0.5, 0.5],
+    "bias": -0.7,
+    "activationFunction": "step"
+  },
+  "expectedStepCount": 6,
+  "keyStates": [
+    { "stepId": "show-inputs", "state": { "inputs": [1, 1], "n": 2 } },
+    { "stepId": "weighted-inputs", "state": { "weightedInputs": [0.5, 0.5] } },
+    { "stepId": "pre-activation", "state": { "z": 0.3 } },
+    { "stepId": "output", "state": { "output": 1, "z": 0.3 } }
+  ],
+  "notes": "z = 1×0.5 + 1×0.5 + (-0.7) = 0.3. step(0.3) = 1 because 0.3 ≥ 0."
+}

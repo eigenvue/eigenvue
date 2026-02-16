@@ -1,21 +1,59 @@
+# =============================================================================
+# Eigenvue CI — Continuous Integration Pipeline
+#
+# Runs on: every pull request, every push to main.
+# Purpose: Validate code quality, type safety, correctness, cross-language
+#          parity, build integrity, and bundle size. If any check fails,
+#          the PR cannot be merged.
+#
+# JOBS:
+#   1. web-lint-typecheck    — ESLint + Prettier + tsc --noEmit
+#   2. web-test              — Vitest unit tests
+#   3. web-build             — next build + bundle size check
+#   4. python-lint-typecheck — Ruff + mypy --strict
+#   5. python-test           — pytest (matrix: 3.10, 3.11, 3.12, 3.13)
+#   6. cross-language-parity — Run both TS and Python generators, diff outputs
+#   7. schema-validation     — Validate all meta.json and step fixtures
+#   8-10. node-*             — Node package lint, test, build
+#   11. docs-build           — Astro docs site build verification
+#
+# CACHING:
+#   - npm dependencies cached by package-lock.json hash
+#   - pip dependencies cached by pyproject.toml hash
+#   - Next.js build cache preserved across runs
+#
+# ARTIFACTS:
+#   - Bundle analysis report (uploaded on web-build)
+#   - Coverage reports (uploaded on test jobs)
+#
+# Author: Ashutosh Mishra
+# =============================================================================
+
 name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
+# Cancel in-progress CI runs for the same PR/branch.
+# This prevents resource waste when a developer pushes multiple commits quickly.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
-  web:
-    name: Web (Next.js)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
+env:
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.12"
 
+jobs:
+  # ===========================================================================
+  # JOB 1: Web Lint & Type Check
+  # ===========================================================================
+  web-lint-typecheck:
+    name: "Web: Lint & Type Check"
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,35 +61,169 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: npm
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
           cache-dependency-path: web/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: cd web && npm ci
 
-      - name: Lint
-        run: npx eslint .
+      # -----------------------------------------------------------------------
+      # ESLint: Catches code quality issues, unused imports, React hook
+      # violations, accessibility issues (via eslint-plugin-jsx-a11y).
+      # -----------------------------------------------------------------------
+      - name: ESLint
+        run: cd web && npx eslint . --max-warnings=0
 
-      - name: Format check
-        run: npx prettier --check "src/**/*.{ts,tsx,css,json}"
+      # -----------------------------------------------------------------------
+      # Prettier: Enforces consistent formatting. The --check flag fails if
+      # any file would be reformatted, without actually modifying files.
+      # -----------------------------------------------------------------------
+      - name: Prettier
+        run: cd web && npx prettier --check .
 
-      - name: Type check
-        run: npx tsc --noEmit
+      # -----------------------------------------------------------------------
+      # TypeScript: Strict mode type checking. --noEmit means we only check
+      # types — no output files are produced. This catches type errors in
+      # generators, rendering engine, and React components.
+      # -----------------------------------------------------------------------
+      - name: TypeScript type check
+        run: cd web && npx tsc --noEmit
 
-      - name: Test
-        run: npx vitest run
-
-      - name: Build
-        run: npx next build
-
-  python:
-    name: Python
+  # ===========================================================================
+  # JOB 2: Web Unit Tests
+  # ===========================================================================
+  web-test:
+    name: "Web: Unit Tests"
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: python
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: cd web && npm ci
+
+      # -----------------------------------------------------------------------
+      # Vitest: Runs all unit tests including generator tests, rendering
+      # engine tests, component tests, and utility tests. Coverage is
+      # collected and uploaded as an artifact.
+      #
+      # The --reporter=verbose flag ensures every test name is printed,
+      # making CI logs easy to scan for failures.
+      # -----------------------------------------------------------------------
+      - name: Run Vitest
+        run: cd web && npx vitest run --reporter=verbose
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-coverage
+          path: web/coverage/
+          retention-days: 14
+
+  # ===========================================================================
+  # JOB 3: Web Build & Bundle Size Check
+  # ===========================================================================
+  web-build:
+    name: "Web: Build & Bundle Size"
+    runs-on: ubuntu-latest
+    needs: [web-lint-typecheck]
+    env:
+      # Provide the production site URL so that SEO metadata, canonical URLs,
+      # and OG image paths are generated correctly during the static build.
+      NEXT_PUBLIC_SITE_URL: "https://eigenvue.web.app"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Setup Python (for pre-computation)
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install web dependencies
+        run: cd web && npm ci
+
+      - name: Install Python package (for pre-computation pipeline)
+        run: cd python && pip install -e ".[dev]"
+
+      # -----------------------------------------------------------------------
+      # PRE-COMPUTATION: Run all 17 Python generators with all example inputs.
+      # Outputs JSON step files to web/public/precomputed/<algorithm-id>/.
+      #
+      # This bridges the Python generators into the web app's static build.
+      # Algorithms without TypeScript generators rely entirely on these
+      # pre-computed steps for their web visualizations.
+      #
+      # The script exits with code 1 if ANY generator fails or produces
+      # invalid steps. This ensures broken generators cannot deploy.
+      # -----------------------------------------------------------------------
+      - name: Run pre-computation pipeline
+        run: python scripts/precompute-steps.py --output-dir web/public/precomputed --validate
+
+      # -----------------------------------------------------------------------
+      # NEXT.JS BUILD: Static Site Generation. Every algorithm page is
+      # pre-rendered at build time. This also runs generateStaticParams()
+      # and generateMetadata() for all dynamic routes.
+      #
+      # The build MUST succeed — a failing build means broken pages.
+      # -----------------------------------------------------------------------
+      - name: Build Next.js (SSG)
+        run: cd web && npm run build
+
+      # -----------------------------------------------------------------------
+      # BUNDLE SIZE GATE: Fail the build if the initial JavaScript bundle
+      # exceeds the threshold. This prevents size regressions from sneaking in.
+      #
+      # The threshold is defined in BUNDLE_SIZE_LIMIT_KB (default: 200).
+      # The check-bundle-size.sh script parses the Next.js build output
+      # and compares the first-load JS size against the limit.
+      # -----------------------------------------------------------------------
+      - name: Check bundle size
+        run: bash scripts/check-bundle-size.sh
+        env:
+          BUNDLE_SIZE_LIMIT_KB: "200"
+
+      # -----------------------------------------------------------------------
+      # Upload the build output as an artifact so the deploy workflow can
+      # use it without rebuilding. Also upload the bundle analysis report.
+      # -----------------------------------------------------------------------
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build-output
+          path: web/out/
+          retention-days: 7
+
+      - name: Upload bundle analysis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis
+          path: web/.next/analyze/
+          retention-days: 14
+
+  # ===========================================================================
+  # JOB 4: Python Lint & Type Check
+  # ===========================================================================
+  python-lint-typecheck:
+    name: "Python: Lint & Type Check"
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -59,18 +231,354 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
-          cache: pip
-          cache-dependency-path: python/pyproject.toml
+          python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install package with dev extras
-        run: pip install -e ".[dev]"
+      - name: Install package with dev dependencies
+        run: cd python && pip install -e ".[dev]"
 
-      - name: Lint
-        run: ruff check .
+      # -----------------------------------------------------------------------
+      # Ruff: Extremely fast Python linter (replaces flake8, isort, pyflakes).
+      # check = lint errors; format --check = formatting violations.
+      # Zero tolerance: any warning or error fails the build.
+      # -----------------------------------------------------------------------
+      - name: Ruff lint
+        run: cd python && ruff check .
 
-      - name: Type check
-        run: mypy src/
+      - name: Ruff format check
+        run: cd python && ruff format --check .
 
-      - name: Test
-        run: pytest
+      # -----------------------------------------------------------------------
+      # mypy: Static type checker in strict mode. Validates all type hints,
+      # catches type mismatches between generators and the Step dataclass,
+      # and ensures public API type signatures are correct.
+      #
+      # --strict enables all optional strictness flags:
+      #   --disallow-untyped-defs, --disallow-any-generics,
+      #   --warn-return-any, --warn-unused-configs, etc.
+      # -----------------------------------------------------------------------
+      - name: mypy strict type check
+        run: cd python && mypy --strict src/eigenvue
+
+  # ===========================================================================
+  # JOB 5: Python Unit Tests (Matrix)
+  # ===========================================================================
+  python-test:
+    name: "Python: Tests (Python ${{ matrix.python-version }})"
+    runs-on: ubuntu-latest
+    strategy:
+      # Do not stop other matrix jobs if one fails — we want results from
+      # all Python versions to diagnose version-specific issues.
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package with dev dependencies
+        run: cd python && pip install -e ".[dev]"
+
+      # -----------------------------------------------------------------------
+      # pytest: Runs all Python tests — generator correctness, math library
+      # tests, API integration tests, cross-language parity tests.
+      #
+      # --cov=eigenvue: collects coverage on the eigenvue package.
+      # --cov-report=xml: produces a machine-readable coverage report.
+      # -v: verbose output with individual test names.
+      #
+      # The test suite reads shared fixture files from algorithms/*/tests/.
+      # These are the SAME fixtures that Vitest uses for TypeScript generators.
+      # -----------------------------------------------------------------------
+      - name: Run pytest
+        run: |
+          cd python && pytest \
+            -v \
+            --cov=eigenvue \
+            --cov-report=xml \
+            --cov-report=term-missing
+
+      - name: Upload coverage report
+        if: matrix.python-version == '3.12' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-coverage
+          path: python/coverage.xml
+          retention-days: 14
+
+  # ===========================================================================
+  # JOB 6: Cross-Language Parity
+  # ===========================================================================
+  cross-language-parity:
+    name: "Cross-Language: Generator Parity"
+    runs-on: ubuntu-latest
+    needs: [web-lint-typecheck, python-lint-typecheck]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install web dependencies
+        run: cd web && npm ci
+
+      - name: Install Python package
+        run: cd python && pip install -e ".[dev]"
+
+      # -----------------------------------------------------------------------
+      # STEP PARITY (Phase 3 script): Verifies that the Python dataclass
+      # round-trip (JSON -> Python -> JSON) produces identical output to the
+      # original JSON. This validates type-level compatibility.
+      # -----------------------------------------------------------------------
+      - name: Verify step format parity (round-trip)
+        run: python scripts/verify-step-parity.py
+
+      # -----------------------------------------------------------------------
+      # GENERATOR SYNC: Runs BOTH TypeScript and Python generators for all
+      # 17 algorithms with all shared test fixture inputs. Compares:
+      #   - Step count (must be identical)
+      #   - Step IDs (must be identical, in same order)
+      #   - State values (must match within +-1e-9 float tolerance)
+      #   - Visual action types and parameters
+      #
+      # This is the definitive proof that both platforms produce identical
+      # visualizations. A failure here means the web app and Python package
+      # would show different behavior for the same algorithm and inputs.
+      #
+      # MATHEMATICAL PRECISION CHECKS (embedded in the sync script):
+      #   - Softmax rows sum to 1.0 (+-1e-6) in attention generators
+      #   - Dijkstra distances satisfy triangle inequality
+      #   - Backpropagation gradients match hand-computed expected values
+      #   - Convolution output matches element-wise dot product sums
+      #   - PRNG sequences are identical (same LCG with same seed)
+      # -----------------------------------------------------------------------
+      - name: Sync generators (TS vs Python)
+        run: python scripts/sync-generators.py --all --tolerance 1e-9 --strict
+
+  # ===========================================================================
+  # JOB 7: Schema Validation
+  # ===========================================================================
+  schema-validation:
+    name: "Schemas: Validate All JSON"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install validation dependencies
+        run: pip install jsonschema
+
+      # -----------------------------------------------------------------------
+      # Validates every meta.json against shared/meta.schema.json and every
+      # test fixture against shared/step-format.schema.json.
+      #
+      # This catches schema drift: if someone modifies a meta.json in a way
+      # that violates the schema (missing required field, wrong type, etc.),
+      # this job fails BEFORE any generator even runs.
+      # -----------------------------------------------------------------------
+      - name: Validate meta.json schemas
+        run: python scripts/validate-schemas.py --meta
+
+      - name: Validate fixture schemas
+        run: python scripts/validate-schemas.py --fixtures
+
+  # ===========================================================================
+  # JOB 8: Node Package Lint & Type Check
+  # ===========================================================================
+  node-lint-typecheck:
+    name: "Node: Lint & Type Check"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: node/package-lock.json
+
+      - name: Install dependencies
+        run: cd node && npm ci
+
+      - name: ESLint
+        run: cd node && npm run lint
+
+      - name: TypeScript type check
+        run: cd node && npm run typecheck
+
+  # ===========================================================================
+  # JOB 9: Node Package Tests
+  # ===========================================================================
+  node-test:
+    name: "Node: Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: node/package-lock.json
+
+      - name: Setup Python (for bundle script)
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Bundle node data
+        run: python scripts/bundle-node-data.py
+
+      - name: Install dependencies
+        run: cd node && npm ci
+
+      - name: Build (required for CLI tests)
+        run: cd node && npm run build
+
+      - name: Run tests
+        run: cd node && npm test
+
+  # ===========================================================================
+  # JOB 10: Node Package Build
+  # ===========================================================================
+  node-build:
+    name: "Node: Build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: node/package-lock.json
+
+      - name: Setup Python (for bundle script)
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Bundle node data
+        run: python scripts/bundle-node-data.py
+
+      - name: Install dependencies
+        run: cd node && npm ci
+
+      - name: Build
+        run: cd node && npm run build
+
+      # Verify the dist/ output exists and contains expected files
+      - name: Verify build output
+        run: |
+          test -f node/dist/index.js
+          test -f node/dist/index.cjs
+          test -f node/dist/index.d.ts
+          test -f node/dist/cli.js
+
+  # ===========================================================================
+  # JOB 11: Docs Build Verification
+  # ===========================================================================
+  docs-build:
+    name: "Docs: Build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        run: cd docs && npm ci
+
+      - name: Build docs site
+        run: cd docs && npm run build
+
+  # ===========================================================================
+  # JOB 12: Final Status Gate
+  # ===========================================================================
+  ci-complete:
+    name: "CI: All Checks Passed"
+    runs-on: ubuntu-latest
+    needs:
+      - web-lint-typecheck
+      - web-test
+      - web-build
+      - python-lint-typecheck
+      - python-test
+      - cross-language-parity
+      - schema-validation
+      - node-lint-typecheck
+      - node-test
+      - node-build
+      - docs-build
+    if: always()
+    steps:
+      # -----------------------------------------------------------------------
+      # This job aggregates all CI results into a single status check.
+      # Branch protection rules require this job to pass before merging.
+      #
+      # The 'if: always()' ensures this job runs even if upstream jobs fail,
+      # so we always report a final status (pass or fail).
+      # -----------------------------------------------------------------------
+      - name: Check all job results
+        run: |
+          echo "Checking CI results..."
+          echo "web-lint-typecheck: ${{ needs.web-lint-typecheck.result }}"
+          echo "web-test: ${{ needs.web-test.result }}"
+          echo "web-build: ${{ needs.web-build.result }}"
+          echo "python-lint-typecheck: ${{ needs.python-lint-typecheck.result }}"
+          echo "python-test: ${{ needs.python-test.result }}"
+          echo "cross-language-parity: ${{ needs.cross-language-parity.result }}"
+          echo "schema-validation: ${{ needs.schema-validation.result }}"
+          echo "node-lint-typecheck: ${{ needs.node-lint-typecheck.result }}"
+          echo "node-test: ${{ needs.node-test.result }}"
+          echo "node-build: ${{ needs.node-build.result }}"
+          echo "docs-build: ${{ needs.docs-build.result }}"
+
+          # Fail if any required job did not succeed.
+          if [[ "${{ needs.web-lint-typecheck.result }}" != "success" ]] || \
+             [[ "${{ needs.web-test.result }}" != "success" ]] || \
+             [[ "${{ needs.web-build.result }}" != "success" ]] || \
+             [[ "${{ needs.python-lint-typecheck.result }}" != "success" ]] || \
+             [[ "${{ needs.python-test.result }}" != "success" ]] || \
+             [[ "${{ needs.cross-language-parity.result }}" != "success" ]] || \
+             [[ "${{ needs.schema-validation.result }}" != "success" ]] || \
+             [[ "${{ needs.node-lint-typecheck.result }}" != "success" ]] || \
+             [[ "${{ needs.node-test.result }}" != "success" ]] || \
+             [[ "${{ needs.node-build.result }}" != "success" ]] || \
+             [[ "${{ needs.docs-build.result }}" != "success" ]]; then
+            echo "::error::One or more CI jobs failed. See above for details."
+            exit 1
+          fi
+
+          echo "All CI checks passed."

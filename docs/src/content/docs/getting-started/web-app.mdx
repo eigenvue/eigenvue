@@ -1,0 +1,109 @@
+---
+title: "Getting Started — Web Application"
+description: "Learn how to use Eigenvue directly in your browser to explore interactive visualizations of algorithms, AI architectures, and quantum computing concepts."
+---
+
+Eigenvue runs entirely in your browser -- no installation, no signup, no friction.
+Open [eigenvue.web.app](https://eigenvue.web.app) and start exploring.
+
+## Opening the App
+
+Navigate to [eigenvue.web.app](https://eigenvue.web.app). The landing page gives you a
+brief overview of the platform and a direct link to the algorithm catalog. There
+is no account creation step; every visualization is available immediately.
+
+## Browsing Algorithms
+
+The catalog lives at [`/algorithms`](https://eigenvue.web.app/algorithms). From
+here you can discover all 17 algorithms organised into three categories:
+
+| Category | Count | Examples |
+| --- | --- | --- |
+| **Classical** | 7 | Sorting, graph traversal, dynamic programming |
+| **Deep Learning** | 5 | Transformers, CNNs, RNNs |
+| **Generative AI** | 5 | Diffusion, VAEs, GANs |
+
+Use the **category tabs** at the top of the catalog to filter by category. You
+can further narrow results with:
+
+- **Difficulty filters** -- toggle beginner, intermediate, or advanced tags.
+- **Text search** -- type a keyword in the search bar to match algorithm names
+  and descriptions.
+
+Click any algorithm card to open its visualizer page.
+
+## The Visualizer Page
+
+Every algorithm page uses a **three-panel layout**:
+
+1. **Canvas** (center) -- the main animation area where the algorithm plays out
+   step by step. Data structures, model layers, and state transitions are
+   rendered here.
+2. **Code Panel** (left) -- displays the algorithm source with three switchable
+   tabs: **Pseudocode**, **Python**, and **JavaScript**. The currently executing
+   line is highlighted as you step through the visualization.
+3. **Explanation Panel** (right) -- contains the algorithm **title**,
+   a **plain-language explanation** of the current step, and a **state
+   inspector** that shows live variable values and data-structure contents.
+
+You can resize any panel by dragging the dividers between them.
+
+## Playback Controls
+
+The playback bar sits below the canvas. It contains, from left to right:
+
+| Control | Icon | Action |
+| --- | --- | --- |
+| Reset | ⏮ | Jump to the very first step |
+| Step Back | ◀ | Move one step backward |
+| Play / Pause | ▶ / ⏸ | Start or pause continuous playback |
+| Step Forward | ▶\| | Move one step forward |
+| Speed | 0.5x / 1x / 2x / 4x | Choose the playback speed |
+| Step counter | -- | Displays the current step number out of the total |
+| Progress bar | -- | A scrubber you can drag to jump to any step |
+
+Playback wraps around: when the animation reaches the last step and you press
+**Step Forward**, the visualizer returns to step 1.
+
+## Modifying Inputs
+
+Below the code panel you will find the **input editor**. Each algorithm exposes
+a set of configurable parameters (for example, the array to sort, the graph
+adjacency list, or the learning rate).
+
+1. Edit the parameter values directly in the input fields.
+2. Alternatively, open the **Examples** dropdown to load a pre-built input set.
+3. Press the **Run** button to regenerate the visualization with your new
+   inputs.
+
+The canvas, code highlights, and explanation panel all update to reflect the new
+run.
+
+## Keyboard Shortcuts
+
+You can control playback without touching the mouse:
+
+| Key | Action |
+| --- | --- |
+| `Space` | Play / Pause |
+| `→` (Right Arrow) | Step forward |
+| `←` (Left Arrow) | Step back |
+| `Home` | Jump to first step |
+| `End` | Jump to last step |
+| `+` | Increase speed |
+| `-` | Decrease speed |
+
+## Educational Content
+
+Each algorithm page includes a **Learn** section accessible via a tab or
+scroll target below the visualizer. Inside you will find:
+
+- **Key Concepts** -- a concise summary of the theory behind the algorithm,
+  including time/space complexity and common use-cases.
+- **Common Pitfalls** -- mistakes learners frequently make and how to avoid
+  them.
+- **Quiz** -- a short set of questions to test your understanding. Answers are
+  revealed inline so you can self-check at your own pace.
+
+Use the Learn section alongside the visualizer to build both intuition and
+formal understanding of every algorithm Eigenvue covers.

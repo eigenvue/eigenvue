@@ -1,0 +1,152 @@
+# =============================================================================
+# Eigenvue npm Publishing
+#
+# Triggers: push of a version tag (e.g., v1.0.0, v1.2.3).
+# Process:  Validate tag -> Lint -> Test -> Build -> Publish to npm ->
+#           Verify install.
+#
+# AUTHENTICATION:
+#   Uses an npm automation token stored as the NPM_TOKEN secret.
+#   Generate one at: https://www.npmjs.com/settings/<username>/tokens
+#   Select "Automation" type (bypasses 2FA for CI).
+#
+# VERSION MANAGEMENT:
+#   The version in node/package.json MUST match the tag being pushed.
+#   For example, if the tag is v1.2.3, package.json must say "version": "1.2.3".
+#   The workflow validates this and fails if they don't match.
+#
+# NOTE: This workflow shares the v*.*.* tag trigger with deploy-pypi.yml.
+#   Both packages (Python + npm) are published from the same tag, ensuring
+#   version parity across ecosystems.
+#
+# Author: Ashutosh Mishra
+# =============================================================================
+
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  # ===========================================================================
+  # JOB 1: Validate, Test, and Build
+  # ===========================================================================
+  build:
+    name: "Validate, Test & Build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: node/package-lock.json
+
+      - name: Install dependencies
+        run: cd node && npm ci
+
+      # -----------------------------------------------------------------------
+      # VERSION VALIDATION
+      # Ensures the git tag matches the version in package.json.
+      # -----------------------------------------------------------------------
+      - name: Validate version matches tag
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PACKAGE_VERSION=$(node -p "require('./node/package.json').version")
+          echo "Tag version:     ${TAG_VERSION}"
+          echo "Package version: ${PACKAGE_VERSION}"
+          if [ "${TAG_VERSION}" != "${PACKAGE_VERSION}" ]; then
+            echo "::error::Version mismatch: tag=${TAG_VERSION} != package.json=${PACKAGE_VERSION}"
+            exit 1
+          fi
+          echo "Version match confirmed."
+
+      # -----------------------------------------------------------------------
+      # QUALITY CHECKS
+      # -----------------------------------------------------------------------
+      - name: Lint
+        run: cd node && npm run lint
+
+      - name: Type check
+        run: cd node && npm run typecheck
+
+      - name: Run tests
+        run: cd node && npm test
+
+      # -----------------------------------------------------------------------
+      # BUILD
+      # -----------------------------------------------------------------------
+      - name: Build package
+        run: cd node && npm run build
+
+      - name: Verify dist output exists
+        run: |
+          test -f node/dist/index.js || (echo "::error::Missing dist/index.js" && exit 1)
+          test -f node/dist/index.cjs || (echo "::error::Missing dist/index.cjs" && exit 1)
+          test -f node/dist/index.d.ts || (echo "::error::Missing dist/index.d.ts" && exit 1)
+          echo "Build artifacts verified."
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-dist
+          path: |
+            node/dist/
+            node/data/
+            node/package.json
+            node/README.md
+
+  # ===========================================================================
+  # JOB 2: Publish to npm
+  # ===========================================================================
+  publish:
+    name: "Publish to npm"
+    runs-on: ubuntu-latest
+    needs: build
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: node-dist
+          path: node/
+
+      # -----------------------------------------------------------------------
+      # NPM PUBLISH
+      # Uses NODE_AUTH_TOKEN which is set by setup-node when registry-url
+      # is configured. The NPM_TOKEN secret must be an Automation token.
+      # -----------------------------------------------------------------------
+      - name: Publish to npm
+        run: cd node && npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # -----------------------------------------------------------------------
+      # VERIFY INSTALL
+      # Confirm the published package is installable from the registry.
+      # -----------------------------------------------------------------------
+      - name: Verify published package
+        run: |
+          sleep 15  # Give npm registry time to propagate.
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          npm install "eigenvue@${TAG_VERSION}" --prefix /tmp/verify
+          node -e "const ev = require('eigenvue'); console.log('Installed:', typeof ev.list === 'function' ? 'OK' : 'FAIL')"
+        working-directory: /tmp

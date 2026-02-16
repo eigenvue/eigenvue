@@ -1,0 +1,14 @@
+{
+  "description": "3×3 input with 1×1 identity kernel — output equals input",
+  "inputs": {
+    "input": [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+    "kernel": [[1]]
+  },
+  "expectedStepCount": 11,
+  "keyStates": [
+    { "stepId": "show-input", "state": { "outputHeight": 3, "outputWidth": 3 } },
+    { "stepId": "conv-0-0", "state": { "sum": 1 } },
+    { "stepId": "conv-1-1", "state": { "sum": 5 } }
+  ],
+  "notes": "Identity convolution: 1×1 kernel [[1]] produces output equal to input. 11 steps: show-input + 9 convolutions + complete."
+}

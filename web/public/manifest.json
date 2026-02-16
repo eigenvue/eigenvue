@@ -1,0 +1,16 @@
+{
+  "name": "Eigenvue",
+  "short_name": "Eigenvue",
+  "description": "Interactive algorithm visualizations for AI, ML & Computer Science",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06080f",
+  "theme_color": "#06080f",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

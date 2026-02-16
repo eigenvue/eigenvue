@@ -1,0 +1,158 @@
+# =============================================================================
+# Eigenvue Web Deployment — Firebase Hosting
+#
+# Triggers: push to main branch.
+# Process:  Pre-compute steps -> Build Next.js SSG -> Build docs ->
+#           Merge into output -> Deploy to Firebase -> Smoke test live URLs.
+#
+# PREREQUISITES:
+#   - FIREBASE_SERVICE_ACCOUNT secret configured (base64-encoded JSON key)
+#   - FIREBASE_PROJECT_ID secret configured
+#   - Firebase project created with Hosting enabled
+#   - Custom domain configured in Firebase Console (eigenvue.web.app)
+#
+# SAFETY:
+#   - This workflow only runs AFTER the CI workflow has passed (via branch
+#     protection rules). It trusts that all tests and validations passed.
+#   - A post-deployment smoke test verifies key URLs return 200.
+#   - If smoke tests fail, the deployment is flagged (but not rolled back —
+#     Firebase Hosting supports instant rollback via the Console).
+#
+# Author: Ashutosh Mishra
+# =============================================================================
+
+name: Deploy Web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "docs/**"
+      - "algorithms/**"
+      - "shared/**"
+      - "scripts/precompute-steps.py"
+      - "scripts/generate-og-images.ts"
+
+# Only one deployment at a time. Never cancel in-progress deploys.
+concurrency:
+  group: deploy-web
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  deploy:
+    name: "Build & Deploy to Firebase"
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: |
+            web/package-lock.json
+            docs/package-lock.json
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install web dependencies
+        run: cd web && npm ci
+
+      - name: Install Python package
+        run: cd python && pip install -e .
+
+      # -----------------------------------------------------------------------
+      # PRE-COMPUTATION PIPELINE
+      # Generate all step JSON files from Python generators.
+      # These files are placed in web/public/precomputed/ and included
+      # in the static build output.
+      # -----------------------------------------------------------------------
+      - name: Pre-compute step sequences
+        run: |
+          python scripts/precompute-steps.py \
+            --output-dir web/public/precomputed \
+            --validate \
+            --verbose
+
+      # -----------------------------------------------------------------------
+      # OG IMAGE GENERATION
+      # Generate Open Graph images for each algorithm page.
+      # These are static PNGs used for social media previews.
+      # -----------------------------------------------------------------------
+      - name: Generate OG images
+        run: cd web && npx tsx ../scripts/generate-og-images.ts
+
+      # -----------------------------------------------------------------------
+      # NEXT.JS STATIC BUILD
+      # Produces the complete static site in web/out/.
+      # All pages are pre-rendered. No Node.js server required in production.
+      # -----------------------------------------------------------------------
+      - name: Build Next.js (SSG)
+        run: cd web && npm run build
+        env:
+          NEXT_OUTPUT_EXPORT: "true"
+          NEXT_PUBLIC_SITE_URL: "https://eigenvue.web.app"
+          NEXT_PUBLIC_PLAUSIBLE_DOMAIN: ""
+
+      # -----------------------------------------------------------------------
+      # DOCS BUILD
+      # Build the Astro Starlight docs site and merge into web/out/docs/.
+      # The docs site is configured with base: "/docs" so all internal
+      # links and assets are correctly prefixed.
+      # -----------------------------------------------------------------------
+      - name: Install docs dependencies
+        run: cd docs && npm ci
+
+      - name: Build docs site
+        run: cd docs && npm run build
+
+      - name: Merge docs into web output
+        run: mkdir -p web/out/docs && cp -r docs/dist/* web/out/docs/
+
+      # -----------------------------------------------------------------------
+      # FIREBASE DEPLOYMENT
+      # Deploys the static output to Firebase Hosting.
+      # Uses the firebase-tools npm package via npx.
+      #
+      # Authentication: The FIREBASE_SERVICE_ACCOUNT secret contains a
+      # base64-encoded service account JSON key. We decode it to a temp
+      # file and use GOOGLE_APPLICATION_CREDENTIALS to authenticate.
+      # -----------------------------------------------------------------------
+      - name: Decode Firebase service account
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" | base64 -d > /tmp/firebase-sa.json
+
+      - name: Deploy to Firebase Hosting
+        run: |
+          cd web && npx firebase-tools deploy \
+            --only hosting \
+            --project "${{ secrets.FIREBASE_PROJECT_ID }}" \
+            --non-interactive
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/firebase-sa.json
+
+      # Always clean up credentials even if deploy fails.
+      - name: Cleanup credentials
+        if: always()
+        run: rm -f /tmp/firebase-sa.json
+
+      # -----------------------------------------------------------------------
+      # POST-DEPLOYMENT SMOKE TESTS
+      # Verify that key URLs are accessible and return 200 responses.
+      # This catches deployment misconfigurations, missing files, and
+      # routing errors that unit tests cannot detect.
+      # -----------------------------------------------------------------------
+      - name: Smoke test live site
+        run: bash scripts/smoke-test.sh "https://eigenvue.web.app"

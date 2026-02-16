@@ -1,0 +1,28 @@
+{
+  "description": "BPE tokenization of 'low est' (two words) with four merge rules. Verifies merging works across a multi-token sentence where a non-mergeable character (space) separates two independently merged groups.",
+  "inputs": {
+    "text": "low est",
+    "mergeRules": [
+      [["l", "o"], "lo"],
+      [["lo", "w"], "low"],
+      [["e", "s"], "es"],
+      [["es", "t"], "est"]
+    ]
+  },
+  "expectedStepCount": 10,
+  "keyStates": [
+    {
+      "stepId": "character-split",
+      "state": {
+        "tokens": ["l", "o", "w", " ", "e", "s", "t"]
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["low", " ", "est"],
+        "finalTokenCount": 3
+      }
+    }
+  ]
+}

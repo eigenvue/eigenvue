@@ -1,0 +1,467 @@
+---
+title: "Code Style Guide"
+description: "Coding standards for the Eigenvue project, covering TypeScript/JavaScript conventions, Python conventions, file naming, import ordering, comments philosophy, and documentation style."
+---
+
+Consistent code style makes the codebase easier to navigate, review, and
+maintain. This guide covers the standards enforced by our tooling and the
+conventions followed by the team.
+
+---
+
+## TypeScript / JavaScript
+
+### Tooling
+
+| Tool      | Config File          | Purpose               |
+|-----------|----------------------|-----------------------|
+| ESLint    | `web/.eslintrc.cjs`  | Linting and rules     |
+| Prettier  | `web/.prettierrc`    | Formatting            |
+| TypeScript| `web/tsconfig.json`  | Type checking         |
+
+```bash
+# Run linting
+cd web
+npm run lint
+
+# Run formatting
+npm run format
+
+# Run type checking
+npm run typecheck
+```
+
+### Strict Mode
+
+TypeScript is configured with `strict: true`. This enables all strict checks:
+
+- `strictNullChecks` -- no implicit `null` or `undefined`
+- `noImplicitAny` -- every variable must have a type
+- `strictFunctionTypes` -- function parameter types are contravariant
+- `strictPropertyInitialization` -- class properties must be initialized
+
+Do not add `@ts-ignore` or `@ts-expect-error` unless absolutely necessary,
+and always include a comment explaining why.
+
+### Naming Conventions
+
+| Kind               | Convention   | Example                          |
+|--------------------|-------------|----------------------------------|
+| Variables          | camelCase    | `stepCount`, `isTerminal`        |
+| Functions          | camelCase    | `runGenerator`, `createStep`     |
+| Interfaces         | PascalCase   | `StepInput`, `VisualAction`      |
+| Type aliases       | PascalCase   | `GeneratorFunction`, `ArrowHead` |
+| Constants          | UPPER_SNAKE  | `STEP_FORMAT_VERSION`, `Z_INDEX` |
+| Enum members       | UPPER_SNAKE  | `ElementShape.ROUNDED_RECT`      |
+| File names         | kebab-case   | `generator-runner.ts`            |
+| React components   | PascalCase   | `VisualizationPanel.tsx`         |
+
+### Type Annotations
+
+Always annotate function parameters and return types. Let TypeScript infer
+local variables when the type is obvious.
+
+```typescript
+// GOOD: Annotated parameters and return type
+function createStep(input: StepInput): Step {
+  const index = steps.length;  // Inferred as number — no annotation needed
+  // ...
+}
+
+// BAD: Missing parameter types
+function createStep(input) {
+  // ...
+}
+
+// BAD: Unnecessary annotation on obvious local
+const index: number = steps.length;
+```
+
+### Readonly by Default
+
+Use `readonly` for interface properties unless mutation is required. This
+communicates intent and catches accidental mutations at compile time.
+
+```typescript
+// GOOD: Immutable by default
+interface StepInput {
+  readonly id: string;
+  readonly title: string;
+  readonly state: Record<string, unknown>;
+}
+
+// BAD: Mutable when it should not be
+interface StepInput {
+  id: string;
+  title: string;
+}
+```
+
+### Avoid `any`
+
+Use `unknown` instead of `any` when the type is genuinely unknown. Then
+narrow with type guards.
+
+```typescript
+// GOOD: unknown + type guard
+function processValue(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+  return String(value);
+}
+
+// BAD: any bypasses all type safety
+function processValue(value: any): string {
+  return value;
+}
+```
+
+### String Formatting
+
+Use template literals for string interpolation. Prefer them over
+concatenation for readability.
+
+```typescript
+// GOOD
+const message = `Found ${target} at index ${index}!`;
+
+// ACCEPTABLE for complex multi-line strings
+const explanation =
+  `array[${mid}] = ${array[mid]} < target ${target}. ` +
+  `Target must be in the right half.`;
+
+// BAD: String concatenation
+const message = "Found " + target + " at index " + index + "!";
+```
+
+---
+
+## Python
+
+### Tooling
+
+| Tool   | Config File           | Purpose                   |
+|--------|-----------------------|---------------------------|
+| Ruff   | `python/pyproject.toml`| Linting and formatting   |
+| mypy   | `python/pyproject.toml`| Static type checking     |
+
+```bash
+cd python
+
+# Lint
+ruff check .
+
+# Auto-fix lint issues
+ruff check --fix .
+
+# Format
+ruff format .
+
+# Type check
+mypy src/
+```
+
+### mypy Strict Mode
+
+Like TypeScript, Python uses strict type checking. The mypy configuration
+includes:
+
+- `strict = true`
+- `disallow_untyped_defs = true`
+- `disallow_any_generics = true`
+
+All function signatures must have type annotations.
+
+### Naming Conventions
+
+| Kind               | Convention     | Example                        |
+|--------------------|---------------|--------------------------------|
+| Variables          | snake_case     | `step_count`, `is_terminal`    |
+| Functions          | snake_case     | `run_generator`, `create_step` |
+| Classes            | PascalCase     | `StepSequence`, `VisualAction` |
+| Constants          | UPPER_SNAKE    | `STEP_FORMAT_VERSION`          |
+| Module files       | snake_case     | `binary_search.py`             |
+| Package dirs       | snake_case     | `eigenvue/generators/`         |
+| Private members    | `_prefix`      | `_validate_steps`              |
+
+### Type Annotations
+
+Annotate all function parameters and return types. Use `from __future__ import
+annotations` at the top of every file for forward reference support.
+
+```python
+from __future__ import annotations
+
+from typing import Any
+
+
+def generate(inputs: dict[str, Any]) -> list[Step]:
+    """Generate algorithm steps."""
+    array: list[int] = list(inputs["array"])
+    target: int = inputs["target"]
+    # ...
+```
+
+### Docstrings
+
+Use NumPy-style docstrings for all public functions and classes:
+
+```python
+def run_generator(
+    algorithm_id: str,
+    inputs: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Run an algorithm generator and return validated step dicts.
+
+    Parameters
+    ----------
+    algorithm_id : str
+        The algorithm identifier.
+    inputs : dict or None
+        Custom input parameters. If None, uses algorithm defaults.
+
+    Returns
+    -------
+    list[dict[str, Any]]
+        Validated step dicts in camelCase wire format.
+
+    Raises
+    ------
+    ValueError
+        If no generator is registered for this algorithm.
+    """
+```
+
+---
+
+## File Naming Conventions
+
+### TypeScript Files
+
+| Kind                    | Pattern                  | Example                        |
+|-------------------------|--------------------------|--------------------------------|
+| Generator               | `generator.ts`           | `binary-search/generator.ts`   |
+| Tests                   | `*.test.ts`              | `generator.test.ts`            |
+| Fixtures                | `*.fixture.json`         | `found.fixture.json`           |
+| Metadata                | `meta.json`              | `binary-search/meta.json`      |
+| Layout                  | `kebab-case.ts`          | `array-with-pointers.ts`       |
+| React component         | `PascalCase.tsx`         | `VisualizationPanel.tsx`       |
+| Engine module           | `PascalCase.ts`          | `GeneratorRunner.ts`           |
+| Shared types            | `kebab-case.ts`          | `step.ts`                      |
+
+### Python Files
+
+| Kind                    | Pattern                  | Example                        |
+|-------------------------|--------------------------|--------------------------------|
+| Generator               | `snake_case.py`          | `binary_search.py`             |
+| Tests                   | `test_*.py`              | `test_binary_search.py`        |
+| Package init            | `__init__.py`            | `generators/__init__.py`       |
+| Utility module          | `snake_case.py`          | `math_utils.py`                |
+
+### Algorithm Directories
+
+Algorithm directory names use **kebab-case** and must match the algorithm ID:
+
+```
+algorithms/classical/binary-search/    # ID: "binary-search"
+algorithms/deep-learning/perceptron/   # ID: "perceptron"
+algorithms/generative-ai/self-attention/  # ID: "self-attention"
+```
+
+---
+
+## Import Ordering
+
+### TypeScript
+
+Imports should be ordered in three groups, separated by blank lines:
+
+1. External dependencies (npm packages)
+2. Internal aliases (`@/...`)
+3. Relative imports (`./...`, `../...`)
+
+Within each group, sort alphabetically.
+
+```typescript
+// 1. External
+import { describe, it, expect } from "vitest";
+
+// 2. Internal aliases
+import { runGenerator } from "@/engine/generator";
+import type { Step, VisualAction } from "@/shared/types/step";
+
+// 3. Relative
+import binarySearchGenerator from "../generator";
+import foundFixture from "./found.fixture.json";
+```
+
+Separate `import type` from value imports when both exist:
+
+```typescript
+import { createGenerator } from "@/engine/generator";
+import type { VisualAction } from "@/engine/generator";
+```
+
+### Python
+
+Follow the standard Python import ordering (enforced by Ruff's `isort` rules):
+
+1. Standard library
+2. Third-party packages
+3. Local imports
+
+```python
+# 1. Standard library
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+from typing import Any
+
+# 2. Third-party
+import pytest
+
+# 3. Local
+from eigenvue._step_types import Step, VisualAction, CodeHighlight
+from eigenvue.runner import run_generator
+```
+
+---
+
+## Comments Philosophy
+
+### When to Comment
+
+Comment the **why**, not the **what**. If the code is clear, it does not need
+a comment explaining what it does. It does need a comment explaining why it
+does it that way.
+
+```typescript
+// GOOD: Explains WHY
+// Kahan summation maintains a running compensation term that tracks
+// the low-order bits lost during each addition, achieving O(1) error
+// independent of the number of terms.
+let sum = 0;
+let compensation = 0;
+for (const w of weights) {
+  const y = w - compensation;
+  const t = sum + y;
+  compensation = (t - sum) - y;
+  sum = t;
+}
+
+// BAD: Explains WHAT (obvious from the code)
+// Add w to sum
+sum += w;
+```
+
+### When Comments Are Required
+
+1. **Mathematical derivations.** When the code implements a formula, cite the
+   formula and explain the mapping from math to code.
+
+2. **Non-obvious invariants.** When a loop or algorithm maintains an invariant
+   that is not immediately apparent.
+
+3. **Performance decisions.** When you chose a specific approach for performance
+   reasons (e.g., Kahan summation instead of naive reduce).
+
+4. **Cross-language parity notes.** When TypeScript and Python implementations
+   differ in their approach to achieve identical output.
+
+5. **Safety constraints.** When a copy is necessary to avoid shared mutable
+   state (the `[...array]` pattern in state snapshots).
+
+### File Headers
+
+Every source file should have a `@fileoverview` JSDoc comment (TypeScript) or
+a module docstring (Python) explaining its purpose:
+
+```typescript
+/**
+ * @fileoverview Binary Search — Step Generator
+ *
+ * Generates a step-by-step visualization of iterative binary search on a
+ * sorted array of numbers.
+ *
+ * ALGORITHM:
+ *   Given a sorted array and a target value, binary search maintains two
+ *   pointers (left, right) defining the search space...
+ */
+```
+
+```python
+"""
+Binary Search — Step Generator (Python)
+
+Produces step-by-step visualization data identical to the TypeScript
+generator when given the same inputs.
+"""
+```
+
+---
+
+## Documentation Style
+
+### JSDoc (TypeScript)
+
+Use JSDoc for all exported functions, interfaces, and type aliases:
+
+```typescript
+/**
+ * Runs a generator with the given inputs and returns a validated StepSequence.
+ *
+ * @typeParam TInputs - The algorithm's input parameter shape.
+ * @param definition - The generator definition (from `createGenerator()`).
+ * @param inputs     - The algorithm's input parameters.
+ * @param options    - Optional configuration (max steps, etc.).
+ * @returns A complete, validated StepSequence.
+ * @throws {GeneratorError} If the generator fails or produces invalid output.
+ *
+ * @example
+ * ```typescript
+ * const result = runGenerator(binarySearchGenerator, {
+ *   array: [1, 3, 5, 7, 9],
+ *   target: 5,
+ * });
+ * ```
+ */
+```
+
+### NumPy-Style Docstrings (Python)
+
+Use the NumPy docstring format with sections for Parameters, Returns, Raises,
+and Examples:
+
+```python
+def verify_fixture(fixture_path: Path) -> bool:
+    """Verify that a fixture round-trips through Python dataclasses.
+
+    Args:
+        fixture_path: Path to a .fixture.json file.
+
+    Returns:
+        True if the round-trip produces identical JSON, False otherwise.
+
+    Examples
+    --------
+    >>> verify_fixture(Path("fixtures/binary-search-found.fixture.json"))
+    True
+    """
+```
+
+### Key Principles
+
+1. **Document contracts, not implementations.** Describe what a function
+   promises to do, not how it does it internally.
+
+2. **Include examples.** A short usage example is worth more than a paragraph
+   of description.
+
+3. **Document mathematical invariants.** When a function enforces or relies on
+   mathematical properties, state them explicitly with the notation.
+
+4. **Keep docs close to code.** Inline documentation (JSDoc, docstrings)
+   stays up to date better than separate documentation files.

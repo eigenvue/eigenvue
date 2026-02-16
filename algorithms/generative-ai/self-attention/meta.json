@@ -1,0 +1,189 @@
+{
+  "id": "self-attention",
+  "name": "Self-Attention (Scaled Dot-Product)",
+  "category": "generative-ai",
+
+  "description": {
+    "short": "Watch how each token decides which other tokens to pay attention to.",
+    "long": "Self-attention is the core mechanism inside Transformer models. Given a sequence of token embeddings, each token creates three vectors: a Query (what am I looking for?), a Key (what do I contain?), and a Value (what information do I provide?). Attention scores are computed as the dot product of queries and keys, scaled by 1/√d_k to prevent gradient vanishing, then normalized with softmax to produce a probability distribution. Each token's output is a weighted sum of all value vectors, where the weights reflect how relevant each other token is. This allows every token to directly attend to every other token in the sequence, capturing long-range dependencies that recurrent models struggle with. Self-attention is the building block of the Transformer architecture introduced in 'Attention Is All You Need' (Vaswani et al., 2017)."
+  },
+
+  "complexity": {
+    "time": "O(n² × d)",
+    "space": "O(n² + n × d)",
+    "level": "intermediate"
+  },
+
+  "visual": {
+    "layout": "attention-heatmap",
+    "theme": {
+      "primary": "#f59e0b",
+      "secondary": "#ef4444"
+    },
+    "components": {
+      "showTokenLabels": true,
+      "showHeatmap": true,
+      "showMatrices": true,
+      "highlightColor": "#f59e0b",
+      "activeColor": "#ef4444",
+      "queryColor": "#3b82f6",
+      "keyColor": "#10b981",
+      "valueColor": "#8b5cf6"
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "tokens": {
+        "type": "array",
+        "items": { "type": "string", "minLength": 1, "maxLength": 20 },
+        "minItems": 2,
+        "maxItems": 8,
+        "description": "A sequence of tokens (words or subwords) to compute self-attention over."
+      },
+      "embeddingDim": {
+        "type": "number",
+        "minimum": 2,
+        "maximum": 16,
+        "description": "Dimensionality of each token embedding vector (d_model). Kept small for visualization clarity."
+      }
+    },
+    "defaults": {
+      "tokens": ["The", "cat", "sat"],
+      "embeddingDim": 4
+    },
+    "examples": [
+      {
+        "name": "3 tokens, dim 4 (default)",
+        "values": { "tokens": ["The", "cat", "sat"], "embeddingDim": 4 }
+      },
+      {
+        "name": "4 tokens, dim 4",
+        "values": { "tokens": ["The", "cat", "sat", "down"], "embeddingDim": 4 }
+      },
+      {
+        "name": "Short sentence, dim 3",
+        "values": { "tokens": ["I", "love", "AI"], "embeddingDim": 3 }
+      },
+      {
+        "name": "5 tokens, dim 4",
+        "values": { "tokens": ["The", "quick", "brown", "fox", "jumps"], "embeddingDim": 4 }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function SelfAttention(X, W_Q, W_K, W_V):\n  Q = X × W_Q            // Query projection\n  K = X × W_K            // Key projection\n  V = X × W_V            // Value projection\n  scores = Q × Kᵀ        // Raw attention scores\n  scaled = scores / √d_k  // Scale to stabilize gradients\n  weights = softmax(scaled, dim=row)  // Normalize each row\n  for each query token q:\n    output[q] = Σ weights[q][j] × V[j]  // Weighted sum\n  return output"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Query, Key, Value Intuition",
+        "description": "Think of attention as an information retrieval system. The Query is a search query ('what am I looking for?'), the Key is an index entry ('what do I contain?'), and the Value is the actual content ('here is my information'). The dot product of Q and K measures relevance, and the result is used to weight the Values."
+      },
+      {
+        "title": "Softmax Normalization",
+        "description": "Softmax converts raw attention scores into a probability distribution where all weights are non-negative and each row sums to exactly 1.0. This means each token distributes 100% of its attention across all tokens in the sequence, with higher weights on more relevant tokens."
+      },
+      {
+        "title": "Scaling by 1/√d_k",
+        "description": "When the embedding dimension d_k is large, dot products grow in magnitude (their variance scales with d_k). Large dot products push softmax into saturated regions where gradients are extremely small, making learning slow. Dividing by √d_k keeps the variance at approximately 1, ensuring healthy gradients."
+      },
+      {
+        "title": "Quadratic Complexity",
+        "description": "Self-attention computes a score for every pair of tokens, giving O(n²) time and space complexity in sequence length. This is why Transformers struggle with very long sequences (e.g., 100K+ tokens) and why research into efficient attention variants (linear attention, sparse attention) is active."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Scaling factor is √d_k, NOT √d_model",
+        "description": "In multi-head attention, each head has dimension d_k = d_model / num_heads. The scaling factor uses d_k (the per-head dimension), not d_model (the full model dimension). Using d_model would over-scale and flatten the attention distribution."
+      },
+      {
+        "title": "Softmax is applied row-wise, not element-wise",
+        "description": "Softmax must be applied independently to each row of the score matrix. Each row corresponds to one query token's attention distribution. Applying softmax to the entire matrix or column-wise would produce incorrect attention weights."
+      },
+      {
+        "title": "Attention weights do not encode position",
+        "description": "Pure self-attention is permutation-equivariant — it treats the input as a set, not a sequence. Without positional encodings added to the embeddings, the model cannot distinguish 'the cat sat' from 'sat cat the'."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "What does the softmax function ensure about each row of the attention weight matrix?",
+        "options": [
+          "All values are between -1 and 1",
+          "All values are non-negative and each row sums to 1.0",
+          "The matrix is symmetric",
+          "The diagonal values are the largest"
+        ],
+        "correctIndex": 1,
+        "explanation": "Softmax exponentiates each score (making it positive) and divides by the row sum, guaranteeing all weights are non-negative and each row sums to exactly 1.0. This creates a valid probability distribution over the key tokens for each query token."
+      },
+      {
+        "question": "Why are attention scores divided by √d_k before applying softmax?",
+        "options": [
+          "To make the matrix square",
+          "To reduce memory usage",
+          "To prevent large dot products from causing vanishing gradients in softmax",
+          "To normalize the output to unit length"
+        ],
+        "correctIndex": 2,
+        "explanation": "When d_k is large, dot products tend to have large magnitudes. Large inputs to softmax produce outputs very close to 0 or 1, where gradients are near zero. Scaling by 1/√d_k keeps dot product magnitudes manageable, ensuring softmax operates in a region with healthy gradients."
+      },
+      {
+        "question": "What is the time complexity of self-attention with respect to sequence length n?",
+        "options": [
+          "O(n)",
+          "O(n log n)",
+          "O(n² × d)",
+          "O(n³)"
+        ],
+        "correctIndex": 2,
+        "explanation": "Self-attention computes the dot product of every query with every key (n² pairs), and each dot product involves d_k dimensions, giving O(n² × d) time. The n² factor is why self-attention is expensive for long sequences."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Attention Is All You Need (Vaswani et al., 2017)",
+        "url": "https://arxiv.org/abs/1706.03762",
+        "type": "paper"
+      },
+      {
+        "title": "The Illustrated Transformer — Jay Alammar",
+        "url": "https://jalammar.github.io/illustrated-transformer/",
+        "type": "article"
+      },
+      {
+        "title": "Self-Attention — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Attention_(machine_learning)",
+        "type": "reference"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "self-attention visualization",
+      "scaled dot-product attention",
+      "transformer attention mechanism",
+      "self-attention step by step",
+      "attention weights heatmap",
+      "query key value explained",
+      "QKV attention",
+      "softmax attention",
+      "transformer self-attention animation",
+      "how self-attention works"
+    ],
+    "ogDescription": "Interactive step-by-step visualization of self-attention. Watch Q, K, V projections, score scaling, softmax normalization, and weighted value aggregation unfold for each token."
+  },
+
+  "prerequisites": ["token-embeddings"],
+  "related": ["multi-head-attention", "token-embeddings"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

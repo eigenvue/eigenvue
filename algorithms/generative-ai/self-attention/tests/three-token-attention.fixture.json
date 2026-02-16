@@ -1,0 +1,35 @@
+{
+  "description": "Self-attention over 3 tokens with dim=4. Verifies attention weight rows sum to 1.0.",
+  "inputs": {
+    "tokens": ["The", "cat", "sat"],
+    "embeddingDim": 4
+  },
+  "expectedStepCount": 11,
+  "keyStates": [
+    {
+      "stepId": "show-input",
+      "state": {
+        "tokens": ["The", "cat", "sat"],
+        "embeddingDim": 4
+      }
+    },
+    {
+      "stepId": "apply-softmax",
+      "checks": {
+        "attentionWeightsRowSum": 1.0,
+        "tolerance": 1e-6
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["The", "cat", "sat"]
+      }
+    }
+  ],
+  "invariants": {
+    "attentionWeightRowsSumToOne": true,
+    "allWeightsNonNegative": true,
+    "noNaNOrInfinity": true
+  }
+}

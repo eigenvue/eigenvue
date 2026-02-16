@@ -1,0 +1,219 @@
+{
+  "id": "tokenization-bpe",
+  "name": "BPE Tokenization",
+  "category": "generative-ai",
+
+  "description": {
+    "short": "Break text into subword tokens using Byte-Pair Encoding merge rules.",
+    "long": "Byte-Pair Encoding (BPE) is the dominant tokenization algorithm used in modern large language models including GPT, LLaMA, and others. Starting from individual characters, BPE iteratively applies learned merge rules that combine the most frequent adjacent token pairs into single tokens. This process produces a subword vocabulary that balances between character-level and word-level representations — common words become single tokens while rare words are split into meaningful subword units. This visualization walks through the merge process step by step, showing how raw text is transformed into the token sequence that a language model actually processes."
+  },
+
+  "complexity": {
+    "time": "O(n × m)",
+    "space": "O(n)",
+    "level": "beginner"
+  },
+
+  "visual": {
+    "layout": "token-sequence",
+    "theme": {
+      "primary": "#8b5cf6",
+      "secondary": "#7c3aed"
+    },
+    "components": {
+      "showTokenBorders": true,
+      "showMergeArcs": true,
+      "highlightColor": "#fbbf24",
+      "activeColor": "#8b5cf6",
+      "mergedColor": "#22c55e"
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "text": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100,
+        "description": "The input text to tokenize."
+      },
+      "mergeRules": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            { "type": "string" }
+          ],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "minItems": 0,
+        "maxItems": 50,
+        "description": "Ordered list of merge rules. Each rule is [[left, right], replacement]."
+      }
+    },
+    "defaults": {
+      "text": "lowest",
+      "mergeRules": [
+        [["l", "o"], "lo"],
+        [["lo", "w"], "low"],
+        [["e", "s"], "es"],
+        [["es", "t"], "est"],
+        [["low", "est"], "lowest"]
+      ]
+    },
+    "examples": [
+      {
+        "name": "Default — \"lowest\"",
+        "values": {
+          "text": "lowest",
+          "mergeRules": [
+            [["l", "o"], "lo"],
+            [["lo", "w"], "low"],
+            [["e", "s"], "es"],
+            [["es", "t"], "est"],
+            [["low", "est"], "lowest"]
+          ]
+        }
+      },
+      {
+        "name": "Simple — \"ab\"",
+        "values": {
+          "text": "aaabdaaabac",
+          "mergeRules": [
+            [["a", "a"], "aa"],
+            [["aa", "a"], "aaa"],
+            [["a", "b"], "ab"],
+            [["aaa", "b"], "aaab"]
+          ]
+        }
+      },
+      {
+        "name": "No merges apply",
+        "values": {
+          "text": "xyz",
+          "mergeRules": [
+            [["a", "b"], "ab"],
+            [["c", "d"], "cd"]
+          ]
+        }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function tokenizeBPE(text, mergeRules):\n  tokens = splitIntoCharacters(text)\n  for each (left, right) → replacement in mergeRules:\n    i = 0\n    while i < length(tokens) - 1:\n      if tokens[i] == left AND tokens[i+1] == right:\n        tokens = tokens[0..i] + [replacement] + tokens[i+2..]\n      else:\n        i = i + 1\n  return tokens",
+      "python": "def tokenize_bpe(text: str, merge_rules: list[tuple[tuple[str, str], str]]) -> list[str]:\n    tokens = list(text)\n    for (left, right), replacement in merge_rules:\n        i = 0\n        while i < len(tokens) - 1:\n            if tokens[i] == left and tokens[i + 1] == right:\n                tokens = tokens[:i] + [replacement] + tokens[i + 2:]\n            else:\n                i += 1\n    return tokens",
+      "javascript": "function tokenizeBPE(text, mergeRules) {\n  let tokens = [...text];\n  for (const [[left, right], replacement] of mergeRules) {\n    let i = 0;\n    while (i < tokens.length - 1) {\n      if (tokens[i] === left && tokens[i + 1] === right) {\n        tokens = [...tokens.slice(0, i), replacement, ...tokens.slice(i + 2)];\n      } else {\n        i++;\n      }\n    }\n  }\n  return tokens;\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Subword Tokenization",
+        "description": "BPE produces tokens that are between characters and full words. Common words like 'the' become single tokens, while rare words like 'unfathomable' are split into subword pieces like 'un', 'fath', 'om', 'able'. This gives a fixed-size vocabulary that can represent any text."
+      },
+      {
+        "title": "Merge Rules Are Learned",
+        "description": "The merge rules are learned from a training corpus by repeatedly finding the most frequent adjacent pair and merging it. At inference time, these pre-learned rules are applied in order to tokenize new text. The order of rules matters — earlier rules are applied first."
+      },
+      {
+        "title": "Greedy Left-to-Right Application",
+        "description": "Each merge rule is applied greedily from left to right across the token sequence. When a matching pair is found, it is merged immediately and the scan continues from the same position (to handle consecutive matches). This deterministic process ensures the same input always produces the same tokens."
+      },
+      {
+        "title": "Vocabulary Size Trade-off",
+        "description": "More merge rules mean larger vocabulary and shorter token sequences (fewer tokens per text), but require more memory for the embedding table. Fewer rules mean smaller vocabulary but longer sequences. GPT models typically use 50,000-100,000 merge rules."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Merge order matters",
+        "description": "Applying merge rules in a different order can produce different token sequences. The rules must be applied in the exact order they were learned during training. Shuffling or reordering rules will break tokenization."
+      },
+      {
+        "title": "BPE is not morphological",
+        "description": "BPE splits are based purely on statistical frequency, not linguistic morphology. The subword units may not correspond to meaningful morphemes. For example, 'unhappy' might split as 'un' + 'happy' (linguistically meaningful) or as 'unh' + 'appy' (not meaningful), depending on the training data."
+      },
+      {
+        "title": "Unknown characters",
+        "description": "If the input text contains characters not seen during training, BPE cannot merge them and they remain as individual character tokens. Modern implementations use byte-level BPE to handle any input byte, avoiding true out-of-vocabulary situations."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "Given tokens ['l', 'o', 'w'] and merge rule (['l', 'o'], 'lo'), what is the result?",
+        "options": ["['lo', 'w']", "['l', 'ow']", "['low']", "['l', 'o', 'w']"],
+        "correctIndex": 0,
+        "explanation": "The merge rule combines 'l' and 'o' into 'lo'. The 'w' is not part of this merge and remains separate. Result: ['lo', 'w']."
+      },
+      {
+        "question": "Why are BPE merge rules applied in a specific order?",
+        "options": [
+          "For computational efficiency only",
+          "Because the order was learned from training data and affects the output",
+          "The order doesn't matter — any order gives the same result",
+          "To ensure alphabetical token ordering"
+        ],
+        "correctIndex": 1,
+        "explanation": "Merge rules are learned in order of frequency from the training corpus. Applying them in a different order can produce different tokenizations because earlier merges change which pairs are available for later merges."
+      },
+      {
+        "question": "What is the initial token sequence for the text 'hello'?",
+        "options": [
+          "['hello']",
+          "['hel', 'lo']",
+          "['h', 'e', 'l', 'l', 'o']",
+          "['he', 'll', 'o']"
+        ],
+        "correctIndex": 2,
+        "explanation": "BPE always starts by splitting the input text into individual characters. Each character becomes its own token. Merge rules are then applied to combine adjacent tokens."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Neural Machine Translation of Rare Words with Subword Units (Sennrich et al., 2016)",
+        "url": "https://arxiv.org/abs/1508.07909",
+        "type": "article"
+      },
+      {
+        "title": "Byte-Pair Encoding — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Byte_pair_encoding",
+        "type": "reference"
+      },
+      {
+        "title": "Hugging Face Tokenizers Documentation",
+        "url": "https://huggingface.co/docs/tokenizers",
+        "type": "reference"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "BPE tokenization visualization",
+      "byte pair encoding algorithm",
+      "tokenization step by step",
+      "subword tokenization",
+      "BPE merge rules",
+      "how BPE tokenization works",
+      "GPT tokenizer visualization",
+      "NLP tokenization algorithm"
+    ],
+    "ogDescription": "Interactive step-by-step visualization of Byte-Pair Encoding (BPE) tokenization. Watch how merge rules transform characters into subword tokens used by GPT and other language models."
+  },
+
+  "prerequisites": [],
+  "related": ["token-embeddings", "self-attention"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

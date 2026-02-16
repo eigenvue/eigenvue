@@ -1,0 +1,128 @@
+{
+  "description": "Binary search: target 4 not found in [1, 3, 5, 7, 9, 11, 13].",
+  "formatVersion": 1,
+  "algorithmId": "binary-search",
+  "inputs": {
+    "array": [1, 3, 5, 7, 9, 11, 13],
+    "target": 4
+  },
+  "generatedAt": "2026-02-14T00:00:00.000Z",
+  "generatedBy": "precomputed",
+  "steps": [
+    {
+      "index": 0,
+      "id": "initialize",
+      "title": "Initialize Pointers",
+      "explanation": "Searching for 4 in a sorted array of 7 elements. Setting left=0, right=6.",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 4, "left": 0, "right": 6 },
+      "visualActions": [
+        { "type": "highlightRange", "from": 0, "to": 6 },
+        { "type": "movePointer", "id": "left", "to": 0 },
+        { "type": "movePointer", "id": "right", "to": 6 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [2, 3] },
+      "isTerminal": false,
+      "phase": "initialization"
+    },
+    {
+      "index": 1,
+      "id": "calculate_mid",
+      "title": "Calculate Middle",
+      "explanation": "mid = floor((0 + 6) / 2) = 3. Checking array[3] = 7.",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 4, "left": 0, "right": 6, "mid": 3 },
+      "visualActions": [
+        { "type": "highlightElement", "index": 3, "color": "highlight" },
+        { "type": "movePointer", "id": "mid", "to": 3 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [5, 6] },
+      "isTerminal": false,
+      "phase": "search"
+    },
+    {
+      "index": 2,
+      "id": "compare_go_left",
+      "title": "Target Is Smaller — Go Left",
+      "explanation": "array[3] = 7 > target 4. Target must be in the left half. Setting right = mid - 1 = 2.",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 4, "left": 0, "right": 2, "mid": 3 },
+      "visualActions": [
+        { "type": "dimRange", "from": 3, "to": 6 },
+        { "type": "highlightRange", "from": 0, "to": 2 },
+        { "type": "movePointer", "id": "right", "to": 2 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [10, 11] },
+      "isTerminal": false,
+      "phase": "search"
+    },
+    {
+      "index": 3,
+      "id": "calculate_mid",
+      "title": "Calculate Middle",
+      "explanation": "mid = floor((0 + 2) / 2) = 1. Checking array[1] = 3.",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 4, "left": 0, "right": 2, "mid": 1 },
+      "visualActions": [
+        { "type": "highlightElement", "index": 1, "color": "highlight" },
+        { "type": "movePointer", "id": "mid", "to": 1 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [5, 6] },
+      "isTerminal": false,
+      "phase": "search"
+    },
+    {
+      "index": 4,
+      "id": "compare_go_right",
+      "title": "Target Is Larger — Go Right",
+      "explanation": "array[1] = 3 < target 4. Target must be in the right half. Setting left = mid + 1 = 2.",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 4, "left": 2, "right": 2, "mid": 1 },
+      "visualActions": [
+        { "type": "dimRange", "from": 0, "to": 1 },
+        { "type": "highlightRange", "from": 2, "to": 2 },
+        { "type": "movePointer", "id": "left", "to": 2 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [12, 13] },
+      "isTerminal": false,
+      "phase": "search"
+    },
+    {
+      "index": 5,
+      "id": "calculate_mid",
+      "title": "Calculate Middle",
+      "explanation": "mid = floor((2 + 2) / 2) = 2. Checking array[2] = 5.",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 4, "left": 2, "right": 2, "mid": 2 },
+      "visualActions": [
+        { "type": "highlightElement", "index": 2, "color": "highlight" },
+        { "type": "movePointer", "id": "mid", "to": 2 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [5, 6] },
+      "isTerminal": false,
+      "phase": "search"
+    },
+    {
+      "index": 6,
+      "id": "compare_go_left",
+      "title": "Target Is Smaller — Go Left",
+      "explanation": "array[2] = 5 > target 4. Setting right = mid - 1 = 1. Now left (2) > right (1), search space exhausted.",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 4, "left": 2, "right": 1, "mid": 2 },
+      "visualActions": [
+        { "type": "dimRange", "from": 2, "to": 2 },
+        { "type": "movePointer", "id": "right", "to": 1 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [10, 11] },
+      "isTerminal": false,
+      "phase": "search"
+    },
+    {
+      "index": 7,
+      "id": "not_found",
+      "title": "Target Not Found",
+      "explanation": "Search space exhausted (left=2 > right=1). 4 is not in the array.",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 4, "left": 2, "right": 1, "result": -1 },
+      "visualActions": [
+        { "type": "markNotFound" },
+        { "type": "showMessage", "text": "Target 4 is not in the array.", "messageType": "warning" }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [15] },
+      "isTerminal": true,
+      "phase": "result"
+    }
+  ]
+}

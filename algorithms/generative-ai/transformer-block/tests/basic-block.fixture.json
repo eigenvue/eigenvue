@@ -1,0 +1,31 @@
+{
+  "description": "Basic transformer block with 3 tokens (dim=4, ffn=8, 1 head)",
+  "inputs": {
+    "tokens": ["The", "cat", "sat"],
+    "embeddingDim": 4,
+    "ffnDim": 8,
+    "numHeads": 1
+  },
+  "expectedStepCount": 11,
+  "keyStates": [
+    {
+      "stepId": "show-input",
+      "state": {
+        "tokens": ["The", "cat", "sat"],
+        "embeddingDim": 4
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["The", "cat", "sat"]
+      }
+    }
+  ],
+  "invariants": {
+    "residualConnectionsCorrect": true,
+    "layerNormMeanApproxZero": true,
+    "layerNormVarianceApproxOne": true,
+    "noNaNOrInfinity": true
+  }
+}

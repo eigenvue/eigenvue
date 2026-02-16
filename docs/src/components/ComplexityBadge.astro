@@ -1,0 +1,55 @@
+---
+/**
+ * ComplexityBadge — Displays time and space complexity in styled badges.
+ *
+ * Props:
+ *   time  — Time complexity string (e.g., "O(log n)")
+ *   space — Space complexity string (e.g., "O(1)")
+ */
+
+interface Props {
+  time: string;
+  space: string;
+}
+
+const { time, space } = Astro.props;
+---
+
+<div class="complexity-badges">
+  <span class="complexity-badge">
+    <span class="complexity-label">Time</span>
+    <code>{time}</code>
+  </span>
+  <span class="complexity-badge">
+    <span class="complexity-label">Space</span>
+    <code>{space}</code>
+  </span>
+</div>
+
+<style>
+  .complexity-badges {
+    display: flex;
+    gap: 0.75rem;
+    margin: 0.5rem 0;
+  }
+  .complexity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 6px;
+    font-size: var(--sl-text-sm);
+    background: var(--sl-color-gray-6, #1e293b);
+    border: 1px solid var(--sl-color-hairline, #334155);
+  }
+  .complexity-label {
+    font-weight: 600;
+    color: var(--sl-color-gray-3, #94a3b8);
+  }
+  .complexity-badge code {
+    font-family: var(--sl-font-mono);
+    color: var(--sl-color-accent, #8b5cf6);
+    background: none;
+    padding: 0;
+  }
+</style>

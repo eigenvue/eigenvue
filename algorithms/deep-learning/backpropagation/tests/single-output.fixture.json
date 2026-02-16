@@ -1,0 +1,17 @@
+{
+  "description": "2-1 network (no hidden layers) with sigmoid + BCE, seed 'backprop-simple'",
+  "inputs": {
+    "inputValues": [0.5, 0.8],
+    "targets": [1],
+    "layerSizes": [2, 1],
+    "activationFunction": "sigmoid",
+    "lossFunction": "binary-cross-entropy",
+    "learningRate": 0.1,
+    "seed": "backprop-simple"
+  },
+  "expectedStepCount": 6,
+  "keyStates": [
+    { "stepId": "forward-start", "state": { "layerSizes": [2, 1] } }
+  ],
+  "notes": "6 steps: forward-start + forward-layer-1 + compute-loss + backward-output + update-weights-1 + complete. No hidden layers means no backward-hidden steps."
+}

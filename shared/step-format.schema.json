@@ -1,96 +1,146 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://eigenvue.web.app/schemas/step-format.schema.json",
-  "title": "Step",
-  "description": "A single snapshot in an algorithm's execution trace produced by an Eigenvue engine.",
+  "$id": "https://eigenvue.dev/schemas/step-format/v1",
+  "title": "Eigenvue Step Sequence",
+  "description": "Validates a complete step sequence produced by an Eigenvue algorithm generator. Version 1.",
   "type": "object",
   "required": [
-    "index",
-    "id",
-    "title",
-    "explanation",
-    "state",
-    "visualActions",
-    "codeHighlight",
-    "isTerminal"
+    "formatVersion",
+    "algorithmId",
+    "inputs",
+    "steps",
+    "generatedAt",
+    "generatedBy"
   ],
   "additionalProperties": false,
   "properties": {
-    "index": {
+    "description": {
+      "type": "string",
+      "description": "Optional human-readable description of this step sequence (used in fixtures)."
+    },
+    "formatVersion": {
       "type": "integer",
-      "minimum": 0,
-      "description": "0-based position in the sequence."
+      "const": 1,
+      "description": "Step format version. Must be 1 for this schema."
     },
-    "id": {
+    "algorithmId": {
       "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
       "minLength": 1,
-      "description": "Template ID that identifies the kind of step (e.g. \"compare_mid\", \"found\")."
+      "description": "URL-safe algorithm identifier."
     },
-    "title": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Short human-readable title."
-    },
-    "explanation": {
-      "type": "string",
-      "description": "Plain-language narration of what is happening."
-    },
-    "state": {
+    "inputs": {
       "type": "object",
-      "description": "All algorithm variables captured at this point in the execution.",
-      "additionalProperties": true
+      "description": "The input parameters that produced this sequence."
     },
-    "visualActions": {
+    "steps": {
       "type": "array",
-      "description": "Ordered list of visual directives for the renderer.",
-      "items": {
-        "$ref": "#/$defs/VisualAction"
-      }
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Step" },
+      "description": "Ordered array of steps. steps[i].index must equal i."
     },
-    "codeHighlight": {
-      "$ref": "#/$defs/CodeHighlight"
-    },
-    "isTerminal": {
-      "type": "boolean",
-      "description": "True when this is the final step of the trace."
-    },
-    "phase": {
+    "generatedAt": {
       "type": "string",
-      "description": "Optional grouping label (e.g. \"partition\", \"merge\")."
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of generation."
+    },
+    "generatedBy": {
+      "type": "string",
+      "enum": ["typescript", "python", "precomputed"],
+      "description": "Which generator produced this sequence."
     }
   },
   "$defs": {
+    "Step": {
+      "type": "object",
+      "required": [
+        "index",
+        "id",
+        "title",
+        "explanation",
+        "state",
+        "visualActions",
+        "codeHighlight",
+        "isTerminal"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "0-based position in the sequence. Must equal the array index."
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$",
+          "minLength": 1,
+          "description": "Template step identifier. Not globally unique."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "Short human-readable heading."
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Plain-language narration of what is happening."
+        },
+        "state": {
+          "type": "object",
+          "description": "Snapshot of all algorithm variables. Keys are variable names."
+        },
+        "visualActions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/VisualAction" },
+          "description": "Ordered rendering instructions. May be empty."
+        },
+        "codeHighlight": {
+          "$ref": "#/$defs/CodeHighlight"
+        },
+        "isTerminal": {
+          "type": "boolean",
+          "description": "True if and only if this is the final step."
+        },
+        "phase": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional grouping label for UI phase indicators."
+        }
+      }
+    },
     "VisualAction": {
       "type": "object",
-      "description": "A renderer directive describing one visual change. The 'type' field selects the handler; all other properties are passed through as parameters.",
       "required": ["type"],
       "properties": {
         "type": {
           "type": "string",
           "minLength": 1,
-          "description": "The visual action handler name."
+          "description": "Action type identifier (open vocabulary)."
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "description": "A single rendering instruction. Additional properties are action-specific parameters."
     },
     "CodeHighlight": {
       "type": "object",
-      "description": "Identifies which lines of source code to highlight for a step.",
       "required": ["language", "lines"],
       "additionalProperties": false,
       "properties": {
         "language": {
           "type": "string",
           "minLength": 1,
-          "description": "Programming language identifier (e.g. \"python\", \"javascript\")."
+          "description": "Language tab identifier."
         },
         "lines": {
           "type": "array",
-          "description": "1-based line numbers to highlight.",
+          "minItems": 1,
           "items": {
             "type": "integer",
             "minimum": 1
-          }
+          },
+          "description": "1-indexed line numbers to highlight."
         }
       }
     }

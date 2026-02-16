@@ -1,0 +1,55 @@
+---
+title: "Comparison with Existing Tools"
+description: "Fair comparison of Eigenvue with existing algorithm visualization tools."
+---
+
+## Landscape Overview
+
+The algorithm visualization space includes several well-established tools, each with distinct strengths. This page offers a fair comparison to help readers understand where Eigenvue fits and where existing tools may better serve specific needs.
+
+## Comparison Table
+
+| Tool | Scope | Platform | Interaction | Shareability | Open Source |
+|------|-------|----------|-------------|--------------|-------------|
+| [VisuAlgo](https://visualgo.net) | Classical algorithms | Web | Step-through, custom inputs | URL params | Partial |
+| [Algorithm Visualizer](https://algorithm-visualizer.org) | Classical algorithms | Web | Step-through | Limited | Yes |
+| [BertViz](https://github.com/jessevig/bertviz) | Attention visualization | Python / Jupyter | Static / Interactive | No | Yes |
+| [TensorFlow Playground](https://playground.tensorflow.org) | Neural networks | Web | Interactive | URL | Yes (Google) |
+| [Quirk](https://algassert.com/quirk) | Quantum circuits | Web | Circuit builder | URL | Yes |
+| [3Blue1Brown](https://www.3blue1brown.com) | Math / ML concepts | Video | Passive viewing | Video links | N/A |
+| **Eigenvue** | Classical + DL + GenAI + Quantum | Web + Python | Step-through, custom inputs | Deep links | Yes (MIT) |
+
+## Where Competitors Excel
+
+It is important to acknowledge the strengths of existing tools:
+
+- **VisuAlgo** has the most comprehensive coverage of classical data structures and algorithms, with detailed pseudocode annotations and support for many languages. For a student focused exclusively on classical algorithms, VisuAlgo remains an excellent resource.
+- **Algorithm Visualizer** provides an integrated code editor that lets users write and visualize their own algorithm implementations, offering a uniquely hands-on learning experience.
+- **BertViz** offers deep, research-grade attention visualization with support for multiple attention head views (model view, head view, neuron view) that are specifically tailored for NLP research workflows.
+- **TensorFlow Playground** delivers an exceptionally intuitive interface for understanding neural network training dynamics, with real-time feedback on decision boundaries that is difficult to replicate in a step-based format.
+- **Quirk** provides a polished, drag-and-drop circuit builder with real-time state vector display that is purpose-built for quantum computing education.
+- **3Blue1Brown** sets the standard for mathematical storytelling through animation, with production quality and narrative depth that interactive tools do not attempt to match.
+
+## Eigenvue Differentiators
+
+Eigenvue's value lies in the combination of features that no single existing tool provides:
+
+### Multi-Domain Coverage
+
+Eigenvue is the only platform that covers classical algorithms, deep learning architectures, generative AI components, and quantum computing within a single interface. A student can progress from Bubble Sort to Self-Attention without switching tools, accounts, or mental models.
+
+### Dual Distribution
+
+While most visualization tools are either web-only or Python-only, Eigenvue ships as both. The web application at [eigenvue.web.app](https://eigenvue.web.app) serves interactive learners, while `pip install eigenvue` integrates into Jupyter notebooks, research scripts, and CI pipelines.
+
+### Code-Based Generators
+
+Unlike tools that define visualizations through YAML, JSON configuration, or GUI builders, Eigenvue generators are written in TypeScript and Python. This preserves full programmatic expressiveness -- loops, conditionals, data structures -- while producing a standardized step output.
+
+### Cross-Language Parity
+
+The CI pipeline validates that TypeScript and Python generators produce identical step sequences for the same inputs. Users of the Python package see the exact same visualization data as web users, eliminating the "second-class SDK" problem common in multi-platform projects.
+
+### Shareable Deep Links
+
+Every visualization state -- algorithm, input data, current step, playback speed -- is encoded in the URL. Users can share, bookmark, or embed links that restore exact states without authentication or server-side storage. This is particularly valuable for educators creating course materials and researchers sharing reproducible examples.

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eigenvue — Algorithm Visualization</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div id="app">
+        <header id="header">
+            <h1 id="algo-name">Loading...</h1>
+            <p id="algo-description"></p>
+        </header>
+
+        <div id="main-content">
+            <div id="visualization-panel">
+                <div id="step-info">
+                    <h2 id="step-title"></h2>
+                    <p id="step-explanation"></p>
+                </div>
+                <div id="state-inspector">
+                    <h3>State</h3>
+                    <pre id="state-display"></pre>
+                </div>
+            </div>
+
+            <div id="controls">
+                <button id="btn-first" title="First Step">&laquo;</button>
+                <button id="btn-prev" title="Previous Step">&lsaquo;</button>
+                <span id="step-counter">0 / 0</span>
+                <button id="btn-next" title="Next Step">&rsaquo;</button>
+                <button id="btn-last" title="Last Step">&raquo;</button>
+                <button id="btn-play" title="Auto-Play">&#9654;</button>
+            </div>
+
+            <div id="step-ids">
+                <h3>Step Sequence</h3>
+                <div id="step-id-list"></div>
+            </div>
+        </div>
+    </div>
+    <script src="/static/visualizer.js"></script>
+</body>
+</html>

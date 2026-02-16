@@ -1,0 +1,174 @@
+---
+title: "UI Controls & Playback"
+description: "Comprehensive reference for every interactive element on the Eigenvue visualizer page, including the canvas, code panel, explanation panel, playback bar, input editor, and keyboard shortcuts."
+---
+
+This page is a complete reference for the visualizer interface. Use it whenever
+you need to know exactly what a button, panel, or shortcut does.
+
+## Canvas Panel
+
+The **canvas** occupies the centre of the visualizer page. It renders the
+algorithm's data structures, model layers, or quantum circuit as an animated
+graphic.
+
+- **Pan** -- click and drag on empty space to move the viewport.
+- **Zoom** -- scroll or pinch to zoom in and out.
+- **Element tooltips** -- hover over any visual element (array cell, graph node,
+  neural-network layer) to see its current value or label.
+- **Highlight** -- the element being operated on in the current step is
+  highlighted with an accent colour.
+
+The canvas redraws on every step transition, whether driven by auto-playback or
+manual stepping.
+
+## Code Panel
+
+The **code panel** sits to the left of the canvas. It shows the algorithm's
+source code and highlights the line that corresponds to the current step.
+
+### Tabs
+
+Three tabs are available at the top of the panel:
+
+| Tab | Description |
+| --- | --- |
+| **Pseudocode** | Language-agnostic notation that focuses on logic |
+| **Python** | Idiomatic Python implementation |
+| **JavaScript** | Idiomatic JavaScript implementation |
+
+Switching tabs preserves the current step and line highlight. The highlighted
+line maps to the equivalent operation in whichever language you select.
+
+### Line Highlight
+
+The active line is marked with a coloured background. As you step through the
+algorithm, the highlight moves to follow execution. If the current step maps to
+multiple lines (for example, a swap), all relevant lines are highlighted.
+
+### Copy Button
+
+A **Copy** icon in the top-right corner of the code panel copies the full source
+listing for the active tab to your clipboard.
+
+## Explanation Panel
+
+The **explanation panel** sits to the right of the canvas and contains three
+sections:
+
+### Title
+
+The algorithm name and a one-line summary (for example,
+"Bubble Sort -- repeatedly swap adjacent elements that are out of order").
+
+### Step Explanation
+
+A plain-language description of what is happening at the current step. This
+updates automatically as you advance or rewind. Example:
+
+> Comparing elements at index 2 (value 7) and index 3 (value 1). Since 7 > 1,
+> they will be swapped.
+
+### State Inspector
+
+A structured view of the algorithm's live variables. For a sorting algorithm
+this might look like:
+
+| Variable | Value |
+| --- | --- |
+| `array` | `[1, 3, 5, 7, 8]` |
+| `i` | `2` |
+| `j` | `3` |
+| `swapped` | `true` |
+
+For a neural-network visualization, the state inspector might show weight
+matrices, activation values, or loss at the current training step.
+
+## Playback Bar
+
+The playback bar is a horizontal toolbar anchored below the canvas. Its controls
+are laid out from left to right as described below.
+
+### Reset Button (⏮)
+
+Returns the visualization to **step 0** -- the initial state before any
+operations have been performed.
+
+### Step Back Button (◀)
+
+Moves **one step backward**. If you are already at step 0, the button is
+disabled. Holding the button does not auto-repeat; use the Play button for
+continuous reverse is not supported -- step back manually.
+
+### Play / Pause Button (▶ / ⏸)
+
+Toggles continuous playback.
+
+- **Play (▶)** -- the visualization advances one step at a time at the
+  currently selected speed.
+- **Pause (⏸)** -- playback stops and you remain on the current step.
+
+When playback reaches the last step, it automatically pauses.
+
+### Step Forward Button (▶|)
+
+Moves **one step forward**. If you are already at the last step, the
+visualization wraps around to step 0.
+
+### Speed Selector
+
+A dropdown or segmented control offering four presets:
+
+| Speed | Delay Between Steps |
+| --- | --- |
+| **0.5x** | 2000 ms |
+| **1x** | 1000 ms (default) |
+| **2x** | 500 ms |
+| **4x** | 250 ms |
+
+The speed change takes effect immediately, even during active playback.
+
+### Step Counter
+
+Displays the current position in the format **Step N / Total**. For example,
+`Step 12 / 45` tells you that you are on step 12 of 45 total steps.
+
+### Progress Bar / Scrubber
+
+A horizontal bar that fills proportionally as you move through the steps. You
+can **click** anywhere on the bar or **drag** the thumb to jump directly to a
+specific step. The canvas, code highlight, and explanation all update instantly
+when you scrub.
+
+## Input Editor
+
+The input editor sits below the code panel. It exposes every configurable
+parameter for the active algorithm.
+
+- **Text fields / number inputs** -- type a value directly.
+- **JSON editor** -- for complex inputs (arrays, objects, graphs) a multi-line
+  editor with syntax highlighting is provided.
+- **Examples dropdown** -- a pre-populated list of interesting inputs. Selecting
+  one fills all fields automatically.
+- **Run button** -- press to regenerate the visualization with the current
+  inputs. The visualizer resets to step 0 with the new data.
+
+Invalid inputs are highlighted in red with an inline error message.
+
+## Keyboard Shortcuts
+
+All shortcuts work when the visualizer page is focused. They mirror the
+playback-bar buttons for faster navigation.
+
+| Key | Action |
+| --- | --- |
+| `Space` | Play / Pause |
+| `→` (Right Arrow) | Step forward |
+| `←` (Left Arrow) | Step back |
+| `Home` | Jump to first step (reset) |
+| `End` | Jump to last step |
+| `+` (or `=`) | Increase playback speed to the next preset |
+| `-` | Decrease playback speed to the previous preset |
+
+Keyboard shortcuts are disabled while the input editor text fields have focus,
+so you can type freely without triggering playback actions.

@@ -1,0 +1,186 @@
+{
+  "id": "feedforward-network",
+  "name": "Feedforward Neural Network",
+  "category": "deep-learning",
+  "description": {
+    "short": "Multi-layer neural network: signals propagate forward through layers.",
+    "long": "A feedforward neural network (also called a multi-layer perceptron, MLP) consists of multiple layers of neurons where signals flow in one direction — from input layer through hidden layers to the output layer. Each neuron in a layer receives weighted inputs from all neurons in the previous layer, computes a weighted sum plus bias, and applies an activation function. Forward propagation is the process of computing the network's output given an input. Understanding forward propagation is essential before learning backpropagation, as it defines the computation graph through which gradients flow backward during training."
+  },
+  "complexity": {
+    "time": "O(Σ n_l × n_{l+1})",
+    "space": "O(Σ n_l × n_{l+1})",
+    "level": "intermediate"
+  },
+  "visual": {
+    "layout": "layer-network",
+    "theme": {
+      "primary": "#8b5cf6",
+      "secondary": "#6d28d9"
+    },
+    "components": {
+      "showWeights": true,
+      "showActivations": true,
+      "showBiases": true,
+      "nodeRadius": 20,
+      "layerSpacing": 150,
+      "inputColor": "#38bdf8",
+      "hiddenColor": "#8b5cf6",
+      "outputColor": "#22c55e",
+      "connectionColor": "#64748b"
+    }
+  },
+  "inputs": {
+    "schema": {
+      "layerSizes": {
+        "type": "array",
+        "items": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "minItems": 2,
+        "maxItems": 5,
+        "description": "Number of neurons in each layer (including input and output)."
+      },
+      "inputValues": {
+        "type": "array",
+        "items": {
+          "type": "number",
+          "minimum": -10,
+          "maximum": 10
+        },
+        "description": "Input values fed to the first layer."
+      },
+      "activationFunction": {
+        "type": "string",
+        "enum": [
+          "sigmoid",
+          "relu",
+          "tanh"
+        ],
+        "description": "Activation function used in hidden layers."
+      }
+    },
+    "defaults": {
+      "layerSizes": [
+        2,
+        3,
+        1
+      ],
+      "inputValues": [
+        0.5,
+        0.8
+      ],
+      "activationFunction": "sigmoid"
+    },
+    "examples": [
+      {
+        "name": "Default (2-3-1 network)",
+        "values": {
+          "layerSizes": [
+            2,
+            3,
+            1
+          ],
+          "inputValues": [
+            0.5,
+            0.8
+          ],
+          "activationFunction": "sigmoid"
+        }
+      },
+      {
+        "name": "Deeper network (2-3-2-1)",
+        "values": {
+          "layerSizes": [
+            2,
+            3,
+            2,
+            1
+          ],
+          "inputValues": [
+            1,
+            -0.5
+          ],
+          "activationFunction": "relu"
+        }
+      }
+    ]
+  },
+  "code": {
+    "implementations": {
+      "pseudocode": "function forwardPass(input, weights, biases, activation):\n  a = input                        // layer activations\n  for layer in range(num_layers - 1):\n    z = weights[layer] × a + biases[layer]  // weighted sum\n    a = activation(z)               // apply activation\n  return a                           // network output"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Layer-by-Layer Computation",
+        "description": "In forward propagation, each layer transforms its input by applying weights, adding biases, and passing through an activation function. The output of one layer becomes the input to the next."
+      },
+      {
+        "title": "Universal Approximation",
+        "description": "A feedforward network with at least one hidden layer and a non-linear activation function can approximate any continuous function to arbitrary precision, given enough neurons. This is the universal approximation theorem."
+      },
+      {
+        "title": "Matrix Multiplication as Core Operation",
+        "description": "Forward propagation is fundamentally a series of matrix multiplications followed by element-wise non-linearities. This is why GPUs, which excel at matrix operations, are so effective for neural networks."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Vanishing gradients with sigmoid",
+        "description": "Deep networks with sigmoid activations suffer from vanishing gradients — gradients become exponentially small in early layers, making training extremely slow. ReLU mitigates this."
+      },
+      {
+        "title": "Dead neurons with ReLU",
+        "description": "ReLU neurons that receive negative inputs output zero and have zero gradient. If a neuron's weights update such that it always receives negative input, it becomes permanently inactive (a 'dead' neuron)."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "What does each layer of a feedforward network compute?",
+        "options": [
+          "activation(weights × input + bias)",
+          "weights × activation(input) + bias",
+          "softmax(weights + bias × input)",
+          "input × (weights - bias)"
+        ],
+        "correctIndex": 0,
+        "explanation": "Each layer computes a weighted sum of inputs plus bias, then applies the activation function: a = activation(W × x + b)."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Neural Networks — 3Blue1Brown",
+        "url": "https://www.3blue1brown.com/topics/neural-networks",
+        "type": "video"
+      },
+      {
+        "title": "Feedforward Neural Network — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Feedforward_neural_network",
+        "type": "article"
+      }
+    ]
+  },
+  "seo": {
+    "keywords": [
+      "feedforward network visualization",
+      "neural network forward propagation",
+      "MLP visualization",
+      "multi-layer perceptron step by step",
+      "forward pass animation"
+    ],
+    "ogDescription": "Interactive visualization of forward propagation in a feedforward neural network. Watch signals flow through layers with weights, biases, and activations."
+  },
+  "prerequisites": [
+    "perceptron"
+  ],
+  "related": [
+    "perceptron",
+    "backpropagation"
+  ],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

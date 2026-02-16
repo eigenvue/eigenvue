@@ -1,0 +1,28 @@
+{
+  "description": "Embed 3 tokens into 4-dimensional vectors and compute pairwise similarity",
+  "inputs": {
+    "tokens": ["The", "cat", "sat"],
+    "embeddingDim": 4
+  },
+  "expectedStepCount": 8,
+  "keyStates": [
+    {
+      "stepId": "show-tokens",
+      "state": {
+        "tokens": ["The", "cat", "sat"],
+        "embeddingDim": 4
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["The", "cat", "sat"],
+        "embeddingDim": 4
+      }
+    }
+  ],
+  "invariants": {
+    "embeddingDimMatchesEachVector": true,
+    "similarityScoresInRange": [-1, 1]
+  }
+}

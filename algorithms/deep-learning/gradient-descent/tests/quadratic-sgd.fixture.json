@@ -1,0 +1,15 @@
+{
+  "description": "SGD on quadratic f(x,y) = x² + 3y², starting at (3, 3), lr=0.1, 20 steps",
+  "inputs": {
+    "startX": 3,
+    "startY": 3,
+    "learningRate": 0.1,
+    "optimizer": "sgd",
+    "numSteps": 20
+  },
+  "expectedStepCount": 21,
+  "keyStates": [
+    { "stepId": "initial", "state": { "loss": 36, "optimizer": "sgd" } }
+  ],
+  "notes": "21 steps: initial + 20 optimization steps. Initial loss = 9 + 27 = 36. SGD should converge toward (0, 0)."
+}

@@ -1,0 +1,56 @@
+---
+title: "Project Overview"
+description: "Eigenvue project overview for JOSS reviewers and academic audiences."
+---
+
+## Statement of Need
+
+The landscape of algorithm and AI visualization tools is fragmented. Classical algorithm visualizers such as VisuAlgo and Algorithm Visualizer cover sorting and graph traversal but stop short of deep learning. Tools like TensorFlow Playground and BertViz address neural networks or attention mechanisms in isolation. Quantum computing has its own separate ecosystem of circuit builders. No single platform today covers **classical algorithms, deep learning, generative AI, and quantum computing** with a consistent interaction model, a unified step format, and a shareable URL scheme that lets users bookmark and share exact visualization states.
+
+Eigenvue fills this gap by providing a single, open-source visual learning platform that spans all four domains. Its architecture is built around a **universal step format** that decouples algorithm logic from rendering, enabling contributors to add new algorithms without touching the visualization engine. The result is a coherent experience where a student can move from Binary Search to Self-Attention to a Quantum Gate and encounter the same playback controls, the same step-through interaction, and the same deep-link sharing mechanism.
+
+## Target Audience
+
+Eigenvue is designed for four primary audiences:
+
+- **Students learning algorithms and AI** -- from introductory sorting algorithms to transformer architectures, Eigenvue provides step-by-step visual explanations that build intuition before students engage with code or mathematical notation.
+- **Educators preparing course materials** -- shareable deep links allow instructors to embed specific algorithm states in slides, assignments, or learning management systems. The quiz system supports formative assessment.
+- **Researchers debugging model architectures** -- interactive visualizations of attention patterns, gradient flow, and transformer blocks help researchers verify their mental models and communicate ideas to collaborators.
+- **ML engineers building intuition for transformers** -- stepping through tokenization, embeddings, self-attention, and multi-head attention reveals the mechanics that production code abstracts away.
+
+## Technical Contributions
+
+Eigenvue introduces several technical contributions that distinguish it from existing tools:
+
+1. **Step Format as Universal Contract** -- Every algorithm, regardless of domain, produces an array of `Step` objects conforming to a shared schema. Each step declares its layout, highlighted elements, annotation text, and state snapshot. This contract means generators and renderers evolve independently.
+
+2. **Code-Based Generators (Not YAML)** -- Algorithm logic is expressed in TypeScript (web) and Python (package) rather than declarative configuration files. This preserves the full expressiveness of the host language -- loops, conditionals, data structures -- while still producing the standardized step output.
+
+3. **Dual Distribution** -- Eigenvue ships as both a web application (https://eigenvue.web.app) and a Python package (`pip install eigenvue`). The web app serves interactive learners and educators; the Python package integrates into Jupyter notebooks, CI pipelines, and research workflows.
+
+4. **Cross-Language Parity via CI** -- A continuous integration pipeline validates that the TypeScript and Python generators produce identical step sequences for the same inputs. This ensures that the Python package is never a second-class citizen.
+
+5. **Shareable Deep Links** -- Every visualization state is encoded in the URL. Users can share a link that restores the exact algorithm, input data, and current step -- no account required, no server-side state.
+
+## Scope and Current State
+
+As of the current release, Eigenvue includes:
+
+- **17 algorithms** spanning three categories: Classical Algorithms, Deep Learning, and Generative AI.
+- **3 algorithm categories** with a fourth (Quantum Computing) in active development.
+- **10 layout types** optimized for different data structures and visualization needs (arrays, trees, graphs, matrices, attention heatmaps, and more).
+- **Full playback controls** including play, pause, step forward, step backward, speed adjustment, and jump-to-step.
+- **Educational content** with explanatory text per step, concept introductions, and integrated quizzes for self-assessment.
+- **SEO optimization** with structured data, Open Graph metadata, and pre-rendered pages for discoverability.
+- **Offline support** via service worker caching, enabling use in environments with limited connectivity.
+
+## Quality Assurance
+
+Eigenvue maintains software quality through a multi-layered CI/CD pipeline:
+
+- **Unit and integration tests** cover generator logic, step schema compliance, and rendering behavior.
+- **Cross-language validation** ensures TypeScript and Python generators produce identical outputs for shared test fixtures.
+- **Schema validation** checks every generated step against the canonical Step Format JSON Schema, catching contract violations before they reach users.
+- **Bundle size gates** prevent regressions in application size, ensuring the web app remains fast to load.
+- **Lighthouse audits** run on every pull request, enforcing thresholds for performance, accessibility, best practices, and SEO scores.
+- **Automated deployments** publish the web app and Python package from the same pipeline, guaranteeing that releases are synchronized.

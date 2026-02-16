@@ -1,448 +1,576 @@
 """
-Shared type definitions for the Eigenvue step format and algorithm metadata.
+Eigenvue Step Format — Python Definitions
 
-These dataclasses mirror the TypeScript interfaces in step.ts and the
-companion JSON Schemas (step-format.schema.json, meta.schema.json).
-Keep all three representations in sync when making changes.
+This module defines the universal contract between algorithm generators
+and the rendering engine, mirrored from the TypeScript definitions in step.ts.
+
+VERSION: 1.0.0
+
+RULES:
+- All types must be JSON-serializable (no lambdas, no classes with methods, no circular refs).
+- Field names use snake_case in Python. The JSON wire format uses camelCase.
+  Conversion functions are provided: to_dict() → camelCase JSON, from_dict() → snake_case Python.
+- Visual action types are an open string vocabulary, NOT a closed set.
+- Step indices are 0-based and contiguous (no gaps).
+- The last step in any sequence MUST have is_terminal == True.
+
+MATHEMATICAL INVARIANTS:
+- ShowAttentionWeightsAction.weights MUST sum to 1.0 within ±1e-6 tolerance.
+- QuizQuestion.correct_index MUST satisfy: 0 <= correct_index < len(options).
+- Step.index MUST equal its position in the step list: steps[i].index == i.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Literal, Optional
+import re
+from dataclasses import dataclass, field, asdict
+from typing import Any, Literal
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP FORMAT VERSION
+# ─────────────────────────────────────────────────────────────────────────────
+
+STEP_FORMAT_VERSION: int = 1
+"""
+The current major version of the step format.
+Increment this ONLY when making breaking changes to the Step dataclass.
+"""
+
+# ─────────────────────────────────────────────────────────────────────────────
+# NAMING CONVENTION UTILITIES
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _snake_to_camel(name: str) -> str:
+    """Convert a snake_case name to camelCase.
+
+    This is used when serializing Python dataclasses to the JSON wire format,
+    which uses camelCase to match the TypeScript definitions.
+
+    Args:
+        name: A snake_case identifier (e.g., "is_terminal", "visual_actions").
+
+    Returns:
+        The camelCase equivalent (e.g., "isTerminal", "visualActions").
+
+    Examples:
+        >>> _snake_to_camel("is_terminal")
+        'isTerminal'
+        >>> _snake_to_camel("visual_actions")
+        'visualActions'
+        >>> _snake_to_camel("id")
+        'id'
+        >>> _snake_to_camel("format_version")
+        'formatVersion'
+    """
+    components = name.split("_")
+    return components[0] + "".join(x.title() for x in components[1:])
 
 
-# ---------------------------------------------------------------------------
-# Step-related types
-# ---------------------------------------------------------------------------
+def _camel_to_snake(name: str) -> str:
+    """Convert a camelCase name to snake_case.
 
-@dataclass
+    This is used when deserializing JSON (camelCase) into Python dataclasses
+    (snake_case).
+
+    Args:
+        name: A camelCase identifier (e.g., "isTerminal", "visualActions").
+
+    Returns:
+        The snake_case equivalent (e.g., "is_terminal", "visual_actions").
+
+    Examples:
+        >>> _camel_to_snake("isTerminal")
+        'is_terminal'
+        >>> _camel_to_snake("visualActions")
+        'visual_actions'
+        >>> _camel_to_snake("id")
+        'id'
+        >>> _camel_to_snake("formatVersion")
+        'format_version'
+    """
+    # Insert underscore before each uppercase letter, then lowercase everything.
+    result = re.sub(r"([A-Z])", r"_\1", name)
+    return result.lower().lstrip("_")
+
+
+def _convert_keys_to_camel(obj: Any) -> Any:
+    """Recursively convert all dict keys from snake_case to camelCase.
+
+    Handles nested dicts and lists. Non-dict/list values pass through unchanged.
+
+    Args:
+        obj: Any JSON-serializable value.
+
+    Returns:
+        The same structure with all dict keys converted to camelCase.
+    """
+    if isinstance(obj, dict):
+        return {_snake_to_camel(k): _convert_keys_to_camel(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_convert_keys_to_camel(item) for item in obj]
+    return obj
+
+
+def _convert_keys_to_snake(obj: Any) -> Any:
+    """Recursively convert all dict keys from camelCase to snake_case.
+
+    Handles nested dicts and lists. Non-dict/list values pass through unchanged.
+
+    Args:
+        obj: Any JSON-serializable value.
+
+    Returns:
+        The same structure with all dict keys converted to snake_case.
+    """
+    if isinstance(obj, dict):
+        return {_camel_to_snake(k): _convert_keys_to_snake(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_convert_keys_to_snake(item) for item in obj]
+    return obj
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CODE HIGHLIGHT
+# ─────────────────────────────────────────────────────────────────────────────
+
+@dataclass(frozen=True, slots=True)
+class CodeHighlight:
+    """Identifies which lines of source code correspond to the current step.
+
+    Attributes:
+        language: Which language tab to highlight (e.g., "pseudocode", "python").
+        lines: 1-indexed line numbers to highlight. Must be non-empty.
+                All values must be positive integers (>= 1).
+    """
+
+    language: str
+    lines: tuple[int, ...]
+
+    def __post_init__(self) -> None:
+        """Validate invariants after initialization."""
+        if not self.language:
+            raise ValueError("CodeHighlight.language must be a non-empty string.")
+        if not self.lines:
+            raise ValueError("CodeHighlight.lines must be a non-empty sequence.")
+        for line in self.lines:
+            if not isinstance(line, int) or line < 1:
+                raise ValueError(
+                    f"CodeHighlight.lines values must be positive integers (>= 1), got {line!r}."
+                )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a camelCase JSON-compatible dict."""
+        return {"language": self.language, "lines": list(self.lines)}
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> CodeHighlight:
+        """Deserialize from a camelCase JSON dict.
+
+        Args:
+            data: Dict with keys "language" (str) and "lines" (list of int).
+
+        Returns:
+            A validated CodeHighlight instance.
+        """
+        return cls(language=data["language"], lines=tuple(data["lines"]))
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VISUAL ACTION
+# ─────────────────────────────────────────────────────────────────────────────
+
+@dataclass(frozen=True, slots=True)
 class VisualAction:
-    """A renderer directive describing one visual change for a step.
+    """A single instruction telling the renderer what to display for this step.
 
-    The ``type`` field selects the renderer handler; every other property is
-    passed through as parameters via ``params``.
+    Visual actions are an OPEN vocabulary. The `type` field is a plain string,
+    not a closed enum. Renderers MUST silently ignore action types they do not
+    recognize.
+
+    Attributes:
+        type: Action type identifier in camelCase (e.g., "highlightElement").
+        params: Action-specific parameters. All values must be JSON-serializable.
     """
 
     type: str
-    params: Dict[str, Any] = field(default_factory=dict)
+    params: dict[str, Any] = field(default_factory=dict)
 
-    # -- serialisation helpers ------------------------------------------------
+    def __post_init__(self) -> None:
+        """Validate that type is non-empty."""
+        if not self.type:
+            raise ValueError("VisualAction.type must be a non-empty string.")
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {"type": self.type, **self.params}
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a flat camelCase JSON-compatible dict.
+
+        The output merges `type` with all `params` keys into a single flat dict,
+        matching the TypeScript VisualAction interface shape.
+
+        Returns:
+            A flat dict like {"type": "highlightElement", "index": 3, "color": "highlight"}.
+        """
+        result: dict[str, Any] = {"type": self.type}
+        result.update(self.params)
+        return result
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> VisualAction:
-        type_ = data["type"]
+    def from_dict(cls, data: dict[str, Any]) -> VisualAction:
+        """Deserialize from a flat camelCase JSON dict.
+
+        Extracts "type" and treats all other keys as params.
+
+        Args:
+            data: Flat dict with at least a "type" key.
+
+        Returns:
+            A VisualAction instance.
+        """
+        action_type = data["type"]
         params = {k: v for k, v in data.items() if k != "type"}
-        return cls(type=type_, params=params)
+        return cls(type=action_type, params=params)
 
 
-@dataclass
-class CodeHighlight:
-    """Identifies which lines of source code to highlight for a step."""
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP
+# ─────────────────────────────────────────────────────────────────────────────
 
-    language: str
-    lines: List[int]
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {"language": self.language, "lines": self.lines}
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> CodeHighlight:
-        return cls(language=data["language"], lines=data["lines"])
+# Regex for validating step IDs: lowercase alphanumeric, hyphens, underscores.
+# Must start with a letter or digit.
+_STEP_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 
 
-@dataclass
+@dataclass(frozen=True, slots=True)
 class Step:
-    """A single snapshot in an algorithm's execution trace.
+    """A single step in an algorithm's execution trace.
 
-    The engine produces an ordered list of ``Step`` objects; the front-end
-    iterates through them to drive the visualisation.
+    INVARIANTS (enforced by __post_init__ validation):
+    1. index >= 0
+    2. id matches ^[a-z0-9][a-z0-9_-]*$
+    3. title is non-empty
+    4. explanation is non-empty
+    5. code_highlight is a valid CodeHighlight
+    6. visual_actions is a (possibly empty) tuple of VisualAction
+
+    The positional invariant (steps[i].index == i) and the terminal invariant
+    (exactly one terminal step, at the end) are validated at the SEQUENCE level,
+    not per-step, because a single Step doesn't know its position in the array.
+
+    Attributes:
+        index: 0-based position in the step sequence.
+        id: Template identifier (e.g., "compare_mid"). Not globally unique.
+        title: Short human-readable heading (≤80 chars recommended).
+        explanation: Plain-language narration of what's happening.
+        state: Snapshot of all algorithm variables. JSON-serializable.
+        visual_actions: Ordered rendering instructions.
+        code_highlight: Maps this step to source code lines.
+        is_terminal: True if and only if this is the final step.
+        phase: Optional grouping label for UI phase indicators.
     """
 
     index: int
-    """0-based position in the sequence."""
-
     id: str
-    """Template ID that identifies the kind of step (e.g. "compare_mid")."""
-
     title: str
-    """Short human-readable title."""
-
     explanation: str
-    """Plain-language narration of what is happening."""
-
-    state: Dict[str, Any]
-    """All algorithm variables captured at this point."""
-
-    visual_actions: List[VisualAction]
-    """Ordered list of visual directives for the renderer."""
-
+    state: dict[str, Any]
+    visual_actions: tuple[VisualAction, ...]
     code_highlight: CodeHighlight
-    """Source-code highlight information."""
-
     is_terminal: bool
-    """True when this is the final step of the trace."""
+    phase: str | None = None
 
-    phase: Optional[str] = None
-    """Optional grouping label (e.g. "partition", "merge")."""
+    def __post_init__(self) -> None:
+        """Validate per-step invariants."""
+        if not isinstance(self.index, int) or self.index < 0:
+            raise ValueError(f"Step.index must be a non-negative integer, got {self.index!r}.")
+        if not _STEP_ID_PATTERN.match(self.id):
+            raise ValueError(
+                f"Step.id must match ^[a-z0-9][a-z0-9_-]*$, got {self.id!r}."
+            )
+        if not self.title:
+            raise ValueError("Step.title must be a non-empty string.")
+        if not self.explanation:
+            raise ValueError("Step.explanation must be a non-empty string.")
 
-    # -- serialisation helpers ------------------------------------------------
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a camelCase JSON-compatible dict.
 
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {
+        Returns:
+            A dict matching the JSON wire format (camelCase keys).
+        """
+        result: dict[str, Any] = {
             "index": self.index,
             "id": self.id,
             "title": self.title,
             "explanation": self.explanation,
             "state": self.state,
-            "visualActions": [va.to_dict() for va in self.visual_actions],
+            "visualActions": [action.to_dict() for action in self.visual_actions],
             "codeHighlight": self.code_highlight.to_dict(),
             "isTerminal": self.is_terminal,
         }
         if self.phase is not None:
-            d["phase"] = self.phase
-        return d
+            result["phase"] = self.phase
+        return result
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> Step:
+    def from_dict(cls, data: dict[str, Any]) -> Step:
+        """Deserialize from a camelCase JSON dict.
+
+        Args:
+            data: Dict matching the JSON wire format.
+
+        Returns:
+            A validated Step instance.
+        """
         return cls(
             index=data["index"],
             id=data["id"],
             title=data["title"],
             explanation=data["explanation"],
             state=data["state"],
-            visual_actions=[
-                VisualAction.from_dict(va) for va in data["visualActions"]
-            ],
+            visual_actions=tuple(
+                VisualAction.from_dict(action) for action in data["visualActions"]
+            ),
             code_highlight=CodeHighlight.from_dict(data["codeHighlight"]),
             is_terminal=data["isTerminal"],
             phase=data.get("phase"),
         )
 
 
-# ---------------------------------------------------------------------------
-# Algorithm metadata types
-# ---------------------------------------------------------------------------
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP SEQUENCE
+# ─────────────────────────────────────────────────────────────────────────────
 
-@dataclass
-class AlgorithmDescription:
-    short: str
-    long: str
+@dataclass(frozen=True, slots=True)
+class StepSequence:
+    """A complete, validated sequence of steps produced by a generator.
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {"short": self.short, "long": self.long}
+    INVARIANTS (enforced by __post_init__ validation):
+    1. format_version == STEP_FORMAT_VERSION
+    2. algorithm_id is non-empty and URL-safe.
+    3. steps is non-empty.
+    4. steps[i].index == i for all i.
+    5. steps[-1].is_terminal is True.
+    6. No step other than the last has is_terminal == True.
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmDescription:
-        return cls(short=data["short"], long=data["long"])
+    Attributes:
+        format_version: Must equal STEP_FORMAT_VERSION.
+        algorithm_id: The algorithm this sequence was generated for.
+        inputs: The input parameters that produced this sequence.
+        steps: Ordered tuple of Step objects.
+        generated_at: ISO 8601 timestamp.
+        generated_by: Which generator produced this ("typescript" | "python" | "precomputed").
+    """
 
+    format_version: int
+    algorithm_id: str
+    inputs: dict[str, Any]
+    steps: tuple[Step, ...]
+    generated_at: str
+    generated_by: Literal["typescript", "python", "precomputed"]
 
-@dataclass
-class AlgorithmComplexity:
-    time: str
-    space: str
-    level: Literal["beginner", "intermediate", "advanced", "expert"]
+    def __post_init__(self) -> None:
+        """Validate all sequence-level invariants.
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {"time": self.time, "space": self.space, "level": self.level}
+        Raises:
+            ValueError: If any invariant is violated, with a precise message.
+        """
+        # 1. Version check
+        if self.format_version != STEP_FORMAT_VERSION:
+            raise ValueError(
+                f"StepSequence.format_version must be {STEP_FORMAT_VERSION}, "
+                f"got {self.format_version}."
+            )
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmComplexity:
-        return cls(time=data["time"], space=data["space"], level=data["level"])
+        # 2. Algorithm ID format
+        if not re.match(r"^[a-z0-9][a-z0-9-]*$", self.algorithm_id):
+            raise ValueError(
+                f"StepSequence.algorithm_id must match ^[a-z0-9][a-z0-9-]*$, "
+                f"got {self.algorithm_id!r}."
+            )
 
+        # 3. Non-empty steps
+        if not self.steps:
+            raise ValueError("StepSequence.steps must contain at least one step.")
 
-@dataclass
-class AlgorithmVisualTheme:
-    primary: str
-    secondary: str
+        # 4. Index contiguity: steps[i].index == i
+        for i, step in enumerate(self.steps):
+            if step.index != i:
+                raise ValueError(
+                    f"Step at position {i} has index={step.index}. "
+                    f"Expected index={i} (steps[i].index must equal i)."
+                )
 
-    def to_dict(self) -> Dict[str, str]:
-        return {"primary": self.primary, "secondary": self.secondary}
+        # 5. Terminal step must be last
+        if not self.steps[-1].is_terminal:
+            raise ValueError(
+                "The last step must have is_terminal=True. "
+                f"Got is_terminal={self.steps[-1].is_terminal} at index {len(self.steps) - 1}."
+            )
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmVisualTheme:
-        return cls(primary=data["primary"], secondary=data["secondary"])
+        # 6. No premature terminal steps
+        for i, step in enumerate(self.steps[:-1]):
+            if step.is_terminal:
+                raise ValueError(
+                    f"Step at index {i} has is_terminal=True, but it is not the last step. "
+                    f"Only the final step (index {len(self.steps) - 1}) may be terminal."
+                )
 
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a camelCase JSON-compatible dict.
 
-@dataclass
-class AlgorithmVisual:
-    layout: str
-    theme: Optional[AlgorithmVisualTheme] = None
-    components: Optional[Dict[str, Any]] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {"layout": self.layout}
-        if self.theme is not None:
-            d["theme"] = self.theme.to_dict()
-        if self.components is not None:
-            d["components"] = self.components
-        return d
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmVisual:
-        theme = None
-        if "theme" in data:
-            theme = AlgorithmVisualTheme.from_dict(data["theme"])
-        return cls(
-            layout=data["layout"],
-            theme=theme,
-            components=data.get("components"),
-        )
-
-
-@dataclass
-class AlgorithmInputExample:
-    name: str
-    values: Dict[str, Any]
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {"name": self.name, "values": self.values}
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmInputExample:
-        return cls(name=data["name"], values=data["values"])
-
-
-@dataclass
-class AlgorithmInputs:
-    schema: Dict[str, Any]
-    defaults: Dict[str, Any]
-    examples: List[AlgorithmInputExample]
-
-    def to_dict(self) -> Dict[str, Any]:
+        Returns:
+            A dict matching the JSON wire format.
+        """
         return {
-            "schema": self.schema,
-            "defaults": self.defaults,
-            "examples": [e.to_dict() for e in self.examples],
+            "formatVersion": self.format_version,
+            "algorithmId": self.algorithm_id,
+            "inputs": self.inputs,
+            "steps": [step.to_dict() for step in self.steps],
+            "generatedAt": self.generated_at,
+            "generatedBy": self.generated_by,
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmInputs:
+    def from_dict(cls, data: dict[str, Any]) -> StepSequence:
+        """Deserialize from a camelCase JSON dict.
+
+        Args:
+            data: Dict matching the JSON wire format.
+
+        Returns:
+            A validated StepSequence instance.
+
+        Raises:
+            ValueError: If any invariant is violated.
+            KeyError: If required fields are missing.
+        """
         return cls(
-            schema=data["schema"],
-            defaults=data["defaults"],
-            examples=[
-                AlgorithmInputExample.from_dict(e) for e in data["examples"]
-            ],
+            format_version=data["formatVersion"],
+            algorithm_id=data["algorithmId"],
+            inputs=data["inputs"],
+            steps=tuple(Step.from_dict(step) for step in data["steps"]),
+            generated_at=data["generatedAt"],
+            generated_by=data["generatedBy"],
         )
 
 
-@dataclass
-class AlgorithmImplementations:
-    pseudocode: str
-    python: str
-    javascript: Optional[str] = None
+# ─────────────────────────────────────────────────────────────────────────────
+# ALGORITHM METADATA TYPES
+# ─────────────────────────────────────────────────────────────────────────────
 
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {
-            "pseudocode": self.pseudocode,
-            "python": self.python,
-        }
-        if self.javascript is not None:
-            d["javascript"] = self.javascript
-        return d
+# These are defined for use in the Python package. They mirror the TypeScript
+# AlgorithmMeta interface. In practice, meta.json files are validated by
+# JSON Schema (meta.schema.json), but these dataclasses provide type safety
+# when meta is loaded into Python code.
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmImplementations:
-        return cls(
-            pseudocode=data["pseudocode"],
-            python=data["python"],
-            javascript=data.get("javascript"),
-        )
+@dataclass(frozen=True, slots=True)
+class EducationEntry:
+    """A key concept or common pitfall.
 
-
-@dataclass
-class AlgorithmCode:
-    implementations: AlgorithmImplementations
-    default_language: str
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "implementations": self.implementations.to_dict(),
-            "defaultLanguage": self.default_language,
-        }
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmCode:
-        return cls(
-            implementations=AlgorithmImplementations.from_dict(
-                data["implementations"]
-            ),
-            default_language=data["defaultLanguage"],
-        )
-
-
-@dataclass
-class KeyConcept:
+    Attributes:
+        title: Short title for the concept/pitfall.
+        description: Explanation text (supports markdown).
+    """
     title: str
     description: str
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a JSON-compatible dict."""
         return {"title": self.title, "description": self.description}
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> KeyConcept:
+    def from_dict(cls, data: dict[str, Any]) -> EducationEntry:
+        """Deserialize from a JSON dict."""
         return cls(title=data["title"], description=data["description"])
 
 
-@dataclass
-class Pitfall:
-    title: str
-    description: str
+@dataclass(frozen=True, slots=True)
+class QuizQuestion:
+    """A self-assessment quiz question.
 
-    def to_dict(self) -> Dict[str, str]:
-        return {"title": self.title, "description": self.description}
+    INVARIANT: 0 <= correct_index < len(options)
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> Pitfall:
-        return cls(title=data["title"], description=data["description"])
-
-
-@dataclass
-class QuizItem:
+    Attributes:
+        question: The question text.
+        options: Answer options (minimum 2).
+        correct_index: 0-based index of the correct option.
+        explanation: Explanation shown after answering.
+    """
     question: str
-    options: List[str]
+    options: tuple[str, ...]
     correct_index: int
     explanation: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def __post_init__(self) -> None:
+        """Validate quiz question invariants."""
+        if len(self.options) < 2:
+            raise ValueError(
+                f"QuizQuestion must have at least 2 options, got {len(self.options)}."
+            )
+        if not (0 <= self.correct_index < len(self.options)):
+            raise ValueError(
+                f"QuizQuestion.correct_index ({self.correct_index}) must be "
+                f"in range [0, {len(self.options)})."
+            )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a camelCase JSON-compatible dict."""
         return {
             "question": self.question,
-            "options": self.options,
+            "options": list(self.options),
             "correctIndex": self.correct_index,
             "explanation": self.explanation,
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> QuizItem:
+    def from_dict(cls, data: dict[str, Any]) -> QuizQuestion:
+        """Deserialize from a camelCase JSON dict."""
         return cls(
             question=data["question"],
-            options=data["options"],
+            options=tuple(data["options"]),
             correct_index=data["correctIndex"],
             explanation=data["explanation"],
         )
 
 
-@dataclass
-class Resource:
+@dataclass(frozen=True, slots=True)
+class ResourceLink:
+    """An external learning resource.
+
+    Attributes:
+        title: Display title for the link.
+        url: Full URL.
+        type: Resource type for icon selection.
+    """
     title: str
     url: str
-    type: str
+    type: Literal["article", "video", "paper", "course", "documentation", "interactive"]
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a JSON-compatible dict."""
         return {"title": self.title, "url": self.url, "type": self.type}
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> Resource:
+    def from_dict(cls, data: dict[str, Any]) -> ResourceLink:
+        """Deserialize from a JSON dict."""
         return cls(title=data["title"], url=data["url"], type=data["type"])
 
 
-@dataclass
-class AlgorithmEducation:
-    key_concepts: List[KeyConcept]
-    pitfalls: List[Pitfall]
-    quiz: List[QuizItem]
-    resources: List[Resource]
+@dataclass(frozen=True, slots=True)
+class InputExample:
+    """A named input preset.
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "keyConcepts": [kc.to_dict() for kc in self.key_concepts],
-            "pitfalls": [p.to_dict() for p in self.pitfalls],
-            "quiz": [q.to_dict() for q in self.quiz],
-            "resources": [r.to_dict() for r in self.resources],
-        }
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmEducation:
-        return cls(
-            key_concepts=[
-                KeyConcept.from_dict(kc) for kc in data["keyConcepts"]
-            ],
-            pitfalls=[Pitfall.from_dict(p) for p in data["pitfalls"]],
-            quiz=[QuizItem.from_dict(q) for q in data["quiz"]],
-            resources=[Resource.from_dict(r) for r in data["resources"]],
-        )
-
-
-@dataclass
-class AlgorithmSeo:
-    keywords: List[str]
-    og_description: str
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "keywords": self.keywords,
-            "ogDescription": self.og_description,
-        }
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmSeo:
-        return cls(
-            keywords=data["keywords"],
-            og_description=data["ogDescription"],
-        )
-
-
-@dataclass
-class AlgorithmMeta:
-    """Complete metadata descriptor for a single algorithm.
-
-    Persisted as JSON/YAML and consumed by both the engine and the front-end.
+    Attributes:
+        name: Display name (e.g., "Large Sorted Array").
+        values: Parameter values matching the algorithm's input schema.
     """
-
-    id: str
     name: str
-    category: Literal["classical", "deep-learning", "generative-ai", "quantum"]
-    description: AlgorithmDescription
-    complexity: AlgorithmComplexity
-    visual: AlgorithmVisual
-    inputs: AlgorithmInputs
-    code: AlgorithmCode
-    education: AlgorithmEducation
-    seo: AlgorithmSeo
-    prerequisites: List[str]
-    related: List[str]
-    author: str
-    version: str
+    values: dict[str, Any]
 
-    # -- serialisation helpers ------------------------------------------------
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "category": self.category,
-            "description": self.description.to_dict(),
-            "complexity": self.complexity.to_dict(),
-            "visual": self.visual.to_dict(),
-            "inputs": self.inputs.to_dict(),
-            "code": self.code.to_dict(),
-            "education": self.education.to_dict(),
-            "seo": self.seo.to_dict(),
-            "prerequisites": self.prerequisites,
-            "related": self.related,
-            "author": self.author,
-            "version": self.version,
-        }
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize to a JSON-compatible dict."""
+        return {"name": self.name, "values": self.values}
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> AlgorithmMeta:
-        return cls(
-            id=data["id"],
-            name=data["name"],
-            category=data["category"],
-            description=AlgorithmDescription.from_dict(data["description"]),
-            complexity=AlgorithmComplexity.from_dict(data["complexity"]),
-            visual=AlgorithmVisual.from_dict(data["visual"]),
-            inputs=AlgorithmInputs.from_dict(data["inputs"]),
-            code=AlgorithmCode.from_dict(data["code"]),
-            education=AlgorithmEducation.from_dict(data["education"]),
-            seo=AlgorithmSeo.from_dict(data["seo"]),
-            prerequisites=data["prerequisites"],
-            related=data["related"],
-            author=data["author"],
-            version=data["version"],
-        )
+    def from_dict(cls, data: dict[str, Any]) -> InputExample:
+        """Deserialize from a JSON dict."""
+        return cls(name=data["name"], values=data["values"])

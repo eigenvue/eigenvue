@@ -1,0 +1,704 @@
+---
+title: "Visual Action Types"
+description: "Complete catalog of visual actions."
+---
+
+Visual actions are the rendering instructions embedded in each step. They tell the rendering engine what to display when a step is active. Every visual action has a `type` field (camelCase string) and action-specific parameters.
+
+Visual actions use an **open vocabulary** -- the `type` field is a plain string, not a closed enum. Renderers silently ignore action types they do not recognize. This allows new action types to be defined in generators before renderer support exists.
+
+```typescript
+interface VisualAction {
+  readonly type: string;
+  readonly [key: string]: unknown;
+}
+```
+
+All parameter values must be JSON-serializable.
+
+---
+
+## Core Actions
+
+These are the fundamental actions used by classical algorithm visualizations (sorting, searching).
+
+| Type               | Parameters                                          | Description                                                                 | Used By                              |
+| ------------------ | --------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------ |
+| `highlightElement` | `index: number`, `color?: string`                   | Highlight a single element (array cell, graph node). Default color: `"highlight"`. | Binary search, bubble sort, quicksort, merge sort |
+| `movePointer`      | `id: string`, `to: number`                          | Move a named pointer to a new position. `id` identifies the pointer (e.g., `"left"`, `"right"`, `"mid"`). | Binary search, quicksort             |
+| `highlightRange`   | `from: number`, `to: number`, `color?: string`      | Highlight a contiguous range of elements (inclusive on both ends). Constraint: `from <= to`. | Binary search, merge sort, quicksort |
+| `dimRange`         | `from: number`, `to: number`                        | Visually de-emphasize a contiguous range. Constraint: `from <= to`.         | Binary search                        |
+| `swapElements`     | `i: number`, `j: number`                            | Swap two elements. Both indices are 0-based.                                | Bubble sort, quicksort               |
+| `compareElements`  | `i: number`, `j: number`, `result: "less" \| "greater" \| "equal"` | Visually compare two elements and show the comparison result.    | Bubble sort, binary search, merge sort |
+| `markFound`        | `index: number`                                     | Mark an element as the found/target element.                                | Binary search                        |
+| `markNotFound`     | _(none)_                                            | Indicate that the target was not found. No specific index.                  | Binary search                        |
+| `showMessage`      | `text: string`, `messageType: "info" \| "success" \| "warning" \| "error"` | Display a transient text message on the visualization. | All algorithms                       |
+
+### Core Action Details
+
+#### `highlightElement`
+
+```typescript
+interface HighlightElementAction extends VisualAction {
+  readonly type: "highlightElement";
+  readonly index: number;     // 0-based element index
+  readonly color?: string;    // Semantic color: "highlight", "compare", "found", "active", "inactive"
+}
+```
+
+#### `movePointer`
+
+```typescript
+interface MovePointerAction extends VisualAction {
+  readonly type: "movePointer";
+  readonly id: string;        // Pointer name (e.g., "left", "right", "mid")
+  readonly to: number;        // 0-based target index
+}
+```
+
+#### `highlightRange`
+
+```typescript
+interface HighlightRangeAction extends VisualAction {
+  readonly type: "highlightRange";
+  readonly from: number;      // 0-based start index (inclusive)
+  readonly to: number;        // 0-based end index (inclusive). Must satisfy: from <= to
+  readonly color?: string;
+}
+```
+
+#### `dimRange`
+
+```typescript
+interface DimRangeAction extends VisualAction {
+  readonly type: "dimRange";
+  readonly from: number;      // 0-based start index (inclusive)
+  readonly to: number;        // 0-based end index (inclusive). Must satisfy: from <= to
+}
+```
+
+#### `swapElements`
+
+```typescript
+interface SwapElementsAction extends VisualAction {
+  readonly type: "swapElements";
+  readonly i: number;         // 0-based index of first element
+  readonly j: number;         // 0-based index of second element
+}
+```
+
+#### `compareElements`
+
+```typescript
+interface CompareElementsAction extends VisualAction {
+  readonly type: "compareElements";
+  readonly i: number;
+  readonly j: number;
+  readonly result: "less" | "greater" | "equal";
+}
+```
+
+#### `markFound`
+
+```typescript
+interface MarkFoundAction extends VisualAction {
+  readonly type: "markFound";
+  readonly index: number;     // 0-based index of the found element
+}
+```
+
+#### `markNotFound`
+
+```typescript
+interface MarkNotFoundAction extends VisualAction {
+  readonly type: "markNotFound";
+  // No additional parameters
+}
+```
+
+#### `showMessage`
+
+```typescript
+interface ShowMessageAction extends VisualAction {
+  readonly type: "showMessage";
+  readonly text: string;
+  readonly messageType: "info" | "success" | "warning" | "error";
+}
+```
+
+---
+
+## Graph Actions
+
+Actions for graph-based algorithm visualizations (BFS, DFS, Dijkstra).
+
+| Type              | Parameters                                           | Description                                                               | Used By              |
+| ----------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- | -------------------- |
+| `visitNode`       | `nodeId: string`, `color?: string`                   | Mark a graph node as visited. Default color: `"visited"`.                 | BFS, DFS, Dijkstra   |
+| `highlightEdge`   | `from: string`, `to: string`, `color?: string`       | Highlight an edge between two nodes. Default color: `"highlight"`.        | BFS, DFS, Dijkstra   |
+| `updateNodeValue` | `nodeId: string`, `value: number \| string \| null`  | Update the displayed value of a node (e.g., distance in Dijkstra). `null` clears the value. | Dijkstra             |
+
+### Graph Action Details
+
+#### `visitNode`
+
+```typescript
+interface VisitNodeAction extends VisualAction {
+  readonly type: "visitNode";
+  readonly nodeId: string;    // Unique node identifier within the graph
+  readonly color?: string;    // Default: "visited"
+}
+```
+
+#### `highlightEdge`
+
+```typescript
+interface HighlightEdgeAction extends VisualAction {
+  readonly type: "highlightEdge";
+  readonly from: string;      // Source node ID
+  readonly to: string;        // Target node ID
+  readonly color?: string;    // Default: "highlight"
+}
+```
+
+#### `updateNodeValue`
+
+```typescript
+interface UpdateNodeValueAction extends VisualAction {
+  readonly type: "updateNodeValue";
+  readonly nodeId: string;
+  readonly value: number | string | null;   // null clears the display value
+}
+```
+
+---
+
+## Neural Network Actions
+
+Actions for neural network visualizations (forward propagation, backpropagation, training).
+
+| Type                     | Parameters                                                                      | Description                                                        | Used By                     |
+| ------------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------- |
+| `activateNeuron`         | `layer: number`, `index: number`, `value: number`                               | Activate (light up) a neuron in a network layer.                   | Forward propagation         |
+| `propagateSignal`        | `fromLayer: number`, `toLayer: number`                                          | Show signal propagating between layers.                            | Forward propagation         |
+| `showGradient`           | `layer: number`, `values: number[]`                                             | Display gradient values for a layer (one per neuron).              | Backpropagation             |
+| `showWeights`            | `fromLayer: number`, `toLayer: number`, `weights: number[][]`                   | Show weight values on connections. Shape: `[toLayerSize, fromLayerSize]`. | Forward propagation, training |
+| `showWeightGradients`    | `fromLayer: number`, `toLayer: number`, `gradients: number[][]`                 | Show weight gradient values. Shape: `[toLayerSize, fromLayerSize]`. `gradients[j][i] = dLoss/dw_ji`. | Backpropagation             |
+| `showBiasGradients`      | `layer: number`, `biasGradients: number[]`                                      | Show bias gradient values. `biasGradients[j] = dLoss/db_j`.       | Backpropagation             |
+| `updateWeights`          | `fromLayer: number`, `toLayer: number`, `oldWeights: number[][]`, `newWeights: number[][]`, `learningRate: number` | Show weight update after gradient descent. | Training                    |
+| `showPreActivation`      | `layer: number`, `index: number`, `z: number`, `weightedInputs: number[]`, `bias: number` | Show pre-activation value: `z = sum(w_i * x_i) + b`. | Forward propagation         |
+| `showActivationFunction` | `layer: number`, `index: number`, `functionName: string`, `input: number`, `output: number` | Show activation function being applied: `a = f(z)`. | Forward propagation         |
+| `showLoss`               | `loss: number`, `lossFunction: string`, `predictions: number[]`, `targets: number[]` | Show the computed loss value.                                | Training                    |
+
+### Neural Network Action Details
+
+#### `activateNeuron`
+
+```typescript
+interface ActivateNeuronAction extends VisualAction {
+  readonly type: "activateNeuron";
+  readonly layer: number;     // 0-based layer index
+  readonly index: number;     // 0-based neuron index within the layer
+  readonly value: number;     // Activation value (typically 0-1, but not constrained)
+}
+```
+
+#### `propagateSignal`
+
+```typescript
+interface PropagateSignalAction extends VisualAction {
+  readonly type: "propagateSignal";
+  readonly fromLayer: number; // 0-based source layer index
+  readonly toLayer: number;   // 0-based target layer index
+}
+```
+
+#### `showGradient`
+
+```typescript
+interface ShowGradientAction extends VisualAction {
+  readonly type: "showGradient";
+  readonly layer: number;
+  readonly values: readonly number[];   // One gradient value per neuron
+}
+```
+
+#### `showWeights`
+
+```typescript
+interface ShowWeightsAction extends VisualAction {
+  readonly type: "showWeights";
+  readonly fromLayer: number;
+  readonly toLayer: number;
+  readonly weights: readonly (readonly number[])[];   // Shape: [toLayerSize, fromLayerSize]
+  // weights[j][i] = weight from neuron i in fromLayer to neuron j in toLayer
+}
+```
+
+#### `showWeightGradients`
+
+```typescript
+interface ShowWeightGradientsAction extends VisualAction {
+  readonly type: "showWeightGradients";
+  readonly fromLayer: number;
+  readonly toLayer: number;
+  readonly gradients: readonly (readonly number[])[];  // Shape: [toLayerSize, fromLayerSize]
+  // gradients[j][i] = dLoss/dw_ji = delta_j * a_i
+}
+```
+
+#### `showBiasGradients`
+
+```typescript
+interface ShowBiasGradientsAction extends VisualAction {
+  readonly type: "showBiasGradients";
+  readonly layer: number;
+  readonly biasGradients: readonly number[];  // biasGradients[j] = dLoss/db_j = delta_j
+}
+```
+
+#### `updateWeights`
+
+```typescript
+interface UpdateWeightsAction extends VisualAction {
+  readonly type: "updateWeights";
+  readonly fromLayer: number;
+  readonly toLayer: number;
+  readonly oldWeights: readonly (readonly number[])[];   // Before update
+  readonly newWeights: readonly (readonly number[])[];   // After update
+  readonly learningRate: number;
+  // newWeights[j][i] = oldWeights[j][i] - learningRate * dLoss/dw_ji
+}
+```
+
+#### `showPreActivation`
+
+```typescript
+interface ShowPreActivationAction extends VisualAction {
+  readonly type: "showPreActivation";
+  readonly layer: number;
+  readonly index: number;
+  readonly z: number;                          // Pre-activation: z = sum(w_i * x_i) + b
+  readonly weightedInputs: readonly number[];  // Individual terms: w_i * x_i
+  readonly bias: number;                       // Bias term
+}
+```
+
+#### `showActivationFunction`
+
+```typescript
+interface ShowActivationFunctionAction extends VisualAction {
+  readonly type: "showActivationFunction";
+  readonly layer: number;
+  readonly index: number;
+  readonly functionName: "sigmoid" | "relu" | "tanh" | "step";
+  readonly input: number;     // z (pre-activation)
+  readonly output: number;    // a = activation_fn(z)
+}
+```
+
+#### `showLoss`
+
+```typescript
+interface ShowLossAction extends VisualAction {
+  readonly type: "showLoss";
+  readonly loss: number;
+  readonly lossFunction: "mse" | "binary-cross-entropy";
+  readonly predictions: readonly number[];
+  readonly targets: readonly number[];
+}
+```
+
+---
+
+## Convolution Actions
+
+Actions for convolution operation visualizations.
+
+| Type                     | Parameters                                                            | Description                                                            | Used By        |
+| ------------------------ | --------------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------- |
+| `highlightKernelPosition`| `row: number`, `col: number`, `kernelHeight: number`, `kernelWidth: number` | Highlight the current position of the convolution kernel on the input grid. | 2D Convolution |
+| `showConvolutionProducts`| `row: number`, `col: number`, `products: number[][]`, `sum: number`   | Show element-wise products between kernel and input patch at the current position. | 2D Convolution |
+| `writeOutputCell`        | `row: number`, `col: number`, `value: number`                         | Write a computed value into the output feature map.                    | 2D Convolution |
+
+### Convolution Action Details
+
+#### `highlightKernelPosition`
+
+```typescript
+interface HighlightKernelPositionAction extends VisualAction {
+  readonly type: "highlightKernelPosition";
+  readonly row: number;           // Top-left row of kernel window on input
+  readonly col: number;           // Top-left column of kernel window on input
+  readonly kernelHeight: number;  // Kernel height
+  readonly kernelWidth: number;   // Kernel width
+}
+```
+
+#### `showConvolutionProducts`
+
+```typescript
+interface ShowConvolutionProductsAction extends VisualAction {
+  readonly type: "showConvolutionProducts";
+  readonly row: number;
+  readonly col: number;
+  readonly products: readonly (readonly number[])[];
+  // products[kr][kc] = input[row + kr][col + kc] * kernel[kr][kc]
+  readonly sum: number;   // Sum of all products -- becomes the output value
+}
+```
+
+#### `writeOutputCell`
+
+```typescript
+interface WriteOutputCellAction extends VisualAction {
+  readonly type: "writeOutputCell";
+  readonly row: number;     // Row in the output feature map
+  readonly col: number;     // Column in the output feature map
+  readonly value: number;   // Computed value to write
+}
+```
+
+---
+
+## Gradient Descent Actions
+
+Actions for gradient descent and optimizer visualizations.
+
+| Type                    | Parameters                                                                                              | Description                                                      | Used By          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------- |
+| `showLandscapePosition` | `parameters: number[]`, `loss: number`, `gradient: number[]`                                            | Show the current position on the loss landscape.                 | Gradient descent |
+| `showDescentStep`       | `fromParameters: number[]`, `toParameters: number[]`, `fromLoss: number`, `toLoss: number`, `optimizer: string`, `learningRate: number` | Show a gradient descent step from current to new position. | Gradient descent |
+| `showTrajectory`        | `trajectory: {parameters: number[], loss: number}[]`, `optimizer: string`                               | Show the trajectory of all visited positions.                    | Gradient descent |
+| `showMomentum`          | `velocity: number[]`, `secondMoment?: number[]`                                                         | Show momentum/velocity vector. `secondMoment` is for Adam only. | Gradient descent |
+
+### Gradient Descent Action Details
+
+#### `showLandscapePosition`
+
+```typescript
+interface ShowLandscapePositionAction extends VisualAction {
+  readonly type: "showLandscapePosition";
+  readonly parameters: readonly number[];   // Current parameter values
+  readonly loss: number;                    // Loss at this position
+  readonly gradient: readonly number[];     // Gradient vector at this position
+}
+```
+
+#### `showDescentStep`
+
+```typescript
+interface ShowDescentStepAction extends VisualAction {
+  readonly type: "showDescentStep";
+  readonly fromParameters: readonly number[];
+  readonly toParameters: readonly number[];
+  readonly fromLoss: number;
+  readonly toLoss: number;
+  readonly optimizer: "sgd" | "momentum" | "adam";
+  readonly learningRate: number;
+}
+```
+
+#### `showTrajectory`
+
+```typescript
+interface ShowTrajectoryAction extends VisualAction {
+  readonly type: "showTrajectory";
+  readonly trajectory: readonly {
+    readonly parameters: readonly number[];
+    readonly loss: number;
+  }[];
+  readonly optimizer: "sgd" | "momentum" | "adam";
+}
+```
+
+#### `showMomentum`
+
+```typescript
+interface ShowMomentumAction extends VisualAction {
+  readonly type: "showMomentum";
+  readonly velocity: readonly number[];
+  readonly secondMoment?: readonly number[];   // Adam only; omit for plain momentum
+}
+```
+
+---
+
+## GenAI Actions
+
+Actions for generative AI visualizations (tokenization, embeddings, attention mechanisms, transformer blocks).
+
+| Type                      | Parameters                                                                      | Description                                                                | Used By                 |
+| ------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------- |
+| `showAttentionWeights`    | `queryIdx: number`, `weights: number[]`                                         | Show attention weights from a query token to all keys. Weights must sum to 1.0 (within 1e-6). | Self-attention, multi-head attention |
+| `highlightToken`          | `index: number`, `color?: string`                                               | Highlight a token in a sequence.                                           | Tokenization, embeddings, attention |
+| `updateBarChart`          | `values: number[]`, `labels?: string[]`                                         | Update a bar chart (e.g., probability distributions). If `labels` provided, `labels.length` must equal `values.length`. | Tokenization            |
+| `highlightTextSpan`       | `start: number`, `end: number`, `color?: string`                                | Highlight characters in source text. `start` inclusive, `end` exclusive.   | BPE tokenization        |
+| `mergeTokens`             | `leftIndex: number`, `rightIndex: number`, `result: string`                     | Show a BPE merge of two adjacent tokens.                                   | BPE tokenization        |
+| `showEmbedding`           | `tokenIndex: number`, `values: number[]`                                        | Display an embedding vector for a token.                                   | Token embeddings        |
+| `showSimilarity`          | `tokenA: number`, `tokenB: number`, `score: number`                             | Show cosine similarity between two embeddings. Score in [-1, 1].           | Token embeddings        |
+| `showProjectionMatrix`    | `projectionType: "Q" \| "K" \| "V"`, `matrix: number[][]`                      | Show Q, K, or V projection matrix. Shape: `[seqLen, d_k]`.                | Self-attention          |
+| `showAttentionScores`     | `scores: number[][]`                                                            | Show raw (pre-softmax) attention scores. Shape: `[seqLen, seqLen]`. `scores[i][j] = Q[i] . K[j]^T / sqrt(d_k)`. | Self-attention          |
+| `showFullAttentionMatrix` | `weights: number[][]`                                                           | Show full attention matrix after softmax. Each row sums to 1.0.            | Self-attention          |
+| `showWeightedValues`      | `queryIdx: number`, `contextVector: number[]`                                   | Show weighted value vectors (attention output) for a query.                | Self-attention          |
+| `activateHead`            | `headIndex: number`, `totalHeads: number`                                       | Activate a specific attention head.                                        | Multi-head attention    |
+| `showConcatenatedHeads`   | `matrix: number[][]`                                                            | Show concatenated multi-head output. Shape: `[seqLen, numHeads * d_v]`.    | Multi-head attention    |
+| `activateSublayer`        | `sublayerId: string`, `label: string`                                           | Show data flowing through a transformer sublayer.                          | Transformer block       |
+| `showResidualConnection`  | `input: number[]`, `sublayerOutput: number[]`, `result: number[]`               | Show residual connection: `result = input + sublayerOutput`.               | Transformer block       |
+| `showLayerNorm`           | `input: number[]`, `output: number[]`                                           | Show layer normalization. Output has mean ~0, variance ~1.                 | Transformer block       |
+
+### GenAI Action Details
+
+#### `showAttentionWeights`
+
+```typescript
+interface ShowAttentionWeightsAction extends VisualAction {
+  readonly type: "showAttentionWeights";
+  readonly queryIdx: number;
+  readonly weights: readonly number[];
+  // Invariant: Math.abs(weights.reduce((a, b) => a + b, 0) - 1.0) <= 1e-6
+  // Each weight must be in [0, 1]
+}
+```
+
+#### `highlightToken`
+
+```typescript
+interface HighlightTokenAction extends VisualAction {
+  readonly type: "highlightToken";
+  readonly index: number;       // 0-based token index
+  readonly color?: string;      // Default: "highlight"
+}
+```
+
+#### `updateBarChart`
+
+```typescript
+interface UpdateBarChartAction extends VisualAction {
+  readonly type: "updateBarChart";
+  readonly values: readonly number[];
+  readonly labels?: readonly string[];   // Must match values.length if provided
+}
+```
+
+#### `highlightTextSpan`
+
+```typescript
+interface HighlightTextSpanAction extends VisualAction {
+  readonly type: "highlightTextSpan";
+  readonly start: number;       // 0-based start character index (inclusive)
+  readonly end: number;         // 0-based end character index (exclusive)
+  readonly color?: string;
+}
+```
+
+#### `mergeTokens`
+
+```typescript
+interface MergeTokensAction extends VisualAction {
+  readonly type: "mergeTokens";
+  readonly leftIndex: number;   // 0-based index of left token
+  readonly rightIndex: number;  // 0-based index of right token
+  readonly result: string;      // The resulting merged token string
+}
+```
+
+#### `showEmbedding`
+
+```typescript
+interface ShowEmbeddingAction extends VisualAction {
+  readonly type: "showEmbedding";
+  readonly tokenIndex: number;
+  readonly values: readonly number[];   // Length equals d_model
+}
+```
+
+#### `showSimilarity`
+
+```typescript
+interface ShowSimilarityAction extends VisualAction {
+  readonly type: "showSimilarity";
+  readonly tokenA: number;
+  readonly tokenB: number;
+  readonly score: number;   // Cosine similarity in [-1, 1]
+  // score = (A . B) / (||A|| * ||B||)
+}
+```
+
+#### `showProjectionMatrix`
+
+```typescript
+interface ShowProjectionMatrixAction extends VisualAction {
+  readonly type: "showProjectionMatrix";
+  readonly projectionType: "Q" | "K" | "V";
+  readonly matrix: readonly (readonly number[])[];   // Shape: [seqLen, d_k]
+}
+```
+
+#### `showAttentionScores`
+
+```typescript
+interface ShowAttentionScoresAction extends VisualAction {
+  readonly type: "showAttentionScores";
+  readonly scores: readonly (readonly number[])[];   // Shape: [seqLen, seqLen]
+  // scores[i][j] = (Q[i] . K[j]) / sqrt(d_k)
+}
+```
+
+#### `showFullAttentionMatrix`
+
+```typescript
+interface ShowFullAttentionMatrixAction extends VisualAction {
+  readonly type: "showFullAttentionMatrix";
+  readonly weights: readonly (readonly number[])[];   // Shape: [seqLen, seqLen]
+  // Invariant: each row sums to 1.0 (within 1e-6)
+}
+```
+
+#### `showWeightedValues`
+
+```typescript
+interface ShowWeightedValuesAction extends VisualAction {
+  readonly type: "showWeightedValues";
+  readonly queryIdx: number;
+  readonly contextVector: readonly number[];   // Length: d_v
+}
+```
+
+#### `activateHead`
+
+```typescript
+interface ActivateHeadAction extends VisualAction {
+  readonly type: "activateHead";
+  readonly headIndex: number;     // 0-based head index
+  readonly totalHeads: number;    // Total number of heads (for UI layout)
+}
+```
+
+#### `showConcatenatedHeads`
+
+```typescript
+interface ShowConcatenatedHeadsAction extends VisualAction {
+  readonly type: "showConcatenatedHeads";
+  readonly matrix: readonly (readonly number[])[];   // Shape: [seqLen, numHeads * d_v]
+}
+```
+
+#### `activateSublayer`
+
+```typescript
+interface ActivateSublayerAction extends VisualAction {
+  readonly type: "activateSublayer";
+  readonly sublayerId: string;    // e.g., "self-attention", "add-norm-1", "ffn", "add-norm-2"
+  readonly label: string;         // Human-readable label
+}
+```
+
+#### `showResidualConnection`
+
+```typescript
+interface ShowResidualConnectionAction extends VisualAction {
+  readonly type: "showResidualConnection";
+  readonly input: readonly number[];           // Input vector (d_model)
+  readonly sublayerOutput: readonly number[];  // Sublayer output (d_model)
+  readonly result: readonly number[];          // input + sublayerOutput (d_model)
+  // Invariant: Math.abs(result[j] - (input[j] + sublayerOutput[j])) <= 1e-9
+}
+```
+
+#### `showLayerNorm`
+
+```typescript
+interface ShowLayerNormAction extends VisualAction {
+  readonly type: "showLayerNorm";
+  readonly input: readonly number[];    // Before normalization (d_model)
+  readonly output: readonly number[];   // After normalization (d_model)
+  // Invariant (without learnable gamma/beta):
+  //   Math.abs(mean(output)) <= 1e-6
+  //   Math.abs(variance(output) - 1.0) <= 1e-4
+}
+```
+
+---
+
+## Discriminated Union
+
+For exhaustive switch statements in renderers, the `KnownVisualAction` type is a discriminated union of all known action interfaces:
+
+```typescript
+type KnownVisualAction =
+  | HighlightElementAction
+  | MovePointerAction
+  | HighlightRangeAction
+  | DimRangeAction
+  | SwapElementsAction
+  | CompareElementsAction
+  | MarkFoundAction
+  | MarkNotFoundAction
+  | ShowMessageAction
+  | VisitNodeAction
+  | HighlightEdgeAction
+  | UpdateNodeValueAction
+  | ActivateNeuronAction
+  | PropagateSignalAction
+  | ShowGradientAction
+  | ShowWeightsAction
+  | ShowWeightGradientsAction
+  | ShowBiasGradientsAction
+  | UpdateWeightsAction
+  | ShowPreActivationAction
+  | ShowActivationFunctionAction
+  | ShowLossAction
+  | HighlightKernelPositionAction
+  | ShowConvolutionProductsAction
+  | WriteOutputCellAction
+  | ShowLandscapePositionAction
+  | ShowDescentStepAction
+  | ShowTrajectoryAction
+  | ShowMomentumAction
+  | ShowAttentionWeightsAction
+  | HighlightTokenAction
+  | UpdateBarChartAction
+  | HighlightTextSpanAction
+  | MergeTokensAction
+  | ShowEmbeddingAction
+  | ShowSimilarityAction
+  | ShowProjectionMatrixAction
+  | ShowAttentionScoresAction
+  | ShowFullAttentionMatrixAction
+  | ShowWeightedValuesAction
+  | ActivateHeadAction
+  | ShowConcatenatedHeadsAction
+  | ActivateSublayerAction
+  | ShowResidualConnectionAction
+  | ShowLayerNormAction;
+```
+
+Renderers must also handle unknown types gracefully (no-op) because the vocabulary is open.
+
+---
+
+## Extensibility
+
+To add a new visual action type:
+
+1. **Define the interface** in `shared/types/step.ts`, extending `VisualAction`.
+2. **Add it to the `KnownVisualAction` union** for type safety.
+3. **Use it in a generator** -- no changes to the runner are needed (the runner does not inspect action types, except for validated types like `highlightRange` and `showAttentionWeights`).
+4. **Implement renderer support** -- add a case to the renderer's action handler. Until renderer support exists, the action is silently ignored.
+
+No version bump is required for new action types because the open vocabulary design ensures backward compatibility. Renderers that do not recognize a new action type will simply skip it.
+
+### Validation
+
+The generator runner validates the following action types at runtime:
+
+| Action Type             | Validation Rule                                              |
+| ----------------------- | ------------------------------------------------------------ |
+| `highlightRange`        | `from <= to`                                                 |
+| `dimRange`              | `from <= to`                                                 |
+| `compareElements`       | `result` is one of `"less"`, `"greater"`, `"equal"`          |
+| `showAttentionWeights`  | Each weight in `[0, 1]`; weights sum to `1.0` within `1e-6` (Kahan summation) |
+| `updateBarChart`        | If `labels` present, `labels.length === values.length`       |
+
+All other action types are passed through without validation. If you need validation for a custom action type, add it to the `validateVisualActions` function in `GeneratorRunner.ts`.

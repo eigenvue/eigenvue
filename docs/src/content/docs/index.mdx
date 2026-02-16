@@ -1,0 +1,74 @@
+---
+title: Eigenvue Documentation
+description: Learn to use, contribute to, and understand Eigenvue — the visual learning platform for algorithms, AI architectures, and quantum computing.
+template: splash
+hero:
+  title: Eigenvue Documentation
+  tagline: The visual learning platform for algorithms, AI architectures, and quantum computing.
+  actions:
+    - text: Get Started (Web)
+      link: /docs/getting-started/web-app/
+      icon: right-arrow
+      variant: primary
+    - text: Install Python Package
+      link: /docs/getting-started/python-package/
+      variant: minimal
+    - text: View on GitHub
+      link: https://github.com/ashutoshm1771/eigenvue
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+## Choose Your Path
+
+<CardGrid>
+  <Card title="I want to learn algorithms" icon="magnifier">
+    Browse the [algorithm catalog](/docs/algorithms/) and watch algorithms execute
+    step-by-step with synchronized code highlighting and explanations.
+  </Card>
+  <Card title="I want to use the Python package" icon="laptop">
+    Install with `pip install eigenvue` and visualize algorithms in Jupyter
+    notebooks and scripts.
+    [Get started →](/docs/getting-started/python-package/)
+  </Card>
+  <Card title="I want to contribute" icon="pencil">
+    Add new algorithms, improve visualizations, or fix bugs. Our contributor
+    guide walks you through every step.
+    [Contribute →](/docs/contributing/development-setup/)
+  </Card>
+  <Card title="I'm reviewing this project" icon="document">
+    JOSS reviewers and researchers: read the [project overview](/docs/research/project-overview/),
+    [tool comparison](/docs/research/comparison/), and [citation info](/docs/research/citation/).
+  </Card>
+</CardGrid>
+
+## What Is Eigenvue?
+
+Eigenvue is an **open-source platform** for visualizing algorithms across four domains:
+classical algorithms, deep learning, generative AI, and quantum computing. It is
+distributed as two products:
+
+- **Web Application** at [eigenvue.web.app](https://eigenvue.web.app) — interactive visualizations in the browser, shareable via deep links.
+- **Python Package** via `pip install eigenvue` — visualizations in Jupyter notebooks, scripts, and research workflows.
+
+Both products share the same algorithm definitions and produce identical visualizations.
+The platform currently includes **17 algorithms** with step-by-step execution,
+synchronized code highlighting, plain-language explanations, and educational content.
+
+## Algorithm Domains
+
+| Domain | Algorithms | Accent |
+|--------|-----------|--------|
+| **Classical** | Binary Search, Bubble Sort, QuickSort, Merge Sort, BFS, DFS, Dijkstra | Blue |
+| **Deep Learning** | Perceptron, Feedforward Network, Backpropagation, Convolution, Gradient Descent | Purple |
+| **Generative AI** | Tokenization (BPE), Token Embeddings, Self-Attention, Multi-Head Attention, Transformer Block | Pink |
+| **Quantum** | *Coming in Phase 14* | Cyan |
+
+## Quick Links
+
+- [Step Format Specification](/docs/api-reference/step-format/) — the universal data contract
+- [Generator API (TypeScript)](/docs/api-reference/typescript-generator-api/) — how algorithms produce steps
+- [Python Public API](/docs/api-reference/python-api/) — the Python package public API
+- [Architecture Overview](/docs/architecture/overview/) — how the system fits together

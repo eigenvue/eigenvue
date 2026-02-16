@@ -1,0 +1,184 @@
+{
+  "id": "multi-head-attention",
+  "name": "Multi-Head Attention",
+  "category": "generative-ai",
+
+  "description": {
+    "short": "See how multiple attention heads capture different relationships simultaneously.",
+    "long": "Multi-Head Attention is a core mechanism in the Transformer architecture that runs several attention functions in parallel. Instead of computing a single attention pass with d_model-dimensional keys, queries, and values, the model splits them into h heads, each operating on d_k = d_model / h dimensions. Each head learns to attend to different aspects of the input — one head might focus on syntactic relationships while another captures semantic similarity. After all heads compute their attention independently, their outputs are concatenated back into a d_model-dimensional vector and passed through a final linear projection W_O. This projection allows the model to mix information across heads. The key insight is that multiple smaller attention operations are more expressive than a single large one, enabling the model to jointly attend to information from different representation subspaces at different positions."
+  },
+
+  "complexity": {
+    "time": "O(h × n² × d_k)",
+    "space": "O(h × n² + n × d)",
+    "level": "advanced"
+  },
+
+  "visual": {
+    "layout": "attention-heatmap",
+    "theme": {
+      "primary": "#f59e0b",
+      "secondary": "#d97706"
+    },
+    "components": {
+      "showHeadSelector": true,
+      "showConcatenation": true,
+      "highlightColor": "#fbbf24",
+      "activeColor": "#f59e0b",
+      "headColors": ["#ef4444", "#3b82f6", "#22c55e", "#a855f7"]
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "tokens": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 2,
+        "maxItems": 8,
+        "description": "The input token sequence."
+      },
+      "embeddingDim": {
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 64,
+        "description": "The embedding dimension (d_model). Must be divisible by numHeads."
+      },
+      "numHeads": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 8,
+        "description": "Number of attention heads. d_model must be divisible by this value."
+      }
+    },
+    "defaults": {
+      "tokens": ["The", "cat", "sat", "on"],
+      "embeddingDim": 8,
+      "numHeads": 2
+    },
+    "examples": [
+      {
+        "name": "2 heads, dim=8",
+        "values": {
+          "tokens": ["The", "cat", "sat", "on"],
+          "embeddingDim": 8,
+          "numHeads": 2
+        }
+      },
+      {
+        "name": "4 heads, dim=8",
+        "values": {
+          "tokens": ["I", "love", "deep", "learning"],
+          "embeddingDim": 8,
+          "numHeads": 4
+        }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function multiHeadAttention(X, numHeads):\n  d_k = d_model / numHeads\n  for h = 1 to numHeads:\n    Q_h = X × W_Q_h    // [n, d_k]\n    K_h = X × W_K_h    // [n, d_k]\n    V_h = X × W_V_h    // [n, d_k]\n    scores_h = (Q_h × K_hᵀ) / √d_k\n    weights_h = softmax(scores_h)  // row-wise\n    head_h = weights_h × V_h\n  concat = [head_1 ; head_2 ; ... ; head_h]  // [n, d_model]\n  output = concat × W_O\n  return output",
+      "python": "def multi_head_attention(X, W_Q, W_K, W_V, W_O, num_heads):\n    d_model = X.shape[-1]\n    d_k = d_model // num_heads\n    heads = []\n    for h in range(num_heads):\n        Q_h = X @ W_Q[h]  # [n, d_k]\n        K_h = X @ W_K[h]  # [n, d_k]\n        V_h = X @ W_V[h]  # [n, d_k]\n        scores = (Q_h @ K_h.T) / math.sqrt(d_k)\n        weights = softmax(scores, axis=-1)\n        heads.append(weights @ V_h)\n    concat = np.concatenate(heads, axis=-1)  # [n, d_model]\n    return concat @ W_O",
+      "javascript": "function multiHeadAttention(X, numHeads, W_Qs, W_Ks, W_Vs, W_O) {\n  const d_k = X[0].length / numHeads;\n  const heads = [];\n  for (let h = 0; h < numHeads; h++) {\n    const Q = matMul(X, W_Qs[h]);\n    const K = matMul(X, W_Ks[h]);\n    const V = matMul(X, W_Vs[h]);\n    const scores = scale(matMul(Q, transpose(K)), 1 / Math.sqrt(d_k));\n    const weights = softmaxRows(scores);\n    heads.push(matMul(weights, V));\n  }\n  const concat = concatenate(heads); // [n, d_model]\n  return matMul(concat, W_O);\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Why Multiple Heads?",
+        "description": "A single attention head can only learn one type of relationship between tokens. Multiple heads allow the model to simultaneously attend to different aspects — for example, one head might learn syntactic dependencies (subject-verb agreement) while another learns semantic relationships (word meaning similarity). This is analogous to having multiple 'perspectives' on the same data."
+      },
+      {
+        "title": "d_k vs d_model",
+        "description": "Each head operates on d_k = d_model / numHeads dimensions, NOT the full d_model. This means the total computation is roughly the same as single-head attention with full dimensionality, but the model gains the expressiveness of multiple independent attention patterns. The scaling factor in each head uses √d_k, not √d_model."
+      },
+      {
+        "title": "Concatenation and W_O Projection",
+        "description": "After all heads compute their outputs (each of shape [n, d_k]), they are concatenated along the feature dimension to form a [n, d_model] matrix. The final W_O projection (shape [d_model, d_model]) mixes information across heads, allowing the model to combine the different perspectives into a unified representation."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "d_model must be divisible by numHeads",
+        "description": "If d_model is not evenly divisible by numHeads, the dimension split is impossible. For example, d_model=7 with numHeads=2 fails because 7/2 = 3.5 is not an integer. Always choose numHeads to be a factor of d_model."
+      },
+      {
+        "title": "Scaling factor uses d_k, not d_model",
+        "description": "A common mistake is scaling by √d_model instead of √d_k. Each head's attention scores are dot products of d_k-dimensional vectors, so the expected magnitude scales with d_k. Using √d_model would under-scale the scores, leading to overly uniform attention weights."
+      },
+      {
+        "title": "Head outputs must be concatenated, not summed",
+        "description": "The outputs from different heads are concatenated along the feature axis, not summed or averaged. Summing would lose information and reduce the effective dimensionality. Concatenation preserves all head outputs and lets W_O learn how to combine them."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "If d_model = 12 and numHeads = 3, what is d_k?",
+        "options": ["12", "3", "4", "36"],
+        "correctIndex": 2,
+        "explanation": "d_k = d_model / numHeads = 12 / 3 = 4. Each head operates on 4-dimensional queries, keys, and values."
+      },
+      {
+        "question": "Why is multi-head attention more expressive than single-head attention?",
+        "options": [
+          "It uses more total parameters",
+          "Each head can learn different attention patterns in different subspaces",
+          "It is computationally faster",
+          "It uses a larger scaling factor"
+        ],
+        "correctIndex": 1,
+        "explanation": "Multiple heads allow the model to jointly attend to information from different representation subspaces. Each head can specialize in different types of relationships (syntactic, semantic, positional, etc.)."
+      },
+      {
+        "question": "What is the shape of the concatenated output before the W_O projection?",
+        "options": [
+          "[seqLen, d_k]",
+          "[seqLen, d_model]",
+          "[numHeads, seqLen, d_k]",
+          "[seqLen, numHeads]"
+        ],
+        "correctIndex": 1,
+        "explanation": "Each head produces [seqLen, d_k]. Concatenating numHeads outputs gives [seqLen, numHeads × d_k] = [seqLen, d_model], since d_k = d_model / numHeads."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Attention Is All You Need (Vaswani et al., 2017)",
+        "url": "https://arxiv.org/abs/1706.03762",
+        "type": "article"
+      },
+      {
+        "title": "The Illustrated Transformer — Jay Alammar",
+        "url": "https://jalammar.github.io/illustrated-transformer/",
+        "type": "article"
+      },
+      {
+        "title": "Multi-Head Attention — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Attention_(machine_learning)#Multi-head_attention",
+        "type": "reference"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "multi-head attention visualization",
+      "multi-head attention step by step",
+      "transformer attention heads",
+      "how multi-head attention works",
+      "attention heads explained",
+      "multi-head self-attention",
+      "transformer architecture visualization",
+      "d_k vs d_model attention"
+    ],
+    "ogDescription": "Interactive step-by-step visualization of Multi-Head Attention. Watch how multiple attention heads capture different relationships, then concatenate and project their outputs."
+  },
+
+  "prerequisites": ["self-attention"],
+  "related": ["self-attention", "transformer-block"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

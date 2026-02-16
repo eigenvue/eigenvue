@@ -1,0 +1,20 @@
+{
+  "description": "Disconnected graph: target C is unreachable from A",
+  "inputs": {
+    "adjacencyList": {
+      "A": [{"to": "B", "weight": 1}],
+      "B": [{"to": "A", "weight": 1}],
+      "C": []
+    },
+    "positions": {
+      "A": {"x": 0.2, "y": 0.5},
+      "B": {"x": 0.5, "y": 0.5},
+      "C": {"x": 0.8, "y": 0.5}
+    },
+    "startNode": "A",
+    "targetNode": "C"
+  },
+  "expected": {
+    "terminalStepId": "target_unreachable"
+  }
+}

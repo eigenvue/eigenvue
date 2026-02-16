@@ -1,0 +1,90 @@
+{
+  "id": "dfs",
+  "name": "Depth-First Search",
+  "category": "classical",
+  "description": {
+    "short": "Explore a graph by going as deep as possible before backtracking.",
+    "long": "DFS explores a graph by following each branch as far as possible before backtracking. It uses a stack (explicit or via recursion) and is useful for cycle detection, topological sorting, and finding connected components. DFS does NOT guarantee shortest paths."
+  },
+  "complexity": { "time": "O(V + E)", "space": "O(V)", "level": "intermediate" },
+  "visual": {
+    "layout": "graph-network",
+    "theme": { "primary": "#38bdf8", "secondary": "#f59e0b" },
+    "components": {}
+  },
+  "inputs": {
+    "schema": {
+      "adjacencyList": { "type": "object", "description": "Adjacency list" },
+      "positions": { "type": "object", "description": "Node positions" },
+      "startNode": { "type": "string", "description": "Starting node" },
+      "targetNode": { "type": "string", "description": "Optional target node" }
+    },
+    "defaults": {
+      "adjacencyList": { "A": ["B", "C"], "B": ["A", "D", "E"], "C": ["A", "F"], "D": ["B"], "E": ["B", "F"], "F": ["C", "E"] },
+      "positions": { "A": {"x": 0.1, "y": 0.5}, "B": {"x": 0.35, "y": 0.2}, "C": {"x": 0.35, "y": 0.8}, "D": {"x": 0.65, "y": 0.1}, "E": {"x": 0.65, "y": 0.5}, "F": {"x": 0.9, "y": 0.8} },
+      "startNode": "A",
+      "targetNode": "F"
+    },
+    "examples": [
+      {
+        "name": "6-node graph",
+        "values": {
+          "adjacencyList": { "A": ["B", "C"], "B": ["A", "D", "E"], "C": ["A", "F"], "D": ["B"], "E": ["B", "F"], "F": ["C", "E"] },
+          "positions": { "A": {"x": 0.1, "y": 0.5}, "B": {"x": 0.35, "y": 0.2}, "C": {"x": 0.35, "y": 0.8}, "D": {"x": 0.65, "y": 0.1}, "E": {"x": 0.65, "y": 0.5}, "F": {"x": 0.9, "y": 0.8} },
+          "startNode": "A", "targetNode": "F"
+        }
+      },
+      {
+        "name": "Linear chain",
+        "values": {
+          "adjacencyList": { "A": ["B"], "B": ["A", "C"], "C": ["B", "D"], "D": ["C"] },
+          "positions": { "A": {"x": 0.1, "y": 0.5}, "B": {"x": 0.35, "y": 0.5}, "C": {"x": 0.65, "y": 0.5}, "D": {"x": 0.9, "y": 0.5} },
+          "startNode": "A", "targetNode": "D"
+        }
+      }
+    ]
+  },
+  "code": {
+    "implementations": {
+      "pseudocode": "function DFS(graph, start, target?):\n  stack = [start]\n  predecessor[start] = null\n  visited = {}\n  while stack is not empty:\n    current = stack.pop()\n    if current in visited: continue\n    visited.add(current)\n    if current == target:\n      return reconstructPath(predecessor, target)\n    for each neighbor of current (reversed):\n      if neighbor not in visited:\n        predecessor[neighbor] = current\n        stack.push(neighbor)\n  return null  // target not found",
+      "python": "def dfs(graph, start, target=None):\n    stack = [start]\n    visited = set()\n    pred = {start: None}\n    while stack:\n        current = stack.pop()\n        if current in visited:\n            continue\n        visited.add(current)\n        if current == target:\n            return reconstruct(pred, target)\n        for neighbor in reversed(sorted(graph[current])):\n            if neighbor not in visited:\n                if neighbor not in pred:\n                    pred[neighbor] = current\n                stack.append(neighbor)\n    return None"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+  "education": {
+    "keyConcepts": [
+      { "title": "Stack-Based Exploration", "description": "DFS uses a LIFO stack. The last node pushed is the first explored, causing the algorithm to go deep before wide." },
+      { "title": "Backtracking", "description": "When DFS reaches a dead end (no unvisited neighbors), it backtracks by popping the stack until it finds a node with unexplored neighbors." },
+      { "title": "Does NOT Find Shortest Paths", "description": "DFS may find a path to the target, but it is not guaranteed to be the shortest. Use BFS for shortest paths in unweighted graphs." }
+    ],
+    "pitfalls": [
+      { "title": "Not shortest path", "description": "DFS can find a valid path but not the shortest one. The path depends on traversal order." },
+      { "title": "Infinite loops without visited check", "description": "In graphs with cycles, DFS will loop forever without a visited set." }
+    ],
+    "quiz": [
+      {
+        "question": "What data structure does DFS use?",
+        "options": ["Queue", "Stack", "Priority Queue", "Array"],
+        "correctIndex": 1,
+        "explanation": "DFS uses a LIFO stack (or recursion, which implicitly uses the call stack)."
+      },
+      {
+        "question": "Does DFS guarantee shortest paths?",
+        "options": ["Yes", "No"],
+        "correctIndex": 1,
+        "explanation": "No. DFS explores depth-first and may find a longer path before a shorter one. Use BFS for shortest paths."
+      }
+    ],
+    "resources": [
+      { "title": "Wikipedia: DFS", "url": "https://en.wikipedia.org/wiki/Depth-first_search", "type": "article" }
+    ]
+  },
+  "seo": {
+    "keywords": ["dfs", "depth-first search", "dfs visualization", "graph traversal", "backtracking"],
+    "ogDescription": "Watch DFS explore a graph depth-first. See the stack, backtracking, and path discovery with interactive controls."
+  },
+  "prerequisites": [],
+  "related": ["bfs", "dijkstra"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

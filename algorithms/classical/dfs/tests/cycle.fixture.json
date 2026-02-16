@@ -1,0 +1,9 @@
+{
+  "description": "Graph with cycles: DFS should not loop infinitely",
+  "inputs": {
+    "adjacencyList": { "A": ["B", "C"], "B": ["A", "C"], "C": ["A", "B"] },
+    "positions": { "A": {"x": 0.2, "y": 0.2}, "B": {"x": 0.8, "y": 0.2}, "C": {"x": 0.5, "y": 0.8} },
+    "startNode": "A"
+  },
+  "expected": { "terminalStepId": "exploration_complete", "visitedCount": 3 }
+}

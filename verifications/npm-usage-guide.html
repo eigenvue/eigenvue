@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eigenvue — npm Usage Guide</title>
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0d1117;
+      --bg-card:     #161b22;
+      --bg-code:     #1c2129;
+      --bg-inline:   #1f2937;
+      --bg-nav:      rgba(13,17,23,.92);
+      --border:      #30363d;
+      --border-hl:   #58a6ff;
+      --text:        #e6edf3;
+      --text-dim:    #8b949e;
+      --text-code:   #c9d1d9;
+      --accent:      #58a6ff;
+      --accent-hover:#79c0ff;
+      --green:       #3fb950;
+      --green-dim:   #238636;
+      --orange:      #d29922;
+      --purple:      #bc8cff;
+      --red:         #f85149;
+      --teal:        #39d2c0;
+      --pink:        #f778ba;
+      --radius:      8px;
+      --radius-lg:   12px;
+      --shadow:      0 2px 12px rgba(0,0,0,.4);
+      --font:        'Segoe UI', system-ui, -apple-system, sans-serif;
+      --mono:        'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+      --max-w:       1140px;
+      --nav-h:       60px;
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 24px); }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Typography ────────────────────────────────────────────────────── */
+    h1 { font-size: 2.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; }
+    h2 { font-size: 1.65rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: -0.02em; }
+    h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.6rem; }
+    p  { margin-bottom: 1rem; color: var(--text-dim); }
+    a  { color: var(--accent); text-decoration: none; transition: color .15s; }
+    a:hover { color: var(--accent-hover); }
+    strong { color: var(--text); }
+
+    /* ── Layout ────────────────────────────────────────────────────────── */
+    .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+    section { padding: 72px 0; border-bottom: 1px solid var(--border); }
+    section:last-of-type { border-bottom: none; }
+
+    /* ── Navigation ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h);
+      background: var(--bg-nav);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+    }
+    nav .container { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .nav-logo {
+      font-size: 1.15rem; font-weight: 700; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo .dot { width: 10px; height: 10px; background: var(--green); border-radius: 50%; }
+    .nav-links { display: flex; gap: 6px; flex-wrap: wrap; }
+    .nav-links a {
+      font-size: .82rem; padding: 6px 12px; border-radius: 6px;
+      color: var(--text-dim); transition: all .15s;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,.06); }
+
+    /* ── Hero ──────────────────────────────────────────────────────────── */
+    .hero {
+      padding: calc(var(--nav-h) + 80px) 0 80px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(88,166,255,.07) 0%, transparent 100%);
+    }
+    .hero h1 { margin-bottom: 16px; }
+    .hero h1 span { color: var(--accent); }
+    .hero .tagline { font-size: 1.15rem; color: var(--text-dim); max-width: 600px; margin: 0 auto 36px; }
+    .install-box {
+      display: inline-flex; align-items: center; gap: 14px;
+      background: var(--bg-code); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 20px;
+      font-family: var(--mono); font-size: 1.05rem; color: var(--green);
+      cursor: pointer; transition: border-color .2s;
+      position: relative;
+    }
+    .install-box:hover { border-color: var(--green); }
+    .install-box .prefix { color: var(--text-dim); user-select: none; }
+    .install-box .copy-hint {
+      position: absolute; right: -4px; top: -10px;
+      font-size: .65rem; background: var(--green-dim); color: #fff;
+      padding: 2px 8px; border-radius: 4px; opacity: 0; transition: opacity .2s;
+      font-family: var(--font); pointer-events: none;
+    }
+    .install-box:hover .copy-hint { opacity: 1; }
+    .install-box.copied .copy-hint { opacity: 1; }
+
+    .stats {
+      display: flex; justify-content: center; gap: 40px; margin-top: 40px; flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-value { font-size: 1.6rem; font-weight: 800; color: var(--text); }
+    .stat-label { font-size: .78rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ── Section Header ────────────────────────────────────────────────── */
+    .section-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 32px;
+    }
+    .section-number {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(88,166,255,.12); color: var(--accent);
+      font-size: .82rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ── Code Blocks ───────────────────────────────────────────────────── */
+    .code-block {
+      position: relative; background: var(--bg-code);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      margin: 16px 0 24px; overflow: hidden;
+    }
+    .code-block .lang-tab {
+      display: inline-block; padding: 6px 14px;
+      font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--text-dim); background: rgba(255,255,255,.03);
+      border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
+      border-radius: var(--radius) 0 0 0;
+    }
+    .code-block pre {
+      padding: 18px 20px; overflow-x: auto;
+      font-family: var(--mono); font-size: .88rem; line-height: 1.65;
+      color: var(--text-code); tab-size: 2;
+    }
+    .code-block .copy-btn {
+      position: absolute; top: 8px; right: 10px;
+      background: rgba(255,255,255,.06); border: 1px solid var(--border);
+      color: var(--text-dim); font-size: .72rem; padding: 4px 10px;
+      border-radius: 5px; cursor: pointer; transition: all .15s;
+      font-family: var(--font);
+    }
+    .code-block .copy-btn:hover { background: rgba(255,255,255,.12); color: var(--text); }
+    .code-block .copy-btn.copied { color: var(--green); border-color: var(--green-dim); }
+
+    /* Inline code */
+    code:not(pre code) {
+      background: var(--bg-inline); padding: 2px 7px; border-radius: 4px;
+      font-family: var(--mono); font-size: .88em; color: var(--accent);
+    }
+
+    /* ── Syntax Highlighting (hand-rolled) ─────────────────────────────── */
+    .kw  { color: #ff7b72; }      /* keywords */
+    .fn  { color: #d2a8ff; }      /* functions */
+    .str { color: #a5d6ff; }      /* strings */
+    .num { color: #79c0ff; }      /* numbers */
+    .cmt { color: #8b949e; font-style: italic; }  /* comments */
+    .typ { color: #ff7b72; }      /* types */
+    .op  { color: #79c0ff; }      /* operators */
+    .prp { color: #c9d1d9; }      /* properties */
+    .con { color: #79c0ff; }      /* constants */
+    .imp { color: #ffa657; }      /* imports */
+
+    /* ── Terminal Output ───────────────────────────────────────────────── */
+    .terminal {
+      background: #0a0e14; border: 1px solid #2d333b; border-radius: var(--radius);
+      margin: 16px 0 24px; overflow: hidden;
+    }
+    .terminal-bar {
+      display: flex; align-items: center; gap: 7px;
+      padding: 10px 14px; background: #1a1f27; border-bottom: 1px solid #2d333b;
+    }
+    .terminal-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .terminal-dot.r { background: #f85149; }
+    .terminal-dot.y { background: #d29922; }
+    .terminal-dot.g { background: #3fb950; }
+    .terminal-title { margin-left: 8px; font-size: .75rem; color: #6e7681; font-family: var(--font); }
+    .terminal pre {
+      padding: 16px 20px; font-family: var(--mono); font-size: .84rem;
+      line-height: 1.6; color: #c9d1d9; overflow-x: auto;
+    }
+    .terminal .prompt { color: var(--green); user-select: none; }
+    .terminal .out    { color: #8b949e; }
+    .terminal .hl     { color: #58a6ff; }
+    .terminal .val    { color: #ffa657; }
+
+    /* ── Cards Grid ────────────────────────────────────────────────────── */
+    .card-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 22px;
+      transition: border-color .2s, transform .15s;
+    }
+    .card:hover { border-color: var(--border-hl); transform: translateY(-2px); }
+    .card h4 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+    .card p  { font-size: .86rem; margin-bottom: 10px; }
+    .card-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ── Badges ─────────────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block; font-size: .7rem; font-weight: 600;
+      padding: 2px 9px; border-radius: 20px;
+      letter-spacing: .03em; text-transform: uppercase;
+    }
+    .badge-green    { background: rgba(63,185,80,.12); color: var(--green); border: 1px solid rgba(63,185,80,.25); }
+    .badge-blue     { background: rgba(88,166,255,.12); color: var(--accent); border: 1px solid rgba(88,166,255,.25); }
+    .badge-orange   { background: rgba(210,153,34,.12); color: var(--orange); border: 1px solid rgba(210,153,34,.25); }
+    .badge-purple   { background: rgba(188,140,255,.12); color: var(--purple); border: 1px solid rgba(188,140,255,.25); }
+    .badge-teal     { background: rgba(57,210,192,.12); color: var(--teal); border: 1px solid rgba(57,210,192,.25); }
+    .badge-pink     { background: rgba(247,120,186,.12); color: var(--pink); border: 1px solid rgba(247,120,186,.25); }
+    .badge-red      { background: rgba(248,81,73,.12); color: var(--red); border: 1px solid rgba(248,81,73,.25); }
+    .badge-dim      { background: rgba(139,148,158,.1); color: var(--text-dim); border: 1px solid rgba(139,148,158,.2); }
+
+    /* ── Collapsible ───────────────────────────────────────────────────── */
+    details {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); margin: 12px 0; overflow: hidden;
+    }
+    summary {
+      padding: 14px 20px; cursor: pointer; font-weight: 600; font-size: .95rem;
+      color: var(--text); list-style: none; display: flex; align-items: center; gap: 10px;
+      transition: background .15s;
+    }
+    summary:hover { background: rgba(255,255,255,.03); }
+    summary::before {
+      content: ''; display: inline-block; width: 6px; height: 6px;
+      border-right: 2px solid var(--text-dim); border-bottom: 2px solid var(--text-dim);
+      transform: rotate(-45deg); transition: transform .2s; flex-shrink: 0;
+    }
+    details[open] > summary::before { transform: rotate(45deg); }
+    .details-body { padding: 0 20px 20px; }
+
+    /* ── Table ──────────────────────────────────────────────────────────── */
+    table {
+      width: 100%; border-collapse: collapse; margin: 16px 0;
+      font-size: .88rem;
+    }
+    th, td {
+      text-align: left; padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--text-dim); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; }
+    td { color: var(--text); }
+    td code { font-size: .82rem; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+
+    /* ── Category Tabs ─────────────────────────────────────────────────── */
+    .cat-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+    .cat-tab {
+      padding: 8px 18px; border-radius: 20px; font-size: .84rem; font-weight: 600;
+      background: rgba(255,255,255,.04); border: 1px solid var(--border);
+      color: var(--text-dim); cursor: pointer; transition: all .15s;
+    }
+    .cat-tab:hover { color: var(--text); border-color: var(--text-dim); }
+    .cat-tab.active { background: rgba(88,166,255,.12); color: var(--accent); border-color: rgba(88,166,255,.3); }
+
+    /* ── Feature Grid ──────────────────────────────────────────────────── */
+    .feat-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px; margin: 24px 0;
+    }
+    .feat-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .feat-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+    .feat-icon.blue   { background: rgba(88,166,255,.12); color: var(--accent); }
+    .feat-icon.green  { background: rgba(63,185,80,.12); color: var(--green); }
+    .feat-icon.orange { background: rgba(210,153,34,.12); color: var(--orange); }
+    .feat-icon.purple { background: rgba(188,140,255,.12); color: var(--purple); }
+    .feat-icon.teal   { background: rgba(57,210,192,.12); color: var(--teal); }
+    .feat-icon.pink   { background: rgba(247,120,186,.12); color: var(--pink); }
+    .feat-item h4 { font-size: .88rem; margin-bottom: 2px; }
+    .feat-item p  { font-size: .8rem; margin: 0; }
+
+    /* ── API Signature ─────────────────────────────────────────────────── */
+    .api-sig {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 8px; flex-wrap: wrap;
+    }
+    .api-sig h3 { margin: 0; font-family: var(--mono); color: var(--accent); font-size: 1.1rem; }
+    .api-returns { font-size: .82rem; color: var(--text-dim); }
+    .api-returns code { color: var(--purple); }
+    .api-desc { margin-bottom: 16px; }
+
+    /* ── Param Table ───────────────────────────────────────────────────── */
+    .param-table td:first-child { font-family: var(--mono); color: var(--accent); white-space: nowrap; font-size: .84rem; }
+    .param-table td:nth-child(2) { font-family: var(--mono); color: var(--purple); font-size: .84rem; }
+    .param-table td:nth-child(3) { color: var(--text-dim); }
+
+    /* ── Separator ─────────────────────────────────────────────────────── */
+    .sep { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+    /* ── Footer ────────────────────────────────────────────────────────── */
+    footer {
+      padding: 40px 0; text-align: center; color: var(--text-dim); font-size: .82rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent); }
+
+    /* ── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      h1 { font-size: 1.8rem; }
+      h2 { font-size: 1.3rem; }
+      .stats { gap: 24px; }
+      .nav-links { display: none; }
+      section { padding: 48px 0; }
+      .card-grid { grid-template-columns: 1fr; }
+      .feat-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Scrollbar ─────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+    /* ── Utility ───────────────────────────────────────────────────────── */
+    .mt-0 { margin-top: 0; }
+    .mb-0 { margin-bottom: 0; }
+    .mb-sm { margin-bottom: 8px; }
+    .mb-md { margin-bottom: 16px; }
+    .mb-lg { margin-bottom: 32px; }
+    .text-dim { color: var(--text-dim); }
+    .text-sm { font-size: .86rem; }
+    .flex-center { display: flex; align-items: center; }
+    .gap-8 { gap: 8px; }
+    .gap-12 { gap: 12px; }
+
+    /* ── Algo category separator ────────────────────────────────────────── */
+    .cat-heading {
+      display: flex; align-items: center; gap: 12px;
+      margin: 32px 0 16px; font-size: 1rem; font-weight: 700;
+    }
+    .cat-heading:first-of-type { margin-top: 0; }
+    .cat-heading .cat-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* ── API block divider ──────────────────────────────────────────────── */
+    .api-block { margin-bottom: 48px; }
+    .api-block:last-child { margin-bottom: 0; }
+
+    /* ── Type definition styling ────────────────────────────────────────── */
+    .type-block { margin-bottom: 24px; }
+    .type-block h4 { font-family: var(--mono); color: var(--purple); font-size: .95rem; margin-bottom: 8px; }
+
+    /* ── Note callout ──────────────────────────────────────────────────── */
+    .note {
+      display: flex; gap: 12px; padding: 14px 18px;
+      background: rgba(88,166,255,.06); border: 1px solid rgba(88,166,255,.15);
+      border-radius: var(--radius); margin: 16px 0;
+      font-size: .88rem; color: var(--text-dim);
+    }
+    .note-icon { color: var(--accent); font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Toc summary ───────────────────────────────────────────────────── */
+    .toc {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px; margin: 24px 0;
+    }
+    .toc a {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: var(--radius);
+      background: var(--bg-card); border: 1px solid var(--border);
+      font-size: .86rem; color: var(--text-dim); transition: all .15s;
+    }
+    .toc a:hover { color: var(--accent); border-color: var(--border-hl); }
+    .toc .toc-num { color: var(--accent); font-weight: 700; font-size: .78rem; min-width: 18px; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- NAVIGATION                                                              -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<nav>
+  <div class="container">
+    <div class="nav-logo"><span class="dot"></span> eigenvue</div>
+    <div class="nav-links">
+      <a href="#quick-start">Quick Start</a>
+      <a href="#api">API</a>
+      <a href="#cli">CLI</a>
+      <a href="#algorithms">Algorithms</a>
+      <a href="#types">Types</a>
+      <a href="#advanced">Advanced</a>
+      <a href="#architecture">Architecture</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- HERO                                                                    -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<header class="hero">
+  <div class="container">
+    <h1><span>eigenvue</span></h1>
+    <p class="tagline">
+      The visual learning platform for understanding algorithms, AI architectures, and quantum computing.
+      Step-by-step. Interactive. Zero dependencies.
+    </p>
+
+    <div class="install-box" onclick="copyInstall(this)" title="Click to copy">
+      <span class="prefix">$</span> npm install eigenvue
+      <span class="copy-hint">Copied!</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value">17</div>
+        <div class="stat-label">Algorithms</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Core Functions</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Dependencies</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">ESM+CJS</div>
+        <div class="stat-label">Dual Format</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- TABLE OF CONTENTS                                                       -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<section style="padding: 40px 0;">
+  <div class="container">
+    <div class="toc">
+      <a href="#quick-start"><span class="toc-num">01</span> Quick Start</a>
+      <a href="#api"><span class="toc-num">02</span> API Reference</a>
+      <a href="#cli"><span class="toc-num">03</span> CLI Reference</a>
+      <a href="#algorithms"><span class="toc-num">04</span> Algorithm Catalog</a>
+      <a href="#types"><span class="toc-num">05</span> Type Reference</a>
+      <a href="#advanced"><span class="toc-num">06</span> Advanced Usage</a>
+      <a href="#architecture"><span class="toc-num">07</span> Architecture</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- 01 · QUICK START                                                        -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<section id="quick-start">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2 class="mb-0">Quick Start</h2>
+    </div>
+
+    <h3>Installation</h3>
+    <div class="code-block">
+      <span class="lang-tab">bash</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre>npm install eigenvue</pre>
+    </div>
+
+    <div class="note">
+      <span class="note-icon">i</span>
+      <span>Requires <strong>Node.js 18+</strong>. Zero runtime dependencies &mdash; everything is bundled.</span>
+    </div>
+
+    <h3>Import</h3>
+    <div class="code-block">
+      <span class="lang-tab">ESM (recommended)</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span class="kw">import</span> { <span class="fn">list</span>, <span class="fn">steps</span>, <span class="fn">show</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;</pre>
+    </div>
+    <div class="code-block">
+      <span class="lang-tab">CommonJS</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span class="kw">const</span> { <span class="fn">list</span>, <span class="fn">steps</span>, <span class="fn">show</span> } = <span class="fn">require</span>(<span class="str">"eigenvue"</span>);</pre>
+    </div>
+
+    <h3>Your First Visualization (3 lines)</h3>
+    <div class="code-block">
+      <span class="lang-tab">TypeScript</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span class="kw">import</span> { <span class="fn">show</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+<span class="cmt">// Opens an interactive visualization of Binary Search in your browser</span>
+<span class="fn">show</span>(<span class="str">"binary-search"</span>);</pre>
+    </div>
+
+    <h3>List All Available Algorithms</h3>
+    <div class="code-block">
+      <span class="lang-tab">TypeScript</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span class="kw">import</span> { <span class="fn">list</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+<span class="kw">const</span> algorithms = <span class="fn">list</span>();
+console.<span class="fn">log</span>(<span class="str">`</span><span class="str">${</span>algorithms.length<span class="str">}</span><span class="str"> algorithms available`</span>); <span class="cmt">// "17 algorithms available"</span>
+
+<span class="kw">for</span> (<span class="kw">const</span> algo <span class="kw">of</span> algorithms) {
+  console.<span class="fn">log</span>(<span class="str">`  </span><span class="str">${</span>algo.id<span class="str">}</span><span class="str"> — </span><span class="str">${</span>algo.name<span class="str">}</span><span class="str"> (</span><span class="str">${</span>algo.timeComplexity<span class="str">}</span><span class="str">)`</span>);
+}</pre>
+    </div>
+
+    <h3>Generate Step-by-Step Data</h3>
+    <div class="code-block">
+      <span class="lang-tab">TypeScript</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span class="kw">import</span> { <span class="fn">steps</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+<span class="kw">const</span> result = <span class="fn">steps</span>(<span class="str">"binary-search"</span>, {
+  array: [<span class="num">1</span>, <span class="num">3</span>, <span class="num">5</span>, <span class="num">7</span>, <span class="num">9</span>, <span class="num">11</span>, <span class="num">13</span>],
+  target: <span class="num">7</span>
+});
+
+console.<span class="fn">log</span>(<span class="str">`Generated </span><span class="str">${</span>result.steps.length<span class="str">}</span><span class="str"> steps`</span>);
+
+<span class="kw">for</span> (<span class="kw">const</span> step <span class="kw">of</span> result.steps) {
+  console.<span class="fn">log</span>(<span class="str">`  Step </span><span class="str">${</span>step.index<span class="str">}</span><span class="str">: </span><span class="str">${</span>step.title<span class="str">}</span><span class="str"> — </span><span class="str">${</span>step.explanation<span class="str">}</span><span class="str">`</span>);
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- 02 · API REFERENCE                                                      -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<section id="api">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <h2 class="mb-0">API Reference</h2>
+    </div>
+    <p>Eigenvue exports three core functions and a version constant. All functions are synchronous.</p>
+
+    <!-- ── list() ──────────────────────────────────────────────────────── -->
+    <div class="api-block">
+      <div class="api-sig">
+        <h3>list(options?)</h3>
+        <span class="api-returns">returns <code>AlgorithmInfo[]</code></span>
+      </div>
+      <p class="api-desc">Lists all available algorithms with their metadata. Optionally filters by category. Results are sorted by category, then by name.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>options</td><td>ListOptions</td><td>Optional. Pass <code>{ category }</code> to filter results.</td></tr>
+          <tr><td>options.category</td><td>AlgorithmCategory</td><td>One of <code>"classical"</code> | <code>"deep-learning"</code> | <code>"generative-ai"</code> | <code>"quantum"</code></td></tr>
+        </tbody>
+      </table>
+
+      <p class="text-sm text-dim mb-sm"><strong>Throws:</strong> <code>Error</code> if an invalid category string is provided.</p>
+
+      <div class="code-block">
+        <span class="lang-tab">Example</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">import</span> { <span class="fn">list</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+<span class="cmt">// All algorithms (17 total)</span>
+<span class="kw">const</span> all = <span class="fn">list</span>();
+
+<span class="cmt">// Filter by category</span>
+<span class="kw">const</span> classical = <span class="fn">list</span>({ category: <span class="str">"classical"</span> });       <span class="cmt">// 7 algorithms</span>
+<span class="kw">const</span> deepLearn = <span class="fn">list</span>({ category: <span class="str">"deep-learning"</span> });   <span class="cmt">// 5 algorithms</span>
+<span class="kw">const</span> genAi     = <span class="fn">list</span>({ category: <span class="str">"generative-ai"</span> });   <span class="cmt">// 5 algorithms</span>
+
+<span class="cmt">// Each AlgorithmInfo contains:</span>
+<span class="kw">const</span> algo = all[<span class="num">0</span>];
+console.<span class="fn">log</span>(algo.id);              <span class="cmt">// "backpropagation"</span>
+console.<span class="fn">log</span>(algo.name);            <span class="cmt">// "Backpropagation"</span>
+console.<span class="fn">log</span>(algo.category);        <span class="cmt">// "deep-learning"</span>
+console.<span class="fn">log</span>(algo.description);     <span class="cmt">// "Neural network training..."</span>
+console.<span class="fn">log</span>(algo.difficulty);      <span class="cmt">// "intermediate"</span>
+console.<span class="fn">log</span>(algo.timeComplexity);  <span class="cmt">// "O(n * m * k)"</span>
+console.<span class="fn">log</span>(algo.spaceComplexity); <span class="cmt">// "O(n * m)"</span></pre>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- ── steps() ─────────────────────────────────────────────────────── -->
+    <div class="api-block">
+      <div class="api-sig">
+        <h3>steps(algorithmId, inputs?)</h3>
+        <span class="api-returns">returns <code>StepSequence</code></span>
+      </div>
+      <p class="api-desc">Generates a complete step-by-step execution trace for an algorithm. Each step includes algorithm state, visual rendering actions, and source code highlights.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>algorithmId</td><td>string</td><td>Algorithm identifier (e.g., <code>"binary-search"</code>, <code>"self-attention"</code>).</td></tr>
+          <tr><td>inputs</td><td>Record&lt;string, unknown&gt;</td><td>Optional custom input parameters. Uses defaults from metadata if omitted.</td></tr>
+        </tbody>
+      </table>
+
+      <p class="text-sm text-dim mb-sm"><strong>Throws:</strong> <code>Error</code> if the algorithm ID is unrecognized or generation fails.</p>
+
+      <div class="code-block">
+        <span class="lang-tab">Example — Default Inputs</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">import</span> { <span class="fn">steps</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+<span class="kw">const</span> result = <span class="fn">steps</span>(<span class="str">"binary-search"</span>);
+
+console.<span class="fn">log</span>(result.formatVersion);  <span class="cmt">// 1</span>
+console.<span class="fn">log</span>(result.algorithmId);    <span class="cmt">// "binary-search"</span>
+console.<span class="fn">log</span>(result.inputs);         <span class="cmt">// { array: [...], target: ... }</span>
+console.<span class="fn">log</span>(result.steps.length);   <span class="cmt">// Number of execution steps</span>
+console.<span class="fn">log</span>(result.generatedAt);    <span class="cmt">// "2026-02-15T12:00:00.000Z"</span>
+console.<span class="fn">log</span>(result.generatedBy);    <span class="cmt">// "typescript"</span></pre>
+      </div>
+
+      <div class="code-block">
+        <span class="lang-tab">Example — Custom Inputs</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">const</span> result = <span class="fn">steps</span>(<span class="str">"binary-search"</span>, {
+  array: [<span class="num">2</span>, <span class="num">4</span>, <span class="num">6</span>, <span class="num">8</span>, <span class="num">10</span>, <span class="num">12</span>, <span class="num">14</span>, <span class="num">16</span>],
+  target: <span class="num">10</span>
+});
+
+<span class="cmt">// Inspect individual steps</span>
+<span class="kw">const</span> step = result.steps[<span class="num">2</span>];
+console.<span class="fn">log</span>(step.index);        <span class="cmt">// 2</span>
+console.<span class="fn">log</span>(step.id);           <span class="cmt">// "compare_mid"</span>
+console.<span class="fn">log</span>(step.title);        <span class="cmt">// "Compare Middle Element"</span>
+console.<span class="fn">log</span>(step.explanation);  <span class="cmt">// "mid = 3. array[3] = 8. 8 &lt; 10, search right."</span>
+console.<span class="fn">log</span>(step.state);        <span class="cmt">// { array, target, left, right, mid }</span>
+console.<span class="fn">log</span>(step.visualActions); <span class="cmt">// [ { type: "movePointer", ... }, ... ]</span>
+console.<span class="fn">log</span>(step.codeHighlight); <span class="cmt">// { language: "pseudocode", lines: [5, 6] }</span>
+console.<span class="fn">log</span>(step.isTerminal);   <span class="cmt">// false</span>
+console.<span class="fn">log</span>(step.phase);        <span class="cmt">// "search"</span></pre>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <!-- ── show() ──────────────────────────────────────────────────────── -->
+    <div class="api-block">
+      <div class="api-sig">
+        <h3>show(algorithmId, options?)</h3>
+        <span class="api-returns">returns <code>void</code></span>
+      </div>
+      <p class="api-desc">Launches an interactive browser-based visualization. Starts a lightweight local HTTP server using only Node.js built-in modules and opens your default browser. Press <code>Ctrl+C</code> to stop.</p>
+
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>algorithmId</td><td>string</td><td>Algorithm identifier (e.g., <code>"self-attention"</code>).</td></tr>
+          <tr><td>options</td><td>ShowOptions</td><td>Optional configuration object.</td></tr>
+          <tr><td>options.port</td><td>number</td><td>TCP port for the local server. Default: <code>0</code> (auto-select).</td></tr>
+          <tr><td>options.openBrowser</td><td>boolean</td><td>Whether to open the default browser. Default: <code>true</code>.</td></tr>
+          <tr><td>options.inputs</td><td>Record&lt;string, unknown&gt;</td><td>Custom input parameters. Uses defaults if omitted.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block">
+        <span class="lang-tab">Examples</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">import</span> { <span class="fn">show</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+<span class="cmt">// Basic — auto port, opens browser</span>
+<span class="fn">show</span>(<span class="str">"binary-search"</span>);
+
+<span class="cmt">// Fixed port</span>
+<span class="fn">show</span>(<span class="str">"dijkstra"</span>, { port: <span class="num">3000</span> });
+
+<span class="cmt">// Custom inputs + no auto-open</span>
+<span class="fn">show</span>(<span class="str">"self-attention"</span>, {
+  port: <span class="num">8080</span>,
+  openBrowser: <span class="kw">false</span>,
+  inputs: { tokens: [<span class="str">"The"</span>, <span class="str">"cat"</span>, <span class="str">"sat"</span>], embeddingDim: <span class="num">4</span> }
+});</pre>
+      </div>
+
+      <details>
+        <summary>Server Endpoints</summary>
+        <div class="details-body">
+          <table>
+            <thead><tr><th>Route</th><th>Response</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /</code></td><td>HTML visualizer page</td></tr>
+              <tr><td><code>GET /api/steps</code></td><td>JSON — <code>{ algorithmId, meta, steps }</code></td></tr>
+              <tr><td><code>GET /api/health</code></td><td>JSON — <code>{ status: "ok", algorithmId }</code></td></tr>
+              <tr><td><code>GET /static/*</code></td><td>Static assets (JS, CSS, images)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+
+    <hr class="sep">
+
+    <!-- ── version ─────────────────────────────────────────────────────── -->
+    <div class="api-block">
+      <div class="api-sig">
+        <h3>version</h3>
+        <span class="api-returns"><code>string</code> constant</span>
+      </div>
+      <p class="api-desc">The package version string.</p>
+
+      <div class="code-block">
+        <span class="lang-tab">Example</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">import</span> { version } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+console.<span class="fn">log</span>(version); <span class="cmt">// "1.0.0"</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- 03 · CLI REFERENCE                                                      -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<section id="cli">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2 class="mb-0">CLI Reference</h2>
+    </div>
+    <p>Eigenvue ships a CLI binary accessible via <code>npx eigenvue</code> or globally after install.</p>
+
+    <!-- list -->
+    <h3><code>eigenvue list</code></h3>
+    <p class="text-sm text-dim">Lists all available algorithms in a formatted table.</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot r"></span>
+        <span class="terminal-dot y"></span>
+        <span class="terminal-dot g"></span>
+        <span class="terminal-title">Terminal</span>
+      </div>
+      <pre><span class="prompt">$ </span>npx eigenvue list
+
+  <span class="hl">ID                        Name                           Category           Difficulty</span>
+  <span class="out">─────────────────────────</span> <span class="out">──────────────────────────────</span> <span class="out">──────────────────</span> <span class="out">────────────</span>
+  backpropagation           Backpropagation                deep-learning      intermediate
+  binary-search             Binary Search                  classical          beginner
+  bfs                       Breadth-First Search           classical          intermediate
+  bubble-sort               Bubble Sort                    classical          beginner
+  convolution               Convolution                    deep-learning      intermediate
+  dfs                       Depth-First Search             classical          intermediate
+  dijkstra                  Dijkstra's Algorithm           classical          intermediate
+  feedforward-network       Feedforward Network            deep-learning      intermediate
+  gradient-descent          Gradient Descent               deep-learning      intermediate
+  merge-sort                Merge Sort                     classical          intermediate
+  multi-head-attention      Multi-Head Attention           generative-ai      advanced
+  perceptron                Perceptron                     deep-learning      beginner
+  quicksort                 Quicksort                      classical          intermediate
+  self-attention            Self-Attention                 generative-ai      intermediate
+  token-embeddings          Token Embeddings               generative-ai      beginner
+  tokenization-bpe          Tokenization (BPE)             generative-ai      intermediate
+  transformer-block         Transformer Block              generative-ai      advanced
+
+  <span class="val">17 algorithm(s) found.</span></pre>
+    </div>
+
+    <!-- list --category -->
+    <h3><code>eigenvue list --category &lt;category&gt;</code></h3>
+    <p class="text-sm text-dim">Filter algorithms by category.</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot r"></span>
+        <span class="terminal-dot y"></span>
+        <span class="terminal-dot g"></span>
+        <span class="terminal-title">Terminal</span>
+      </div>
+      <pre><span class="prompt">$ </span>npx eigenvue list --category generative-ai
+
+  <span class="hl">ID                        Name                           Category           Difficulty</span>
+  <span class="out">─────────────────────────</span> <span class="out">──────────────────────────────</span> <span class="out">──────────────────</span> <span class="out">────────────</span>
+  multi-head-attention      Multi-Head Attention           generative-ai      advanced
+  self-attention            Self-Attention                 generative-ai      intermediate
+  token-embeddings          Token Embeddings               generative-ai      beginner
+  tokenization-bpe          Tokenization (BPE)             generative-ai      intermediate
+  transformer-block         Transformer Block              generative-ai      advanced
+
+  <span class="val">5 algorithm(s) found.</span></pre>
+    </div>
+
+    <!-- show -->
+    <h3><code>eigenvue show &lt;algorithm-id&gt;</code></h3>
+    <p class="text-sm text-dim">Opens an interactive visualization in the browser.</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot r"></span>
+        <span class="terminal-dot y"></span>
+        <span class="terminal-dot g"></span>
+        <span class="terminal-title">Terminal</span>
+      </div>
+      <pre><span class="prompt">$ </span>npx eigenvue show binary-search
+<span class="out">Eigenvue: serving "binary-search" at http://127.0.0.1:54321</span>
+<span class="out">Press Ctrl+C to stop.</span>
+
+<span class="prompt">$ </span>npx eigenvue show self-attention --port 8080
+<span class="out">Eigenvue: serving "self-attention" at http://127.0.0.1:8080</span>
+<span class="out">Press Ctrl+C to stop.</span></pre>
+    </div>
+
+    <!-- steps -->
+    <h3><code>eigenvue steps &lt;algorithm-id&gt;</code></h3>
+    <p class="text-sm text-dim">Prints the complete step sequence as JSON to stdout.</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot r"></span>
+        <span class="terminal-dot y"></span>
+        <span class="terminal-dot g"></span>
+        <span class="terminal-title">Terminal</span>
+      </div>
+      <pre><span class="prompt">$ </span>npx eigenvue steps binary-search | jq '.steps | length'
+<span class="val">8</span>
+
+<span class="prompt">$ </span>npx eigenvue steps binary-search | jq '.algorithmId'
+<span class="val">"binary-search"</span>
+
+<span class="prompt">$ </span>npx eigenvue steps binary-search > steps.json</pre>
+    </div>
+
+    <!-- version & help -->
+    <h3><code>eigenvue --version</code> / <code>eigenvue --help</code></h3>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-dot r"></span>
+        <span class="terminal-dot y"></span>
+        <span class="terminal-dot g"></span>
+        <span class="terminal-title">Terminal</span>
+      </div>
+      <pre><span class="prompt">$ </span>npx eigenvue --version
+<span class="val">1.0.0</span>
+
+<span class="prompt">$ </span>npx eigenvue --help
+<span class="out">
+eigenvue v1.0.0 — The visual learning platform for algorithms
+
+Usage:
+  eigenvue list [--category &lt;category&gt;]    List available algorithms
+  eigenvue show &lt;algorithm-id&gt; [--port N]  Open interactive visualization
+  eigenvue steps &lt;algorithm-id&gt;            Print step sequence as JSON
+  eigenvue --version                       Print version
+  eigenvue --help                          Show this help
+
+Categories: classical, deep-learning, generative-ai, quantum
+
+Examples:
+  eigenvue list
+  eigenvue list --category classical
+  eigenvue show binary-search
+  eigenvue show self-attention --port 8080
+  eigenvue steps binary-search | jq '.steps | length'</span></pre>
+    </div>
+
+    <div class="note">
+      <span class="note-icon">i</span>
+      <span>All CLI commands are also available programmatically via the <code>list()</code>, <code>steps()</code>, and <code>show()</code> functions.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- 04 · ALGORITHM CATALOG                                                  -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<section id="algorithms">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <h2 class="mb-0">Algorithm Catalog</h2>
+    </div>
+    <p>17 algorithms across 3 domains, each with step-by-step visualization, multiple code implementations, educational content, and default example inputs.</p>
+
+    <div class="cat-tabs">
+      <button class="cat-tab active" onclick="filterAlgos('all', this)">All (17)</button>
+      <button class="cat-tab" onclick="filterAlgos('classical', this)">Classical (7)</button>
+      <button class="cat-tab" onclick="filterAlgos('deep-learning', this)">Deep Learning (5)</button>
+      <button class="cat-tab" onclick="filterAlgos('generative-ai', this)">Generative AI (5)</button>
+    </div>
+
+    <!-- Classical -->
+    <div class="cat-heading cat-section" data-cat="classical">
+      <span class="badge badge-blue">Classical Algorithms</span>
+      <span class="cat-line"></span>
+      <span class="text-dim text-sm">7 algorithms</span>
+    </div>
+    <div class="card-grid">
+      <div class="card algo-card" data-cat="classical">
+        <h4>Binary Search</h4>
+        <p>Efficient search in sorted arrays by repeatedly halving the search space.</p>
+        <div class="card-meta">
+          <span class="badge badge-green">beginner</span>
+          <span class="badge badge-dim">O(log n)</span>
+          <span class="badge badge-dim">O(1) space</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"binary-search"</span>, { array: [<span class="num">1</span>,<span class="num">3</span>,<span class="num">5</span>,<span class="num">7</span>,<span class="num">9</span>], target: <span class="num">5</span> })</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="classical">
+        <h4>Bubble Sort</h4>
+        <p>Simple comparison-based sorting by repeatedly swapping adjacent elements.</p>
+        <div class="card-meta">
+          <span class="badge badge-green">beginner</span>
+          <span class="badge badge-dim">O(n&sup2;)</span>
+          <span class="badge badge-dim">O(1) space</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"bubble-sort"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="classical">
+        <h4>Quicksort</h4>
+        <p>Divide-and-conquer sorting using pivot-based partitioning.</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O(n log n) avg</span>
+          <span class="badge badge-dim">O(log n) space</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"quicksort"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="classical">
+        <h4>Merge Sort</h4>
+        <p>Stable divide-and-conquer sorting with guaranteed O(n log n) performance.</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O(n log n)</span>
+          <span class="badge badge-dim">O(n) space</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"merge-sort"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="classical">
+        <h4>Breadth-First Search</h4>
+        <p>Level-order graph traversal using a queue data structure.</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O(V + E)</span>
+          <span class="badge badge-dim">O(V) space</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"bfs"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="classical">
+        <h4>Depth-First Search</h4>
+        <p>Stack-based (or recursive) graph traversal exploring as deep as possible first.</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O(V + E)</span>
+          <span class="badge badge-dim">O(V) space</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"dfs"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="classical">
+        <h4>Dijkstra's Algorithm</h4>
+        <p>Shortest path algorithm for weighted graphs using a priority queue.</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O((V+E) log V)</span>
+          <span class="badge badge-dim">O(V) space</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"dijkstra"</span>)</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deep Learning -->
+    <div class="cat-heading cat-section" data-cat="deep-learning">
+      <span class="badge badge-purple">Deep Learning</span>
+      <span class="cat-line"></span>
+      <span class="text-dim text-sm">5 algorithms</span>
+    </div>
+    <div class="card-grid">
+      <div class="card algo-card" data-cat="deep-learning">
+        <h4>Perceptron</h4>
+        <p>Single-layer binary classifier &mdash; the simplest neural network.</p>
+        <div class="card-meta">
+          <span class="badge badge-green">beginner</span>
+          <span class="badge badge-dim">O(n * epochs)</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"perceptron"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="deep-learning">
+        <h4>Feedforward Network</h4>
+        <p>Multi-layer neural network with forward propagation through hidden layers.</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O(n * m * k)</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"feedforward-network"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="deep-learning">
+        <h4>Backpropagation</h4>
+        <p>Training algorithm for neural networks using gradient computation via the chain rule.</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O(n * m * k)</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"backpropagation"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="deep-learning">
+        <h4>Convolution</h4>
+        <p>2D convolution operation &mdash; the core of convolutional neural networks (CNNs).</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O(n&sup2; * k&sup2;)</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"convolution"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="deep-learning">
+        <h4>Gradient Descent</h4>
+        <p>Optimization algorithm with SGD, momentum, and Adam variants.</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O(n * iterations)</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"gradient-descent"</span>)</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generative AI -->
+    <div class="cat-heading cat-section" data-cat="generative-ai">
+      <span class="badge badge-orange">Generative AI</span>
+      <span class="cat-line"></span>
+      <span class="text-dim text-sm">5 algorithms</span>
+    </div>
+    <div class="card-grid">
+      <div class="card algo-card" data-cat="generative-ai">
+        <h4>Tokenization (BPE)</h4>
+        <p>Byte-Pair Encoding for subword tokenization used in modern language models.</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O(n * vocab)</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"tokenization-bpe"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="generative-ai">
+        <h4>Token Embeddings</h4>
+        <p>Vector representation of tokens &mdash; mapping discrete tokens to continuous space.</p>
+        <div class="card-meta">
+          <span class="badge badge-green">beginner</span>
+          <span class="badge badge-dim">O(n * d)</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"token-embeddings"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="generative-ai">
+        <h4>Self-Attention</h4>
+        <p>Scaled dot-product attention &mdash; the mechanism that lets transformers attend to context.</p>
+        <div class="card-meta">
+          <span class="badge badge-blue">intermediate</span>
+          <span class="badge badge-dim">O(n&sup2; * d)</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"self-attention"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="generative-ai">
+        <h4>Multi-Head Attention</h4>
+        <p>Parallel attention heads that capture different relationship patterns.</p>
+        <div class="card-meta">
+          <span class="badge badge-orange">advanced</span>
+          <span class="badge badge-dim">O(h * n&sup2; * d)</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"multi-head-attention"</span>)</pre>
+        </div>
+      </div>
+      <div class="card algo-card" data-cat="generative-ai">
+        <h4>Transformer Block</h4>
+        <p>Full transformer layer with multi-head attention, residual connections, and layer normalization.</p>
+        <div class="card-meta">
+          <span class="badge badge-orange">advanced</span>
+          <span class="badge badge-dim">O(n&sup2; * d)</span>
+        </div>
+        <div class="code-block mt-0" style="margin-top:12px">
+          <pre style="padding:10px 14px;font-size:.8rem"><span class="fn">steps</span>(<span class="str">"transformer-block"</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- 05 · TYPE REFERENCE                                                     -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<section id="types">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <h2 class="mb-0">Type Reference</h2>
+    </div>
+    <p>All types are exported from the package for use in TypeScript projects. Full type declarations ship with the package (<code>dist/index.d.ts</code>).</p>
+
+    <!-- AlgorithmCategory -->
+    <div class="type-block">
+      <h4>AlgorithmCategory</h4>
+      <div class="code-block">
+        <span class="lang-tab">TypeScript</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">type</span> <span class="typ">AlgorithmCategory</span> =
+  | <span class="str">"classical"</span>
+  | <span class="str">"deep-learning"</span>
+  | <span class="str">"generative-ai"</span>
+  | <span class="str">"quantum"</span>;</pre>
+      </div>
+    </div>
+
+    <!-- ListOptions -->
+    <div class="type-block">
+      <h4>ListOptions</h4>
+      <div class="code-block">
+        <span class="lang-tab">TypeScript</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">interface</span> <span class="typ">ListOptions</span> {
+  category?: <span class="typ">AlgorithmCategory</span>;   <span class="cmt">// Filter by category. Omit to return all.</span>
+}</pre>
+      </div>
+    </div>
+
+    <!-- AlgorithmInfo -->
+    <div class="type-block">
+      <h4>AlgorithmInfo</h4>
+      <div class="code-block">
+        <span class="lang-tab">TypeScript</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">interface</span> <span class="typ">AlgorithmInfo</span> {
+  <span class="kw">readonly</span> id: <span class="typ">string</span>;              <span class="cmt">// e.g., "binary-search"</span>
+  <span class="kw">readonly</span> name: <span class="typ">string</span>;            <span class="cmt">// e.g., "Binary Search"</span>
+  <span class="kw">readonly</span> category: <span class="typ">string</span>;        <span class="cmt">// e.g., "classical"</span>
+  <span class="kw">readonly</span> description: <span class="typ">string</span>;     <span class="cmt">// Short description (&le;80 chars)</span>
+  <span class="kw">readonly</span> difficulty: <span class="typ">string</span>;      <span class="cmt">// "beginner" | "intermediate" | "advanced"</span>
+  <span class="kw">readonly</span> timeComplexity: <span class="typ">string</span>;  <span class="cmt">// e.g., "O(log n)"</span>
+  <span class="kw">readonly</span> spaceComplexity: <span class="typ">string</span>; <span class="cmt">// e.g., "O(1)"</span>
+}</pre>
+      </div>
+    </div>
+
+    <!-- ShowOptions -->
+    <div class="type-block">
+      <h4>ShowOptions</h4>
+      <div class="code-block">
+        <span class="lang-tab">TypeScript</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">interface</span> <span class="typ">ShowOptions</span> {
+  port?: <span class="typ">number</span>;                          <span class="cmt">// TCP port (default: 0 = auto-select)</span>
+  openBrowser?: <span class="typ">boolean</span>;                   <span class="cmt">// Open default browser (default: true)</span>
+  inputs?: <span class="typ">Record</span>&lt;<span class="typ">string</span>, <span class="typ">unknown</span>&gt;;       <span class="cmt">// Custom algorithm inputs</span>
+}</pre>
+      </div>
+    </div>
+
+    <!-- StepSequence -->
+    <div class="type-block">
+      <h4>StepSequence</h4>
+      <div class="code-block">
+        <span class="lang-tab">TypeScript</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">interface</span> <span class="typ">StepSequence</span> {
+  <span class="kw">readonly</span> formatVersion: <span class="typ">number</span>;           <span class="cmt">// Always 1</span>
+  <span class="kw">readonly</span> algorithmId: <span class="typ">string</span>;             <span class="cmt">// Algorithm identifier</span>
+  <span class="kw">readonly</span> inputs: <span class="typ">Record</span>&lt;<span class="typ">string</span>, <span class="typ">unknown</span>&gt;; <span class="cmt">// Input parameters used</span>
+  <span class="kw">readonly</span> steps: <span class="kw">readonly</span> <span class="typ">Step</span>[];          <span class="cmt">// Ordered steps (min 1)</span>
+  <span class="kw">readonly</span> generatedAt: <span class="typ">string</span>;             <span class="cmt">// ISO 8601 timestamp</span>
+  <span class="kw">readonly</span> generatedBy:                     <span class="cmt">// Generator origin</span>
+    | <span class="str">"typescript"</span> | <span class="str">"python"</span> | <span class="str">"precomputed"</span>;
+}</pre>
+      </div>
+    </div>
+
+    <!-- Step -->
+    <div class="type-block">
+      <h4>Step</h4>
+      <div class="code-block">
+        <span class="lang-tab">TypeScript</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">interface</span> <span class="typ">Step</span> {
+  <span class="kw">readonly</span> index: <span class="typ">number</span>;                       <span class="cmt">// 0-based position</span>
+  <span class="kw">readonly</span> id: <span class="typ">string</span>;                          <span class="cmt">// URL-safe identifier</span>
+  <span class="kw">readonly</span> title: <span class="typ">string</span>;                       <span class="cmt">// Human-readable heading</span>
+  <span class="kw">readonly</span> explanation: <span class="typ">string</span>;                 <span class="cmt">// Plain-language narration</span>
+  <span class="kw">readonly</span> state: <span class="typ">Record</span>&lt;<span class="typ">string</span>, <span class="typ">unknown</span>&gt;;     <span class="cmt">// Complete state snapshot</span>
+  <span class="kw">readonly</span> visualActions: <span class="kw">readonly</span> <span class="typ">VisualAction</span>[]; <span class="cmt">// Rendering instructions</span>
+  <span class="kw">readonly</span> codeHighlight: <span class="typ">CodeHighlight</span>;        <span class="cmt">// Source code line mappings</span>
+  <span class="kw">readonly</span> isTerminal: <span class="typ">boolean</span>;                <span class="cmt">// true only on final step</span>
+  <span class="kw">readonly</span> phase?: <span class="typ">string</span>;                     <span class="cmt">// Optional grouping label</span>
+}</pre>
+      </div>
+    </div>
+
+    <!-- VisualAction -->
+    <div class="type-block">
+      <h4>VisualAction</h4>
+      <div class="code-block">
+        <span class="lang-tab">TypeScript</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">interface</span> <span class="typ">VisualAction</span> {
+  <span class="kw">readonly</span> type: <span class="typ">string</span>;          <span class="cmt">// Action type (e.g., "highlightElement")</span>
+  [key: <span class="typ">string</span>]: <span class="typ">unknown</span>;       <span class="cmt">// Action-specific parameters</span>
+}</pre>
+      </div>
+    </div>
+
+    <!-- CodeHighlight -->
+    <div class="type-block">
+      <h4>CodeHighlight</h4>
+      <div class="code-block">
+        <span class="lang-tab">TypeScript</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="kw">interface</span> <span class="typ">CodeHighlight</span> {
+  <span class="kw">readonly</span> language: <span class="typ">string</span>;              <span class="cmt">// "pseudocode" | "python" | "javascript"</span>
+  <span class="kw">readonly</span> lines: <span class="kw">readonly</span> <span class="typ">number</span>[];     <span class="cmt">// 1-indexed line numbers to highlight</span>
+}</pre>
+      </div>
+    </div>
+
+    <!-- StepsResult alias -->
+    <div class="type-block">
+      <h4>StepsResult</h4>
+      <div class="code-block">
+        <span class="lang-tab">TypeScript</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><span class="cmt">// Type alias — equivalent to StepSequence</span>
+<span class="kw">type</span> <span class="typ">StepsResult</span> = <span class="typ">StepSequence</span>;</pre>
+      </div>
+    </div>
+
+    <details>
+      <summary>Visual Action Types (50+ subtypes)</summary>
+      <div class="details-body">
+        <p class="text-sm text-dim">The <code>VisualAction</code> interface uses an open vocabulary &mdash; renderers silently ignore unknown types. Known action types include:</p>
+        <table>
+          <thead><tr><th>Domain</th><th>Action Types</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-blue">Array</span></td>
+              <td><code>highlightElement</code>, <code>movePointer</code>, <code>highlightRange</code>, <code>dimRange</code>, <code>swapElements</code>, <code>compareElements</code>, <code>markFound</code>, <code>markNotFound</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-blue">Graph</span></td>
+              <td><code>visitNode</code>, <code>highlightEdge</code>, <code>updateNodeValue</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-purple">Neural Net</span></td>
+              <td><code>activateNeuron</code>, <code>propagateSignal</code>, <code>showGradient</code>, <code>showWeights</code>, <code>showWeightGradients</code>, <code>showBiasGradients</code>, <code>updateWeights</code>, <code>showPreActivation</code>, <code>showActivationFunction</code>, <code>showLoss</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-purple">Convolution</span></td>
+              <td><code>highlightKernelPosition</code>, <code>showConvolutionProducts</code>, <code>writeOutputCell</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-purple">Gradient</span></td>
+              <td><code>showLandscapePosition</code>, <code>showDescentStep</code>, <code>showTrajectory</code>, <code>showMomentum</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-orange">Attention</span></td>
+              <td><code>showAttentionWeights</code>, <code>highlightToken</code>, <code>updateBarChart</code>, <code>highlightTextSpan</code>, <code>mergeTokens</code>, <code>showEmbedding</code>, <code>showSimilarity</code>, <code>showProjectionMatrix</code>, <code>showAttentionScores</code>, <code>showFullAttentionMatrix</code>, <code>showWeightedValues</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-orange">Transformer</span></td>
+              <td><code>activateHead</code>, <code>showConcatenatedHeads</code>, <code>activateSublayer</code>, <code>showResidualConnection</code>, <code>showLayerNorm</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-dim">General</span></td>
+              <td><code>showMessage</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- 06 · ADVANCED USAGE                                                     -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<section id="advanced">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">06</span>
+      <h2 class="mb-0">Advanced Usage</h2>
+    </div>
+
+    <!-- Build Custom Visualizations -->
+    <h3 class="mb-md">Build Custom Visualizations</h3>
+    <p>Use the step data programmatically to build your own visualization layer &mdash; for a React app, a CLI tool, a Jupyter widget, or anything else.</p>
+
+    <div class="code-block">
+      <span class="lang-tab">TypeScript</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span class="kw">import</span> { <span class="fn">steps</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+<span class="kw">import</span> <span class="kw">type</span> { <span class="typ">Step</span>, <span class="typ">VisualAction</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+<span class="kw">const</span> seq = <span class="fn">steps</span>(<span class="str">"binary-search"</span>, {
+  array: [<span class="num">2</span>, <span class="num">4</span>, <span class="num">6</span>, <span class="num">8</span>, <span class="num">10</span>, <span class="num">12</span>],
+  target: <span class="num">8</span>
+});
+
+<span class="cmt">// Replay all steps for a custom renderer</span>
+<span class="kw">for</span> (<span class="kw">const</span> step <span class="kw">of</span> seq.steps) {
+  <span class="fn">renderStepHeader</span>(step.index, step.title);
+  <span class="fn">renderExplanation</span>(step.explanation);
+
+  <span class="cmt">// Process each visual action</span>
+  <span class="kw">for</span> (<span class="kw">const</span> action <span class="kw">of</span> step.visualActions) {
+    <span class="kw">switch</span> (action.type) {
+      <span class="kw">case</span> <span class="str">"highlightElement"</span>:
+        <span class="fn">highlightArrayCell</span>(action.index, action.color);
+        <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">"movePointer"</span>:
+        <span class="fn">animatePointer</span>(action.id, action.to);
+        <span class="kw">break</span>;
+      <span class="kw">case</span> <span class="str">"showMessage"</span>:
+        <span class="fn">displayMessage</span>(action.text, action.messageType);
+        <span class="kw">break</span>;
+      <span class="cmt">// Unknown types are silently ignored</span>
+    }
+  }
+
+  <span class="cmt">// Highlight source code lines</span>
+  <span class="fn">highlightCode</span>(step.codeHighlight.language, step.codeHighlight.lines);
+
+  <span class="kw">if</span> (step.isTerminal) {
+    <span class="fn">showFinalResult</span>(step.state);
+  }
+}</pre>
+    </div>
+
+    <hr class="sep">
+
+    <!-- Iterate by Phase -->
+    <h3 class="mb-md">Group Steps by Phase</h3>
+    <p>Steps may include an optional <code>phase</code> field for logical grouping. Use it to organize complex algorithms into sections.</p>
+
+    <div class="code-block">
+      <span class="lang-tab">TypeScript</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span class="kw">import</span> { <span class="fn">steps</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+<span class="kw">const</span> seq = <span class="fn">steps</span>(<span class="str">"transformer-block"</span>);
+
+<span class="cmt">// Group steps by phase</span>
+<span class="kw">const</span> phases = <span class="kw">new</span> <span class="typ">Map</span>&lt;<span class="typ">string</span>, <span class="typ">Step</span>[]&gt;();
+
+<span class="kw">for</span> (<span class="kw">const</span> step <span class="kw">of</span> seq.steps) {
+  <span class="kw">const</span> phase = step.phase ?? <span class="str">"default"</span>;
+  <span class="kw">if</span> (!phases.<span class="fn">has</span>(phase)) phases.<span class="fn">set</span>(phase, []);
+  phases.<span class="fn">get</span>(phase)!.<span class="fn">push</span>(step);
+}
+
+<span class="kw">for</span> (<span class="kw">const</span> [phase, phaseSteps] <span class="kw">of</span> phases) {
+  console.<span class="fn">log</span>(<span class="str">`\n── </span><span class="str">${</span>phase<span class="str">}</span><span class="str"> (</span><span class="str">${</span>phaseSteps.length<span class="str">}</span><span class="str"> steps) ──`</span>);
+  <span class="kw">for</span> (<span class="kw">const</span> s <span class="kw">of</span> phaseSteps) {
+    console.<span class="fn">log</span>(<span class="str">`  </span><span class="str">${</span>s.title<span class="str">}</span><span class="str">`</span>);
+  }
+}</pre>
+    </div>
+
+    <hr class="sep">
+
+    <!-- Export to JSON -->
+    <h3 class="mb-md">Export Step Data to JSON</h3>
+    <p>All step data is fully JSON-serializable &mdash; no functions, no circular references, no undefined values.</p>
+
+    <div class="code-block">
+      <span class="lang-tab">TypeScript</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span class="kw">import</span> { <span class="fn">steps</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+<span class="kw">import</span> { <span class="fn">writeFileSync</span> } <span class="kw">from</span> <span class="str">"node:fs"</span>;
+
+<span class="kw">const</span> result = <span class="fn">steps</span>(<span class="str">"self-attention"</span>);
+
+<span class="cmt">// Save to file</span>
+<span class="fn">writeFileSync</span>(<span class="str">"self-attention-steps.json"</span>, JSON.<span class="fn">stringify</span>(result, <span class="kw">null</span>, <span class="num">2</span>));
+
+<span class="cmt">// Send over HTTP, store in database, pipe to another tool, etc.</span></pre>
+    </div>
+
+    <hr class="sep">
+
+    <!-- Iterate All Algorithms -->
+    <h3 class="mb-md">Batch-Process All Algorithms</h3>
+    <p>Combine <code>list()</code> and <code>steps()</code> to process every algorithm programmatically.</p>
+
+    <div class="code-block">
+      <span class="lang-tab">TypeScript</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span class="kw">import</span> { <span class="fn">list</span>, <span class="fn">steps</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+<span class="kw">for</span> (<span class="kw">const</span> algo <span class="kw">of</span> <span class="fn">list</span>()) {
+  <span class="kw">const</span> seq = <span class="fn">steps</span>(algo.id);
+  console.<span class="fn">log</span>(
+    <span class="str">`</span><span class="str">${</span>algo.name.<span class="fn">padEnd</span>(<span class="num">25</span>)<span class="str">}</span><span class="str">  </span><span class="str">${</span>seq.steps.length<span class="str">}</span><span class="str"> steps  </span><span class="str">${</span>algo.timeComplexity<span class="str">}</span><span class="str">`</span>
+  );
+}</pre>
+    </div>
+
+    <hr class="sep">
+
+    <!-- Error Handling -->
+    <h3 class="mb-md">Error Handling</h3>
+    <p>All errors throw standard <code>Error</code> objects with descriptive messages.</p>
+
+    <div class="code-block">
+      <span class="lang-tab">TypeScript</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre><span class="kw">import</span> { <span class="fn">list</span>, <span class="fn">steps</span> } <span class="kw">from</span> <span class="str">"eigenvue"</span>;
+
+<span class="cmt">// Invalid category</span>
+<span class="kw">try</span> {
+  <span class="fn">list</span>({ category: <span class="str">"invalid"</span> <span class="kw">as</span> <span class="kw">any</span> });
+} <span class="kw">catch</span> (e) {
+  <span class="cmt">// Error: Invalid category "invalid". Valid categories: classical, deep-learning, ...</span>
+}
+
+<span class="cmt">// Unknown algorithm</span>
+<span class="kw">try</span> {
+  <span class="fn">steps</span>(<span class="str">"not-real"</span>);
+} <span class="kw">catch</span> (e) {
+  <span class="cmt">// Error: Unknown algorithm "not-real". Use list() to see available algorithms.</span>
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- 07 · ARCHITECTURE                                                       -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<section id="architecture">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">07</span>
+      <h2 class="mb-0">Architecture</h2>
+    </div>
+
+    <h3 class="mb-md">What Ships in the Package</h3>
+    <p>After <code>npm install eigenvue</code>, this is what lands in your <code>node_modules/eigenvue</code>:</p>
+
+    <div class="code-block">
+      <span class="lang-tab">Package Contents</span>
+      <pre><span class="cmt">eigenvue/</span>
+<span class="cmt">├──</span> <span class="fn">dist/</span>
+<span class="cmt">│   ├──</span> index.js              <span class="text-dim">ESM bundle (all generators included)</span>
+<span class="cmt">│   ├──</span> index.cjs             <span class="text-dim">CJS bundle (all generators included)</span>
+<span class="cmt">│   ├──</span> index.d.ts            <span class="text-dim">ESM type declarations</span>
+<span class="cmt">│   ├──</span> index.d.cts           <span class="text-dim">CJS type declarations</span>
+<span class="cmt">│   ├──</span> cli.js                <span class="text-dim">CLI binary (with #!/usr/bin/env node shebang)</span>
+<span class="cmt">│   └──</span> cli.cjs               <span class="text-dim">CLI binary (CJS)</span>
+<span class="cmt">├──</span> <span class="fn">data/</span>
+<span class="cmt">│   ├──</span> <span class="fn">algorithms/</span>           <span class="text-dim">17 *.meta.json files (algorithm metadata)</span>
+<span class="cmt">│   └──</span> <span class="fn">web/</span>                  <span class="text-dim">HTML/JS/CSS visualizer assets</span>
+<span class="cmt">├──</span> package.json
+<span class="cmt">└──</span> README.md</pre>
+    </div>
+
+    <h3 class="mb-md">Key Design Decisions</h3>
+
+    <div class="feat-grid">
+      <div class="feat-item">
+        <div class="feat-icon green">0</div>
+        <div>
+          <h4>Zero Dependencies</h4>
+          <p>No runtime dependencies. Uses only Node.js built-in modules (http, fs, path, child_process).</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon blue">D</div>
+        <div>
+          <h4>Dual ESM + CJS</h4>
+          <p>Works with both <code>import</code> and <code>require()</code>. Type declarations for both formats.</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon purple">R</div>
+        <div>
+          <h4>Immutable Returns</h4>
+          <p>All public API returns use <code>readonly</code> types. <code>list()</code> returns a fresh copy each call.</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon orange">V</div>
+        <div>
+          <h4>Open Action Vocabulary</h4>
+          <p>New visual action types can be added without breaking existing renderers. Unknown types are silently ignored.</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon teal">L</div>
+        <div>
+          <h4>Local-First Visualization</h4>
+          <p>Browser visualization requires no internet. The server runs entirely on localhost.</p>
+        </div>
+      </div>
+      <div class="feat-item">
+        <div class="feat-icon pink">F</div>
+        <div>
+          <h4>Format Versioning</h4>
+          <p><code>StepSequence.formatVersion</code> enables forward/backward compatibility.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="sep">
+
+    <h3 class="mb-md">Module Resolution</h3>
+
+    <div class="code-block">
+      <span class="lang-tab">package.json (exports map)</span>
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <pre>{
+  <span class="str">"exports"</span>: {
+    <span class="str">"."</span>: {
+      <span class="str">"import"</span>: {
+        <span class="str">"types"</span>:   <span class="str">"./dist/index.d.ts"</span>,
+        <span class="str">"default"</span>: <span class="str">"./dist/index.js"</span>
+      },
+      <span class="str">"require"</span>: {
+        <span class="str">"types"</span>:   <span class="str">"./dist/index.d.cts"</span>,
+        <span class="str">"default"</span>: <span class="str">"./dist/index.cjs"</span>
+      }
+    }
+  },
+  <span class="str">"bin"</span>: { <span class="str">"eigenvue"</span>: <span class="str">"./dist/cli.js"</span> }
+}</pre>
+    </div>
+
+    <hr class="sep">
+
+    <h3 class="mb-md">Platform Support</h3>
+    <table>
+      <thead><tr><th>Requirement</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Node.js</td><td><code>>= 18.0.0</code></td></tr>
+        <tr><td>Operating Systems</td><td>Windows, macOS, Linux</td></tr>
+        <tr><td>Module Formats</td><td>ESM (<code>import</code>) and CJS (<code>require</code>)</td></tr>
+        <tr><td>TypeScript</td><td>Full type declarations included</td></tr>
+        <tr><td>Runtime Dependencies</td><td>None</td></tr>
+        <tr><td>Browser opening</td><td><code>start</code> (Win), <code>open</code> (Mac), <code>xdg-open</code> (Linux)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- FOOTER                                                                  -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <p class="mb-sm"><strong>eigenvue</strong> v1.0.0 &mdash; MIT License</p>
+    <p class="mb-0">
+      <a href="https://eigenvue.web.app/">Website</a> &nbsp;&middot;&nbsp;
+      <a href="https://github.com/ashutoshm1771/eigenvue">GitHub</a> &nbsp;&middot;&nbsp;
+      <a href="https://www.npmjs.com/package/eigenvue">npm</a>
+    </p>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS                                                                 -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<script>
+  // ── Copy install command ────────────────────────────────────────────────
+  function copyInstall(el) {
+    navigator.clipboard.writeText('npm install eigenvue');
+    el.classList.add('copied');
+    setTimeout(() => el.classList.remove('copied'), 1500);
+  }
+
+  // ── Copy code block ────────────────────────────────────────────────────
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.textContent;
+    navigator.clipboard.writeText(text);
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 1500);
+  }
+
+  // ── Algorithm catalog filter ───────────────────────────────────────────
+  function filterAlgos(cat, tabEl) {
+    // Update active tab
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+
+    // Filter cards
+    document.querySelectorAll('.algo-card').forEach(card => {
+      if (cat === 'all' || card.dataset.cat === cat) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Filter category headings
+    document.querySelectorAll('.cat-section').forEach(heading => {
+      if (cat === 'all' || heading.dataset.cat === cat) {
+        heading.style.display = '';
+      } else {
+        heading.style.display = 'none';
+      }
+    });
+  }
+
+  // ── Smooth scroll for nav links ────────────────────────────────────────
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

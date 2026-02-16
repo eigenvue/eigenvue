@@ -1,0 +1,27 @@
+{
+  "description": "Two tokens: verifies cosine similarity is computed and is in [-1, 1]",
+  "inputs": {
+    "tokens": ["king", "queen"],
+    "embeddingDim": 4
+  },
+  "expectedStepCount": 5,
+  "keyStates": [
+    {
+      "stepId": "show-tokens",
+      "state": {
+        "tokens": ["king", "queen"],
+        "embeddingDim": 4
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["king", "queen"],
+        "embeddingDim": 4
+      }
+    }
+  ],
+  "invariants": {
+    "similarityScoresInRange": [-1, 1]
+  }
+}

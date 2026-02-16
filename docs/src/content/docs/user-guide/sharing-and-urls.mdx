@@ -1,0 +1,87 @@
+---
+title: "Sharing & URLs"
+description: "Understand how Eigenvue encodes algorithm state in URLs and how to share specific visualization steps with others."
+---
+
+Every visualization state in Eigenvue is captured by a URL. This means you can
+bookmark, share, or link to the exact step and input configuration you are
+looking at.
+
+## URL Structure
+
+Visualization URLs follow this pattern:
+
+```
+https://eigenvue.web.app/algo/{algorithm-id}?{input-params}&step={N}
+```
+
+| Segment | Description | Example |
+| --- | --- | --- |
+| `{algorithm-id}` | The unique slug for the algorithm | `bubble-sort` |
+| `{input-params}` | URL-encoded input parameters | `data=[5,3,8,1]` |
+| `step={N}` | The step number to jump to (0-indexed) | `step=12` |
+
+A full example:
+
+```
+https://eigenvue.web.app/algo/bubble-sort?data=[5,3,8,1,2]&step=7
+```
+
+This opens the Bubble Sort visualizer, seeds it with the array `[5, 3, 8, 1, 2]`,
+and jumps directly to step 7.
+
+## Sharing a Specific State
+
+The visualizer toolbar includes a **Share** button (link icon). Clicking it:
+
+1. Constructs a URL that includes the current algorithm ID, all input parameters,
+   and the current step number.
+2. Copies the URL to your clipboard.
+3. Displays a brief "Link copied" confirmation toast.
+
+You can then paste the link into a chat message, email, forum post, or
+learning-management system.
+
+## Loading from a URL
+
+When someone opens a shared URL, Eigenvue performs the following sequence:
+
+1. **Parse the algorithm ID** from the path to determine which visualizer to
+   load.
+2. **Read query parameters** to extract input values (for example, `data`,
+   `target`, `graph`, `start`).
+3. **Run the step generator** with those inputs to produce the full list of
+   animation frames.
+4. **Jump to the step** specified by the `step` parameter. If the parameter is
+   missing, playback starts from step 0.
+
+The entire process takes only a moment. The recipient sees the exact same
+visualization state the sender captured.
+
+## Pre-computed vs Live Generation
+
+Eigenvue generates step data **on the fly** in the browser. There is no
+server-side pre-computation or caching of frames. This has two implications:
+
+- **Deterministic algorithms** (most classical and deep-learning visualizations)
+  always produce identical step sequences for the same inputs, so shared links
+  are perfectly reproducible.
+- **Stochastic algorithms** (some generative-AI visualizations that involve
+  random sampling) may produce slightly different intermediate states on each
+  run. The shared link preserves the inputs and the step number, but the
+  animation may not be frame-identical. A seed parameter is available for
+  algorithms where reproducibility matters.
+
+## Social Sharing Previews
+
+When you paste an Eigenvue URL into a platform that supports link previews
+(Slack, Discord, Twitter/X, LinkedIn, iMessage, etc.), the page serves
+**Open Graph (OG) meta tags** that produce a rich preview card:
+
+- **Title** -- the algorithm name (for example, "Bubble Sort -- Eigenvue").
+- **Description** -- a one-line summary of the algorithm.
+- **Image** -- a generated preview image showing the canvas at the linked step.
+
+These OG images are generated automatically so that every shared link looks
+informative in social feeds and messaging apps, even before the recipient clicks
+through.

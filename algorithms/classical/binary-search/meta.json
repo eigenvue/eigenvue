@@ -1,0 +1,193 @@
+{
+  "id": "binary-search",
+  "name": "Binary Search",
+  "category": "classical",
+
+  "description": {
+    "short": "Efficiently find a target in a sorted array by halving the search space.",
+    "long": "Binary search is a divide-and-conquer algorithm that finds a target value in a sorted array. At each step, it compares the target with the middle element and eliminates half of the remaining search space. This gives it O(log n) time complexity — dramatically faster than linear search for large arrays. Binary search is one of the most fundamental algorithms in computer science and appears everywhere from database indexing to debugging (git bisect)."
+  },
+
+  "complexity": {
+    "time": "O(log n)",
+    "space": "O(1)",
+    "level": "beginner"
+  },
+
+  "visual": {
+    "layout": "array-with-pointers",
+    "theme": {
+      "primary": "#38bdf8",
+      "secondary": "#0284c7"
+    },
+    "components": {
+      "pointers": [
+        { "id": "left", "label": "L", "color": "#38bdf8" },
+        { "id": "right", "label": "R", "color": "#38bdf8" },
+        { "id": "mid", "label": "M", "color": "#f472b6" }
+      ],
+      "showIndices": true,
+      "showValues": true,
+      "highlightColor": "#fbbf24",
+      "foundColor": "#22c55e",
+      "dimColor": "rgba(160, 168, 192, 0.15)",
+      "compareColor": "#f472b6"
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "array": {
+        "type": "array",
+        "items": { "type": "number", "minimum": -999, "maximum": 999 },
+        "minItems": 1,
+        "maxItems": 20,
+        "description": "A sorted array of numbers. Must be in ascending order.",
+        "sorted": true
+      },
+      "target": {
+        "type": "number",
+        "minimum": -999,
+        "maximum": 999,
+        "description": "The value to search for."
+      }
+    },
+    "defaults": {
+      "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+      "target": 13
+    },
+    "examples": [
+      {
+        "name": "Default (target found)",
+        "values": { "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19], "target": 13 }
+      },
+      {
+        "name": "Target not found",
+        "values": { "array": [2, 4, 6, 8, 10, 12, 14], "target": 5 }
+      },
+      {
+        "name": "Single element (found)",
+        "values": { "array": [42], "target": 42 }
+      },
+      {
+        "name": "Single element (not found)",
+        "values": { "array": [42], "target": 99 }
+      },
+      {
+        "name": "Target is first element",
+        "values": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 1 }
+      },
+      {
+        "name": "Target is last element",
+        "values": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 13 }
+      },
+      {
+        "name": "Large array",
+        "values": {
+          "array": [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47],
+          "target": 29
+        }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function binarySearch(array, target):\n  left = 0\n  right = length(array) - 1\n\n  while left <= right:\n    mid = floor((left + right) / 2)\n\n    if array[mid] == target:\n      return mid          // Found!\n\n    if array[mid] < target:\n      left = mid + 1      // Search right half\n    else:\n      right = mid - 1     // Search left half\n\n  return -1               // Not found",
+      "python": "def binary_search(array: list[int], target: int) -> int:\n    left = 0\n    right = len(array) - 1\n\n    while left <= right:\n        mid = (left + right) // 2\n\n        if array[mid] == target:\n            return mid\n\n        if array[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n\n    return -1",
+      "javascript": "function binarySearch(array, target) {\n  let left = 0;\n  let right = array.length - 1;\n\n  while (left <= right) {\n    const mid = Math.floor((left + right) / 2);\n\n    if (array[mid] === target) {\n      return mid;\n    }\n\n    if (array[mid] < target) {\n      left = mid + 1;\n    } else {\n      right = mid - 1;\n    }\n  }\n\n  return -1;\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Divide and Conquer",
+        "description": "Binary search works by repeatedly dividing the search interval in half. If the target is less than the middle element, narrow to the left half. If greater, narrow to the right half."
+      },
+      {
+        "title": "Sorted Input Requirement",
+        "description": "Binary search only works on sorted arrays. If the input is unsorted, the algorithm may miss the target entirely. Always verify the array is sorted before applying binary search."
+      },
+      {
+        "title": "Logarithmic Time Complexity",
+        "description": "Each comparison eliminates half the remaining elements. For an array of n elements, this means at most ⌈log₂(n)⌉ comparisons. For 1 million elements, that's at most 20 comparisons — compared to 1 million for linear search."
+      },
+      {
+        "title": "Integer Overflow in Mid Calculation",
+        "description": "The classic formula mid = (left + right) / 2 can overflow for very large arrays. A safer alternative is mid = left + (right - left) / 2. In JavaScript with 64-bit floats this isn't an issue for arrays up to 2⁵³, but it matters in languages with 32-bit integers like Java or C."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Off-by-one in boundaries",
+        "description": "The most common binary search bug is using < instead of <= in the while condition, or forgetting the +1 / -1 when updating left and right. These cause the algorithm to miss elements or loop infinitely."
+      },
+      {
+        "title": "Unsorted input",
+        "description": "Binary search silently produces wrong results on unsorted arrays. It won't crash — it'll just return an incorrect answer. Always validate that input is sorted."
+      },
+      {
+        "title": "Empty array",
+        "description": "An empty array should return -1 immediately. The loop condition left <= right handles this correctly (0 <= -1 is false), but it's worth testing explicitly."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "What is the maximum number of comparisons binary search needs for an array of 1024 elements?",
+        "options": ["10", "11", "32", "1024"],
+        "correctIndex": 1,
+        "explanation": "⌈log₂(1024)⌉ = 10, but we need one extra comparison for the final check, giving us at most 11 comparisons. Each comparison halves the space: 1024 → 512 → 256 → ... → 1."
+      },
+      {
+        "question": "What happens if you use binary search on an unsorted array?",
+        "options": [
+          "It throws an error",
+          "It always returns -1",
+          "It may return a wrong index or miss the target",
+          "It sorts the array first"
+        ],
+        "correctIndex": 2,
+        "explanation": "Binary search assumes the array is sorted. On an unsorted array, the comparisons are meaningless — the algorithm may eliminate the half that actually contains the target, returning an incorrect result with no warning."
+      },
+      {
+        "question": "What is the space complexity of binary search?",
+        "options": ["O(1)", "O(log n)", "O(n)", "O(n log n)"],
+        "correctIndex": 0,
+        "explanation": "Iterative binary search uses only a constant amount of extra memory (the left, right, and mid pointers), regardless of input size. The recursive version uses O(log n) stack space."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Binary Search — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Binary_search_algorithm",
+        "type": "reference"
+      },
+      {
+        "title": "Nearly All Binary Searches Are Broken",
+        "url": "https://research.google/blog/extra-extra-read-all-about-it-nearly-all-binary-searches-and-mergesorts-are-broken/",
+        "type": "article"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "binary search visualization",
+      "binary search algorithm",
+      "binary search step by step",
+      "binary search animation",
+      "how binary search works",
+      "search algorithm visualization",
+      "divide and conquer",
+      "logarithmic search"
+    ],
+    "ogDescription": "Interactive step-by-step visualization of binary search. Watch how the algorithm halves the search space to find a target in a sorted array."
+  },
+
+  "prerequisites": [],
+  "related": ["bubble-sort", "quicksort", "merge-sort"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

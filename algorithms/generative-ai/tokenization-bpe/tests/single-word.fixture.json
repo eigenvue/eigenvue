@@ -1,0 +1,29 @@
+{
+  "description": "BPE tokenization of 'lowest' with five merge rules producing a single final token",
+  "inputs": {
+    "text": "lowest",
+    "mergeRules": [
+      [["l", "o"], "lo"],
+      [["lo", "w"], "low"],
+      [["e", "s"], "es"],
+      [["es", "t"], "est"],
+      [["low", "est"], "lowest"]
+    ]
+  },
+  "expectedStepCount": 12,
+  "keyStates": [
+    {
+      "stepId": "character-split",
+      "state": {
+        "tokens": ["l", "o", "w", "e", "s", "t"]
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["lowest"],
+        "finalTokenCount": 1
+      }
+    }
+  ]
+}

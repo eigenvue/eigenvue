@@ -1,0 +1,388 @@
+---
+title: "Step Format Specification"
+description: "The universal data contract."
+---
+
+The Step Format is the universal contract between algorithm generators and the rendering engine. Every generator -- whether written in TypeScript or Python -- produces an array of `Step` objects. Every renderer consumes `Step` objects without knowing which generator produced them. This separation is the foundation of Eigenvue's architecture.
+
+**Format Version: 1.0.0**
+
+Module: `@eigenvue/step-format`
+
+---
+
+## Design Principles
+
+1. **JSON-serializable**: All types must be serializable to JSON. No functions, no classes, no circular references, no `undefined` values.
+2. **Open vocabulary for visual actions**: The `type` field on visual actions is a plain string, not a closed enum. Renderers silently ignore action types they do not recognize.
+3. **Contiguous indexing**: Step indices are 0-based with no gaps.
+4. **Single terminal**: The last step in any sequence must have `isTerminal === true`, and only the last step.
+
+---
+
+## Step
+
+A single step in an algorithm's execution trace. Steps are the atomic unit of the platform: a generator produces an ordered array of steps, and the renderer displays one at a time.
+
+```typescript
+interface Step {
+  readonly index: number;
+  readonly id: string;
+  readonly title: string;
+  readonly explanation: string;
+  readonly state: Readonly<Record<string, unknown>>;
+  readonly visualActions: readonly VisualAction[];
+  readonly codeHighlight: CodeHighlight;
+  readonly isTerminal: boolean;
+  readonly phase?: string;
+}
+```
+
+### Fields
+
+| Field           | Type                                   | Required | Description                                                                                                                 |
+| --------------- | -------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `index`         | `number`                               | Yes      | 0-based position of this step in the sequence. **Invariant**: `steps[i].index === i`.                                       |
+| `id`            | `string`                               | Yes      | Template identifier (e.g., `"compare_mid"`, `"found"`). Must match `^[a-z0-9][a-z0-9_-]*$`. Not unique within a sequence -- the same id may recur across loop iterations. Used for analytics, bookmarking, and debugging. |
+| `title`         | `string`                               | Yes      | Short, human-readable heading. Recommended maximum: 80 characters. Shown in the step heading area of the UI.                |
+| `explanation`   | `string`                               | Yes      | Plain-language narration. Should be self-contained enough that a learner understands the step without reading the code. May reference concrete values (e.g., "Comparing array[3]=7 with target 5"). |
+| `state`         | `Readonly<Record<string, unknown>>`    | Yes      | Snapshot of all algorithm variables at this point. Must be a flat or nested JSON-serializable object. No `undefined`, no functions, no class instances, no symbols. |
+| `visualActions` | `readonly VisualAction[]`              | Yes      | Ordered array of visual rendering instructions. Processed in array order. An empty array is valid (step has state/code changes but no visual effect). |
+| `codeHighlight` | `CodeHighlight`                        | Yes      | Identifies which source code lines correspond to this step.                                                                 |
+| `isTerminal`    | `boolean`                              | Yes      | `true` if and only if this is the final step. **Invariant**: Exactly one step has `isTerminal === true`, and it is `steps[steps.length - 1]`. |
+| `phase`         | `string`                               | No       | Optional grouping label (e.g., `"initialization"`, `"search"`, `"result"`). Consecutive steps with the same phase are visually grouped in the UI. |
+
+### Invariants
+
+These invariants are enforced by the generator runner and tested by CI:
+
+1. `steps[i].index === i` for all `i` in `[0, steps.length)`.
+2. `id` is a non-empty string matching `^[a-z0-9][a-z0-9_-]*$`.
+3. `title` is non-empty and at most 200 characters.
+4. `state` contains only JSON-serializable values.
+5. The last step (and only the last step) has `isTerminal === true`.
+
+---
+
+## CodeHighlight
+
+Identifies which lines of source code correspond to the current step. The code panel in the visualizer highlights these lines.
+
+```typescript
+interface CodeHighlight {
+  readonly language: string;
+  readonly lines: readonly number[];
+}
+```
+
+| Field      | Type               | Required | Description                                                                                         |
+| ---------- | ------------------ | -------- | --------------------------------------------------------------------------------------------------- |
+| `language` | `string`           | Yes      | Which language tab to highlight. Must be one of the keys in the algorithm's `code.implementations` map from `meta.json` (e.g., `"pseudocode"`, `"python"`, `"javascript"`). |
+| `lines`    | `readonly number[]` | Yes     | 1-indexed line numbers to highlight. Must be a non-empty array of positive integers. Order does not matter; the renderer highlights all listed lines. |
+
+### Example
+
+```json
+{
+  "language": "pseudocode",
+  "lines": [5, 6]
+}
+```
+
+---
+
+## VisualAction
+
+A single instruction telling the renderer what to display for a step.
+
+```typescript
+interface VisualAction {
+  readonly type: string;
+  readonly [key: string]: unknown;
+}
+```
+
+| Field   | Type      | Required | Description                                                                                |
+| ------- | --------- | -------- | ------------------------------------------------------------------------------------------ |
+| `type`  | `string`  | Yes      | The action type identifier in camelCase (e.g., `"highlightElement"`, `"movePointer"`). Renderers silently ignore unrecognized types. |
+| `[key]` | `unknown` | Varies   | Action-specific parameters. All values must be JSON-serializable.                          |
+
+Visual actions use an **open vocabulary**. The `type` field is a plain string, not a closed enum. This means new action types (e.g., for quantum computing) can be defined in generators before renderer support exists. Renderers must silently ignore action types they do not recognize.
+
+See the [Visual Action Types](/docs/api-reference/visual-actions) reference for the complete catalog of known action types.
+
+---
+
+## StepSequence
+
+A complete, validated sequence of steps produced by a generator. This is the top-level structure that flows from generators to renderers.
+
+```typescript
+interface StepSequence {
+  readonly formatVersion: number;
+  readonly algorithmId: string;
+  readonly inputs: Readonly<Record<string, unknown>>;
+  readonly steps: readonly Step[];
+  readonly generatedAt: string;
+  readonly generatedBy: "typescript" | "python" | "precomputed";
+}
+```
+
+| Field           | Type                                    | Required | Description                                                                                          |
+| --------------- | --------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `formatVersion` | `number`                                | Yes      | The step format major version. Currently `1`. Renderers should check this and refuse incompatible versions. |
+| `algorithmId`   | `string`                                | Yes      | The algorithm ID this sequence was generated for. Must match the `id` in `meta.json`. Pattern: `^[a-z0-9][a-z0-9-]*$`. |
+| `inputs`        | `Readonly<Record<string, unknown>>`     | Yes      | The input parameters that produced this sequence. Stored for reproducibility.                        |
+| `steps`         | `readonly Step[]`                       | Yes      | The ordered array of steps. Must contain at least 1 step. `steps[i].index === i`. `steps[steps.length - 1].isTerminal === true`. |
+| `generatedAt`   | `string`                                | Yes      | ISO 8601 timestamp of generation (e.g., `"2026-02-14T10:30:00.000Z"`).                              |
+| `generatedBy`   | `"typescript" \| "python" \| "precomputed"` | Yes  | Which generator produced this sequence.                                                              |
+
+---
+
+## JSON Schema Reference
+
+The step format can be validated against the following JSON Schema (draft 2020-12). This schema covers the `StepSequence` envelope and all nested types.
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eigenvue.com/schemas/step-sequence.json",
+  "title": "StepSequence",
+  "description": "A complete step sequence produced by an Eigenvue generator.",
+  "type": "object",
+  "required": ["formatVersion", "algorithmId", "inputs", "steps", "generatedAt", "generatedBy"],
+  "properties": {
+    "formatVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Step format major version."
+    },
+    "algorithmId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "The algorithm identifier."
+    },
+    "inputs": {
+      "type": "object",
+      "description": "The input parameters that produced this sequence."
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Step" },
+      "description": "Ordered array of steps."
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 generation timestamp."
+    },
+    "generatedBy": {
+      "type": "string",
+      "enum": ["typescript", "python", "precomputed"],
+      "description": "Which generator produced this sequence."
+    }
+  },
+  "$defs": {
+    "Step": {
+      "type": "object",
+      "required": ["index", "id", "title", "explanation", "state", "visualActions", "codeHighlight", "isTerminal"],
+      "properties": {
+        "index": { "type": "integer", "minimum": 0 },
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "explanation": { "type": "string", "minLength": 1 },
+        "state": { "type": "object" },
+        "visualActions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/VisualAction" }
+        },
+        "codeHighlight": { "$ref": "#/$defs/CodeHighlight" },
+        "isTerminal": { "type": "boolean" },
+        "phase": { "type": "string" }
+      }
+    },
+    "VisualAction": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "CodeHighlight": {
+      "type": "object",
+      "required": ["language", "lines"],
+      "properties": {
+        "language": { "type": "string", "minLength": 1 },
+        "lines": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1 }
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+## Versioning
+
+The step format uses a single integer version number (`formatVersion`), currently `1`. This represents the major version of the format.
+
+### Version Compatibility
+
+- **Renderers** should check `formatVersion` before processing a step sequence. If the version is higher than what the renderer supports, it should display an appropriate error rather than silently producing incorrect output.
+- **Generators** always produce steps at the current version.
+- **Breaking changes** (adding required fields, removing fields, changing field semantics) require incrementing the version.
+- **Additive changes** (new optional fields, new visual action types) do not require a version bump because renderers already ignore unknown fields and unknown action types.
+
+The version constant is exported from the TypeScript module:
+
+```typescript
+import { STEP_FORMAT_VERSION } from "@/shared/types/step";
+// STEP_FORMAT_VERSION === 1
+```
+
+---
+
+## Serialization Rules
+
+All step data must conform to these serialization rules to ensure compatibility across TypeScript and Python generators and between server and client.
+
+### JSON Constraints
+
+1. All values must be JSON-serializable: `number`, `string`, `boolean`, `null`, arrays of these, or nested objects of these.
+2. `undefined` is **not** valid. Use `null` to represent absent values.
+3. No functions, class instances, `Symbol`, `BigInt`, `Date` objects, or circular references.
+4. Numbers must be finite. `NaN`, `Infinity`, and `-Infinity` are not valid JSON and must not appear.
+5. Arrays must not be sparse (no holes).
+
+### Wire Format
+
+The JSON wire format uses **camelCase** field names (TypeScript convention). This is the canonical serialized form used for:
+
+- Pre-computed step files stored on disk
+- Data transfer between the generator and renderer
+- The `StepSequence` output of `runGenerator()`
+
+---
+
+## TypeScript to Python Field Mapping
+
+When step sequences cross the TypeScript/Python boundary, the **Step envelope** fields are converted between camelCase and snake_case. Fields **inside** visual actions retain camelCase because they are part of the visual action vocabulary, not the Step envelope.
+
+### Step Envelope Fields
+
+| TypeScript (camelCase) | Python (snake_case) | Type                                   |
+| ---------------------- | ------------------- | -------------------------------------- |
+| `index`                | `index`             | `number` / `int`                       |
+| `id`                   | `id`                | `string` / `str`                       |
+| `title`                | `title`             | `string` / `str`                       |
+| `explanation`          | `explanation`       | `string` / `str`                       |
+| `state`                | `state`             | `Record<string, unknown>` / `dict`     |
+| `visualActions`        | `visual_actions`    | `VisualAction[]` / `list[dict]`        |
+| `codeHighlight`        | `code_highlight`    | `CodeHighlight` / `dict`               |
+| `isTerminal`           | `is_terminal`       | `boolean` / `bool`                     |
+| `phase`                | `phase`             | `string?` / `str \| None`             |
+
+### CodeHighlight Fields
+
+| TypeScript (camelCase) | Python (snake_case) |
+| ---------------------- | ------------------- |
+| `language`             | `language`          |
+| `lines`               | `lines`             |
+
+### StepSequence Envelope Fields
+
+| TypeScript (camelCase) | Python (snake_case) |
+| ---------------------- | ------------------- |
+| `formatVersion`        | `format_version`    |
+| `algorithmId`          | `algorithm_id`      |
+| `inputs`               | `inputs`            |
+| `steps`                | `steps`             |
+| `generatedAt`          | `generated_at`      |
+| `generatedBy`          | `generated_by`      |
+
+### Visual Action Fields
+
+Visual action fields are **not** converted. They remain in camelCase regardless of language context. For example, `nodeId`, `queryIdx`, `fromLayer`, `toLayer`, `kernelHeight`, and `kernelWidth` are the same in both TypeScript and Python.
+
+```python
+# Python step with visual actions -- note camelCase inside actions
+step = {
+    "index": 0,
+    "id": "visit",
+    "title": "Visit Node A",
+    "explanation": "Visiting node A.",
+    "state": {"visited": ["A"]},
+    "visual_actions": [
+        {"type": "visitNode", "nodeId": "A", "color": "visited"},  # camelCase
+    ],
+    "code_highlight": {"language": "pseudocode", "lines": [3]},
+    "is_terminal": False,
+}
+```
+
+---
+
+## Complete Step Example
+
+```json
+{
+  "formatVersion": 1,
+  "algorithmId": "binary-search",
+  "inputs": {
+    "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+    "target": 13
+  },
+  "steps": [
+    {
+      "index": 0,
+      "id": "init",
+      "title": "Initialize Binary Search",
+      "explanation": "Set left = 0, right = 9. The entire array is the initial search space.",
+      "state": {
+        "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+        "target": 13,
+        "left": 0,
+        "right": 9,
+        "mid": null
+      },
+      "visualActions": [
+        { "type": "highlightRange", "from": 0, "to": 9, "color": "highlight" },
+        { "type": "movePointer", "id": "left", "to": 0 },
+        { "type": "movePointer", "id": "right", "to": 9 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [2, 3] },
+      "isTerminal": false,
+      "phase": "initialization"
+    },
+    {
+      "index": 1,
+      "id": "compare_mid",
+      "title": "Compare Middle Element",
+      "explanation": "mid = floor((0 + 9) / 2) = 4. array[4] = 9. Since 9 < 13, search the right half.",
+      "state": {
+        "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+        "target": 13,
+        "left": 0,
+        "right": 9,
+        "mid": 4
+      },
+      "visualActions": [
+        { "type": "movePointer", "id": "mid", "to": 4 },
+        { "type": "highlightElement", "index": 4, "color": "compare" },
+        { "type": "compareElements", "i": 4, "j": -1, "result": "less" },
+        { "type": "dimRange", "from": 0, "to": 4 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [5, 6, 10, 11] },
+      "isTerminal": false,
+      "phase": "search"
+    }
+  ],
+  "generatedAt": "2026-02-14T10:30:00.000Z",
+  "generatedBy": "typescript"
+}
+```

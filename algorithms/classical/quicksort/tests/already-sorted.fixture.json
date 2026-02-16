@@ -1,0 +1,8 @@
+{
+  "description": "Already-sorted array: worst case for Lomuto partition",
+  "inputs": { "array": [1, 2, 3, 4, 5] },
+  "expected": {
+    "terminalStepId": "complete",
+    "sortedArray": [1, 2, 3, 4, 5]
+  }
+}

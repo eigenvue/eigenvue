@@ -1,0 +1,121 @@
+/* Eigenvue — Minimal Visualizer Styles */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --border: #334155;
+  --text: #e2e8f0;
+  --text-dim: #94a3b8;
+  --accent: #38bdf8;
+  --accent-hover: #7dd3fc;
+  --success: #22c55e;
+  --radius: 8px;
+  --mono: "SF Mono", "Cascadia Code", "Fira Code", monospace;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+#app { max-width: 960px; width: 100%; margin: 0 auto; padding: 24px 16px; flex: 1; }
+#header { text-align: center; margin-bottom: 24px; }
+#header h1 { font-size: 1.5rem; color: var(--accent); margin-bottom: 4px; }
+#header p { color: var(--text-dim); font-size: 0.9rem; }
+#main-content { display: flex; flex-direction: column; gap: 16px; }
+#visualization-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+#step-info { margin-bottom: 16px; }
+#step-title { font-size: 1.2rem; margin-bottom: 8px; color: var(--accent); }
+#step-explanation { color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; }
+#state-inspector h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+#state-display {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--text);
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+#controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+#controls button {
+  background: var(--border);
+  color: var(--text);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+#controls button:hover { background: var(--accent); color: var(--bg); }
+#controls button:disabled { opacity: 0.3; cursor: not-allowed; }
+#controls button:disabled:hover { background: var(--border); color: var(--text); }
+#step-counter {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  min-width: 60px;
+  text-align: center;
+}
+#step-ids {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+#step-ids h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+#step-id-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.step-chip {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.step-chip:hover { border-color: var(--accent); color: var(--text); }
+.step-chip.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.step-chip.terminal { border-color: var(--success); }
+.step-chip.terminal.active { background: var(--success); border-color: var(--success); }

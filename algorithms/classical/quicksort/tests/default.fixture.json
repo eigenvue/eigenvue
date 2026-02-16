@@ -1,0 +1,8 @@
+{
+  "description": "Default unsorted array: typical quicksort case",
+  "inputs": { "array": [38, 27, 43, 3, 9, 82, 10] },
+  "expected": {
+    "terminalStepId": "complete",
+    "sortedArray": [3, 9, 10, 27, 38, 43, 82]
+  }
+}

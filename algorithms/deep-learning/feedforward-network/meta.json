@@ -1,0 +1,66 @@
+{
+  "id": "feedforward-network",
+  "name": "Feedforward Neural Network",
+  "category": "deep-learning",
+  "description": {
+    "short": "Watch data flow forward through a multi-layer neural network.",
+    "long": "A feedforward neural network passes data through multiple layers of neurons. Each layer applies a linear transformation (weights × inputs + bias) followed by a non-linear activation function. This visualization shows the forward propagation process layer by layer, revealing how raw inputs are transformed into predictions through successive non-linear transformations."
+  },
+  "complexity": { "time": "O(Σ n_l × n_{l-1})", "space": "O(Σ n_l)", "level": "intermediate" },
+  "visual": { "layout": "layer-network", "theme": { "primary": "#8b5cf6", "secondary": "#c084fc" }, "components": {} },
+  "inputs": {
+    "schema": {
+      "inputValues": { "type": "array", "items": { "type": "number" }, "description": "Input values" },
+      "layerSizes": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "description": "Neurons per layer", "minItems": 2 },
+      "activationFunction": { "type": "string", "enum": ["sigmoid", "relu", "tanh"], "description": "Activation function" },
+      "seed": { "type": "string", "description": "Random seed for weight initialization" }
+    },
+    "defaults": {
+      "inputValues": [0.5, 0.8],
+      "layerSizes": [2, 3, 1],
+      "activationFunction": "sigmoid",
+      "seed": "eigenvue-ff"
+    },
+    "examples": [
+      { "name": "2-3-1 network (sigmoid)", "values": { "inputValues": [0.5, 0.8], "layerSizes": [2, 3, 1], "activationFunction": "sigmoid", "seed": "eigenvue-ff" } },
+      { "name": "3-4-4-2 deep network", "values": { "inputValues": [0.3, 0.7, 0.5], "layerSizes": [3, 4, 4, 2], "activationFunction": "relu", "seed": "deep-net" } },
+      { "name": "2-2-1 minimal", "values": { "inputValues": [1.0, 0.0], "layerSizes": [2, 2, 1], "activationFunction": "sigmoid", "seed": "minimal" } }
+    ]
+  },
+  "code": {
+    "implementations": {
+      "pseudocode": "function forward(x, weights, biases, activation_fn):\n  a = x                              // input layer activations\n  for L = 1 to num_layers - 1:\n    z = weights[L] @ a + biases[L]   // linear transform\n    a = activation_fn(z)              // non-linear activation\n  return a                            // network output",
+      "python": "import numpy as np\n\ndef forward(x, weights, biases, activation='sigmoid'):\n    a = np.array(x)\n    for W, b in zip(weights, biases):\n        z = W @ a + b\n        a = 1/(1+np.exp(-z)) if activation == 'sigmoid' else np.maximum(0, z)\n    return a"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+  "education": {
+    "keyConcepts": [
+      { "title": "Layer-by-Layer Transformation", "description": "Each layer takes the previous layer's output, applies W×a+b then activation." },
+      { "title": "Hidden Representations", "description": "Hidden layers learn internal representations of the input data." },
+      { "title": "Universal Approximation", "description": "A network with at least one hidden layer can approximate any continuous function." }
+    ],
+    "pitfalls": [
+      { "title": "Depth vs Width", "description": "More layers allow hierarchical features; more neurons increase per-layer capacity." }
+    ],
+    "quiz": [
+      {
+        "question": "A network has layer sizes [3, 4, 2]. How many weight parameters does it have (excluding biases)?",
+        "options": ["8", "12", "20", "24"],
+        "correctIndex": 2,
+        "explanation": "Layer 0→1: 3×4 = 12 weights. Layer 1→2: 4×2 = 8 weights. Total: 20."
+      }
+    ],
+    "resources": [
+      { "title": "3Blue1Brown — Neural Networks series", "url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi", "type": "video" }
+    ]
+  },
+  "prerequisites": ["perceptron"],
+  "related": ["backpropagation", "perceptron"],
+  "author": "eigenvue",
+  "version": "1.0.0",
+  "seo": {
+    "keywords": ["feedforward neural network", "forward propagation", "multi-layer perceptron", "neural network visualization"],
+    "ogDescription": "Interactive visualization of forward propagation through a multi-layer neural network. Watch data transform layer by layer."
+  }
+}

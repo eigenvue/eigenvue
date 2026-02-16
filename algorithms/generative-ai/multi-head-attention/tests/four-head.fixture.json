@@ -1,0 +1,32 @@
+{
+  "description": "Multi-head attention with 4 heads over 3 tokens (dim=8, d_k=2)",
+  "inputs": {
+    "tokens": ["I", "love", "AI"],
+    "embeddingDim": 8,
+    "numHeads": 4
+  },
+  "expectedStepCount": 21,
+  "keyStates": [
+    {
+      "stepId": "show-input",
+      "state": {
+        "tokens": ["I", "love", "AI"],
+        "embeddingDim": 8,
+        "numHeads": 4,
+        "d_k": 2
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["I", "love", "AI"],
+        "numHeads": 4
+      }
+    }
+  ],
+  "invariants": {
+    "attentionWeightRowsSumToOne": true,
+    "allWeightsNonNegative": true,
+    "noNaNOrInfinity": true
+  }
+}

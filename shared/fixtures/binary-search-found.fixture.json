@@ -1,0 +1,56 @@
+{
+  "description": "Binary search: target 7 found in [1, 3, 5, 7, 9, 11, 13] at index 3.",
+  "formatVersion": 1,
+  "algorithmId": "binary-search",
+  "inputs": {
+    "array": [1, 3, 5, 7, 9, 11, 13],
+    "target": 7
+  },
+  "generatedAt": "2026-02-14T00:00:00.000Z",
+  "generatedBy": "precomputed",
+  "steps": [
+    {
+      "index": 0,
+      "id": "initialize",
+      "title": "Initialize Pointers",
+      "explanation": "Searching for 7 in a sorted array of 7 elements. Setting left=0, right=6.",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 7, "left": 0, "right": 6 },
+      "visualActions": [
+        { "type": "highlightRange", "from": 0, "to": 6, "color": "highlight" },
+        { "type": "movePointer", "id": "left", "to": 0 },
+        { "type": "movePointer", "id": "right", "to": 6 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [2, 3] },
+      "isTerminal": false,
+      "phase": "initialization"
+    },
+    {
+      "index": 1,
+      "id": "calculate_mid",
+      "title": "Calculate Middle",
+      "explanation": "mid = floor((0 + 6) / 2) = 3. Checking array[3] = 7.",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 7, "left": 0, "right": 6, "mid": 3 },
+      "visualActions": [
+        { "type": "highlightElement", "index": 3, "color": "highlight" },
+        { "type": "movePointer", "id": "mid", "to": 3 }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [5, 6] },
+      "isTerminal": false,
+      "phase": "search"
+    },
+    {
+      "index": 2,
+      "id": "found",
+      "title": "Target Found!",
+      "explanation": "array[3] = 7 equals target 7. Found at index 3!",
+      "state": { "array": [1, 3, 5, 7, 9, 11, 13], "target": 7, "left": 0, "right": 6, "mid": 3, "result": 3 },
+      "visualActions": [
+        { "type": "markFound", "index": 3 },
+        { "type": "showMessage", "text": "Target 7 found at index 3!", "messageType": "success" }
+      ],
+      "codeHighlight": { "language": "pseudocode", "lines": [8] },
+      "isTerminal": true,
+      "phase": "result"
+    }
+  ]
+}

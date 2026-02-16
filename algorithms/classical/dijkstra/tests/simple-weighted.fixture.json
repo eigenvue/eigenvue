@@ -1,0 +1,24 @@
+{
+  "description": "Simple 4-node weighted graph, shortest path A→D costs 6 via A→B→C→D",
+  "inputs": {
+    "adjacencyList": {
+      "A": [{"to": "B", "weight": 1}, {"to": "C", "weight": 4}],
+      "B": [{"to": "A", "weight": 1}, {"to": "C", "weight": 2}, {"to": "D", "weight": 6}],
+      "C": [{"to": "A", "weight": 4}, {"to": "B", "weight": 2}, {"to": "D", "weight": 3}],
+      "D": [{"to": "B", "weight": 6}, {"to": "C", "weight": 3}]
+    },
+    "positions": {
+      "A": {"x": 0.15, "y": 0.5},
+      "B": {"x": 0.45, "y": 0.15},
+      "C": {"x": 0.45, "y": 0.85},
+      "D": {"x": 0.85, "y": 0.5}
+    },
+    "startNode": "A",
+    "targetNode": "D"
+  },
+  "expected": {
+    "terminalStepId": "target_found",
+    "shortestPathCost": 6,
+    "path": ["A", "B", "C", "D"]
+  }
+}

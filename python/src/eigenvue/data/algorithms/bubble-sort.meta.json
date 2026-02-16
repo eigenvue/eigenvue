@@ -1,0 +1,175 @@
+{
+  "id": "bubble-sort",
+  "name": "Bubble Sort",
+  "category": "classical",
+
+  "description": {
+    "short": "Repeatedly swap adjacent out-of-order elements until the array is sorted.",
+    "long": "Bubble Sort is a simple comparison-based sorting algorithm. It repeatedly steps through the array, compares adjacent elements, and swaps them if they are in the wrong order. After each full pass, the largest unsorted element 'bubbles up' to its correct position. The algorithm terminates early if a pass completes with no swaps, indicating the array is already sorted. While its O(n²) worst-case performance makes it impractical for large datasets, Bubble Sort is an excellent educational algorithm for understanding sorting fundamentals, invariants, and optimization techniques like early termination."
+  },
+
+  "complexity": {
+    "time": "O(n²)",
+    "space": "O(1)",
+    "level": "beginner"
+  },
+
+  "visual": {
+    "layout": "array-comparison",
+    "theme": {
+      "primary": "#f97316",
+      "secondary": "#ea580c"
+    },
+    "components": {
+      "pointers": [
+        { "id": "j", "label": "j", "color": "#f97316" }
+      ],
+      "showIndices": true,
+      "showValues": true,
+      "highlightColor": "#fbbf24",
+      "highlightAltColor": "#f472b6",
+      "sortedColor": "#22c55e",
+      "swapArc": true
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "array": {
+        "type": "array",
+        "items": { "type": "number", "minimum": -999, "maximum": 999 },
+        "minItems": 0,
+        "maxItems": 20,
+        "description": "An array of numbers to sort."
+      }
+    },
+    "defaults": {
+      "array": [64, 34, 25, 12, 22, 11, 90]
+    },
+    "examples": [
+      {
+        "name": "Default (unsorted)",
+        "values": { "array": [64, 34, 25, 12, 22, 11, 90] }
+      },
+      {
+        "name": "Already sorted",
+        "values": { "array": [1, 2, 3, 4, 5] }
+      },
+      {
+        "name": "Reverse sorted (worst case)",
+        "values": { "array": [5, 4, 3, 2, 1] }
+      },
+      {
+        "name": "Single element",
+        "values": { "array": [42] }
+      },
+      {
+        "name": "Empty array",
+        "values": { "array": [] }
+      },
+      {
+        "name": "With duplicates",
+        "values": { "array": [5, 3, 8, 3, 2, 5, 1] }
+      },
+      {
+        "name": "Nearly sorted",
+        "values": { "array": [1, 2, 5, 3, 4] }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function bubbleSort(array):\n  n = length(array)\n  for pass = 0 to n - 2:\n    swapped = false\n    for j = 0 to n - 2 - pass:\n      if array[j] > array[j + 1]:\n        swap(array[j], array[j + 1])\n        swapped = true\n    if not swapped:\n      break          // Early termination\n  return array",
+      "python": "def bubble_sort(array: list[int]) -> list[int]:\n    n = len(array)\n    for pass_num in range(n - 1):\n        swapped = False\n        for j in range(n - 1 - pass_num):\n            if array[j] > array[j + 1]:\n                array[j], array[j + 1] = array[j + 1], array[j]\n                swapped = True\n        if not swapped:\n            break\n    return array",
+      "javascript": "function bubbleSort(array) {\n  const n = array.length;\n  for (let pass = 0; pass < n - 1; pass++) {\n    let swapped = false;\n    for (let j = 0; j < n - 1 - pass; j++) {\n      if (array[j] > array[j + 1]) {\n        [array[j], array[j + 1]] = [array[j + 1], array[j]];\n        swapped = true;\n      }\n    }\n    if (!swapped) break;\n  }\n  return array;\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Bubbling Up",
+        "description": "In each pass, the largest unsorted element 'bubbles up' to its correct position at the end of the unsorted portion. After pass p, the element at index N-1-p is in its final sorted position."
+      },
+      {
+        "title": "Early Termination",
+        "description": "If a complete pass makes no swaps, the array is already sorted. This optimization reduces the best-case time complexity from O(n²) to O(n) for already-sorted arrays."
+      },
+      {
+        "title": "Stability",
+        "description": "Bubble Sort is a stable sorting algorithm. Equal elements are never swapped (we use strict > comparison), so their relative order from the original array is preserved."
+      },
+      {
+        "title": "Adaptive Behavior",
+        "description": "Bubble Sort is adaptive — it performs fewer operations on nearly-sorted arrays. The number of swaps equals the number of inversions in the input, and early termination can skip unnecessary passes."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "O(n²) worst case",
+        "description": "A reverse-sorted array requires the maximum number of comparisons and swaps: n(n-1)/2. For large arrays, this makes Bubble Sort impractical compared to O(n log n) algorithms like Merge Sort or Quick Sort."
+      },
+      {
+        "title": "Forgetting early termination",
+        "description": "Without the swapped flag, Bubble Sort always runs all n-1 passes even on a sorted array. The early termination optimization is simple to implement and dramatically improves best-case performance."
+      },
+      {
+        "title": "Using >= instead of >",
+        "description": "Using >= for comparison instead of > breaks stability. Equal elements would be swapped unnecessarily, changing their relative order from the original array."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "After 2 passes of Bubble Sort on an array of 6 elements, how many elements are guaranteed to be in their final positions?",
+        "options": ["1", "2", "3", "6"],
+        "correctIndex": 1,
+        "explanation": "After each pass, the largest unsorted element bubbles to its correct position. After 2 passes, the 2 largest elements are in their final positions at the end of the array."
+      },
+      {
+        "question": "What is the best-case time complexity of optimized Bubble Sort (with early termination)?",
+        "options": ["O(1)", "O(n)", "O(n log n)", "O(n²)"],
+        "correctIndex": 1,
+        "explanation": "On an already-sorted array, Bubble Sort makes one pass with n-1 comparisons and zero swaps, then terminates early. This gives O(n) best-case time complexity."
+      },
+      {
+        "question": "How many swaps does Bubble Sort perform on the array [3, 1, 2]?",
+        "options": ["1", "2", "3", "4"],
+        "correctIndex": 1,
+        "explanation": "Pass 1: Compare 3,1 → swap (→[1,3,2]), compare 3,2 → swap (→[1,2,3]). Pass 2: Compare 1,2 → no swap. Early termination. Total: 2 swaps."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Bubble Sort — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Bubble_sort",
+        "type": "reference"
+      },
+      {
+        "title": "VisuAlgo — Sorting Visualizations",
+        "url": "https://visualgo.net/en/sorting",
+        "type": "interactive"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "bubble sort visualization",
+      "bubble sort algorithm",
+      "bubble sort step by step",
+      "bubble sort animation",
+      "how bubble sort works",
+      "sorting algorithm visualization",
+      "bubble sort early termination",
+      "stable sorting algorithm"
+    ],
+    "ogDescription": "Interactive step-by-step visualization of Bubble Sort. Watch adjacent elements swap as the largest values bubble up to their sorted positions."
+  },
+
+  "prerequisites": [],
+  "related": ["merge-sort", "quicksort", "binary-search"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

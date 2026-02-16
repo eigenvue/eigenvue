@@ -1,0 +1,15 @@
+{
+  "description": "Momentum on quadratic f(x,y) = x² + 3y², starting at (-3, 4), lr=0.05, 30 steps",
+  "inputs": {
+    "startX": -3,
+    "startY": 4,
+    "learningRate": 0.05,
+    "optimizer": "momentum",
+    "numSteps": 30
+  },
+  "expectedStepCount": 31,
+  "keyStates": [
+    { "stepId": "initial", "state": { "loss": 57, "optimizer": "momentum" } }
+  ],
+  "notes": "31 steps: initial + 30 optimization steps. Initial loss = 9 + 48 = 57. Momentum should show faster convergence than SGD."
+}

@@ -1,0 +1,15 @@
+{
+  "description": "Adam on quadratic f(x,y) = x² + 3y², starting at (4, -2), lr=0.1, 25 steps",
+  "inputs": {
+    "startX": 4,
+    "startY": -2,
+    "learningRate": 0.1,
+    "optimizer": "adam",
+    "numSteps": 25
+  },
+  "expectedStepCount": 26,
+  "keyStates": [
+    { "stepId": "initial", "state": { "loss": 28, "optimizer": "adam" } }
+  ],
+  "notes": "26 steps: initial + 25 optimization steps. Initial loss = 16 + 12 = 28. Adam should converge smoothly."
+}

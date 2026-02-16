@@ -1,0 +1,13 @@
+{
+  "description": "5×5 block input with 3×3 Laplacian edge detection kernel",
+  "inputs": {
+    "input": [[0, 0, 0, 0, 0], [0, 1, 1, 1, 0], [0, 1, 1, 1, 0], [0, 1, 1, 1, 0], [0, 0, 0, 0, 0]],
+    "kernel": [[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]]
+  },
+  "expectedStepCount": 11,
+  "keyStates": [
+    { "stepId": "show-input", "state": { "outputHeight": 3, "outputWidth": 3 } },
+    { "stepId": "conv-1-1", "state": { "sum": 0 } }
+  ],
+  "notes": "Edge detection: center of uniform block produces 0, edges produce non-zero. 3×3 output from 5×5 input with 3×3 kernel."
+}

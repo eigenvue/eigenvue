@@ -1,0 +1,115 @@
+---
+title: "Getting Started — Jupyter Integration"
+description: "Embed interactive Eigenvue visualizations directly inside Jupyter notebooks and Google Colab using the eigenvue.jupyter() function."
+---
+
+Eigenvue integrates with Jupyter notebooks so you can explore algorithm
+visualizations right next to your own code and analysis.
+
+## Displaying a Visualization
+
+Use `eigenvue.jupyter()` to render an interactive widget in any notebook cell:
+
+```python
+import eigenvue
+
+eigenvue.jupyter("quicksort", data=[10, 3, 7, 1, 9, 5, 2, 8, 4, 6])
+```
+
+When you run the cell, an inline widget appears containing the full Eigenvue
+visualizer -- canvas, code panel, explanation panel, and playback controls.
+
+## Cell Output
+
+The widget is rendered as an **IFrame** that embeds a local Flask server. You
+get the same playback controls available on the web app:
+
+- **Play / Pause** -- start or stop continuous playback.
+- **Step Forward / Step Back** -- advance or rewind one step at a time.
+- **Speed selector** -- choose 0.5x, 1x, 2x, or 4x.
+- **Progress bar** -- drag to jump to any step.
+- **Reset** -- return to the first step.
+
+The IFrame resizes to fit the notebook output area. Scroll within the widget if
+your screen is narrow.
+
+## Multiple Visualizations
+
+You can display several visualizations in the same notebook. Each call to
+`eigenvue.jupyter()` in a separate cell produces its own independent widget:
+
+```python
+# Cell 1
+import eigenvue
+
+eigenvue.jupyter("bubble-sort", data=[5, 1, 4, 2, 8])
+```
+
+```python
+# Cell 2
+eigenvue.jupyter("transformer-attention", sequence=["the", "cat", "sat"])
+```
+
+Each widget maintains its own playback state, so you can compare algorithms
+side by side without interference.
+
+## Google Colab Compatibility
+
+Eigenvue works in **Google Colab** with no extra setup. Install the package in
+a code cell and call `eigenvue.jupyter()` as usual:
+
+```python
+!pip install eigenvue
+
+import eigenvue
+
+eigenvue.jupyter("dijkstra", graph={
+    "A": {"B": 1, "C": 4},
+    "B": {"C": 2, "D": 6},
+    "C": {"D": 3},
+    "D": {}
+}, start="A")
+```
+
+Colab routes the local server through its built-in proxy, so the IFrame loads
+correctly without any manual port configuration.
+
+## Combining with Analysis
+
+A common workflow is to collect step data with `eigenvue.steps()`, run your own
+analysis, and then display the visualization with `eigenvue.jupyter()` in the
+same notebook:
+
+```python
+import eigenvue
+
+# 1. Collect step data programmatically
+frames = eigenvue.steps("a-star", grid=[
+    [0, 0, 0, 1, 0],
+    [0, 1, 0, 1, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0],
+], start=(0, 0), goal=(4, 4))
+
+# 2. Analyse the results
+total_steps = len(frames)
+nodes_visited = sum(
+    1 for f in frames if "visit" in f["description"].lower()
+)
+
+print(f"Total steps:   {total_steps}")
+print(f"Nodes visited: {nodes_visited}")
+
+# 3. Display the interactive visualization
+eigenvue.jupyter("a-star", grid=[
+    [0, 0, 0, 1, 0],
+    [0, 1, 0, 1, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0],
+], start=(0, 0), goal=(4, 4))
+```
+
+This pattern lets you quantify algorithm behaviour (step counts, comparisons,
+memory usage) and visually verify the results -- all within a single notebook.

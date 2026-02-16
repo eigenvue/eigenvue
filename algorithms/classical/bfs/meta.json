@@ -1,0 +1,91 @@
+{
+  "id": "bfs",
+  "name": "Breadth-First Search",
+  "category": "classical",
+  "description": {
+    "short": "Explore a graph level by level using a queue.",
+    "long": "BFS explores all neighbors of the current node before moving to the next level. It uses a FIFO queue and guarantees the shortest path (minimum edges) in unweighted graphs."
+  },
+  "complexity": { "time": "O(V + E)", "space": "O(V)", "level": "intermediate" },
+  "visual": {
+    "layout": "graph-network",
+    "theme": { "primary": "#38bdf8", "secondary": "#818cf8" },
+    "components": {}
+  },
+  "inputs": {
+    "schema": {
+      "adjacencyList": { "type": "object", "description": "Adjacency list: nodeId → [neighborIds]" },
+      "positions": { "type": "object", "description": "Node positions: nodeId → {x, y} in [0,1]" },
+      "startNode": { "type": "string", "description": "Starting node" },
+      "targetNode": { "type": "string", "description": "Optional target node" }
+    },
+    "defaults": {
+      "adjacencyList": { "A": ["B", "C"], "B": ["A", "D", "E"], "C": ["A", "F"], "D": ["B"], "E": ["B", "F"], "F": ["C", "E"] },
+      "positions": { "A": {"x": 0.1, "y": 0.5}, "B": {"x": 0.35, "y": 0.2}, "C": {"x": 0.35, "y": 0.8}, "D": {"x": 0.65, "y": 0.1}, "E": {"x": 0.65, "y": 0.5}, "F": {"x": 0.9, "y": 0.8} },
+      "startNode": "A",
+      "targetNode": "F"
+    },
+    "examples": [
+      {
+        "name": "6-node graph (find F)",
+        "values": {
+          "adjacencyList": { "A": ["B", "C"], "B": ["A", "D", "E"], "C": ["A", "F"], "D": ["B"], "E": ["B", "F"], "F": ["C", "E"] },
+          "positions": { "A": {"x": 0.1, "y": 0.5}, "B": {"x": 0.35, "y": 0.2}, "C": {"x": 0.35, "y": 0.8}, "D": {"x": 0.65, "y": 0.1}, "E": {"x": 0.65, "y": 0.5}, "F": {"x": 0.9, "y": 0.8} },
+          "startNode": "A",
+          "targetNode": "F"
+        }
+      },
+      {
+        "name": "Explore all (no target)",
+        "values": {
+          "adjacencyList": { "A": ["B", "C"], "B": ["A", "D"], "C": ["A"], "D": ["B"] },
+          "positions": { "A": {"x": 0.2, "y": 0.5}, "B": {"x": 0.5, "y": 0.2}, "C": {"x": 0.5, "y": 0.8}, "D": {"x": 0.8, "y": 0.5} },
+          "startNode": "A"
+        }
+      }
+    ]
+  },
+  "code": {
+    "implementations": {
+      "pseudocode": "function BFS(graph, start, target?):\n  visited = {start}\n  queue = [start]\n  predecessor[start] = null\n  while queue is not empty:\n    current = queue.dequeue()\n    for each neighbor of current:\n      if neighbor not in visited:\n        visited.add(neighbor)\n        predecessor[neighbor] = current\n        queue.enqueue(neighbor)\n        if neighbor == target:\n          return reconstructPath(predecessor, target)\n  return null  // target not found",
+      "python": "from collections import deque\n\ndef bfs(graph, start, target=None):\n    visited = {start}\n    queue = deque([start])\n    pred = {start: None}\n    while queue:\n        current = queue.popleft()\n        for neighbor in graph[current]:\n            if neighbor not in visited:\n                visited.add(neighbor)\n                pred[neighbor] = current\n                queue.append(neighbor)\n                if neighbor == target:\n                    return reconstruct(pred, target)\n    return None"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+  "education": {
+    "keyConcepts": [
+      { "title": "Level-by-Level Exploration", "description": "BFS visits all nodes at distance d before any at distance d+1. This is guaranteed by the FIFO queue." },
+      { "title": "Shortest Path (Unweighted)", "description": "The first time BFS reaches a node, it found the shortest path (fewest edges). This does NOT apply to weighted graphs — use Dijkstra for those." },
+      { "title": "Queue (FIFO)", "description": "The queue ensures first-in-first-out order, which is what makes BFS explore level by level rather than depth-first." }
+    ],
+    "pitfalls": [
+      { "title": "Not for weighted graphs", "description": "BFS finds the shortest path only in UNWEIGHTED graphs. For weighted graphs, use Dijkstra's algorithm." },
+      { "title": "Memory usage", "description": "BFS can use a lot of memory because it stores all nodes at the current level in the queue. For very wide graphs, this can be a problem." }
+    ],
+    "quiz": [
+      {
+        "question": "What data structure does BFS use?",
+        "options": ["Stack", "Queue", "Priority Queue", "Hash Set"],
+        "correctIndex": 1,
+        "explanation": "BFS uses a FIFO queue. Nodes are added to the back and removed from the front, ensuring level-by-level exploration."
+      },
+      {
+        "question": "Does BFS guarantee the shortest path?",
+        "options": ["Always", "Only in unweighted graphs", "Only in weighted graphs", "Never"],
+        "correctIndex": 1,
+        "explanation": "BFS guarantees shortest path only in unweighted graphs (where all edges have equal cost). For weighted graphs, use Dijkstra's algorithm."
+      }
+    ],
+    "resources": [
+      { "title": "Wikipedia: BFS", "url": "https://en.wikipedia.org/wiki/Breadth-first_search", "type": "article" }
+    ]
+  },
+  "seo": {
+    "keywords": ["bfs", "breadth-first search", "bfs visualization", "graph traversal", "shortest path unweighted"],
+    "ogDescription": "Watch BFS explore a graph level by level. See the queue, node visitation, and shortest path reconstruction."
+  },
+  "prerequisites": [],
+  "related": ["dfs", "dijkstra"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

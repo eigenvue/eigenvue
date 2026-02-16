@@ -1,0 +1,344 @@
+/**
+ * Eigenvue Global Styles
+ *
+ * This file contains:
+ * 1. Tailwind directives
+ * 2. Theme CSS custom properties (dark default + light overrides)
+ * 3. CSS reset additions (beyond Tailwind's preflight)
+ * 4. Custom scrollbar styling
+ * 5. Selection color
+ * 6. Focus-visible styles
+ * 7. Reduced-motion overrides
+ * 8. Utility classes that Tailwind cannot express
+ */
+
+/* ─── 1. Tailwind Directives ─── */
+@import "tailwindcss";
+
+/* Load the traditional tailwind.config.ts for design token definitions */
+@config "../../tailwind.config.ts";
+
+/* ─── 2. Font Imports ─── */
+/* Import Inter (variable font) and JetBrains Mono from Google Fonts.
+   Prefer loading via next/font in layout.tsx for optimal performance.
+   This CSS import is the fallback if next/font setup is not used. */
+
+/* ─── 3. Base Layer Overrides ─── */
+@layer base {
+  /**
+   * Theme CSS Custom Properties — Dark mode (default).
+   *
+   * These variables are consumed by the Tailwind config via var() references.
+   * The `.light` class on <html> overrides them for light mode.
+   */
+  :root {
+    /* ── Backgrounds ── */
+    --bg-page: #06080f;
+    --bg-surface: #0c1021;
+    --bg-elevated: #131830;
+    --bg-hover: #1a2040;
+
+    /* ── Text ── */
+    --text-primary: #f0f2f8;
+    --text-secondary: #a0a8c0;
+    --text-tertiary: #6b7394;
+    --text-disabled: #3d4460;
+
+    /* ── Borders ── */
+    --border-default: rgba(160, 168, 192, 0.10);
+    --border-hover: rgba(160, 168, 192, 0.20);
+
+    /* ── Category accents ── */
+    --classical: #38bdf8;
+    --classical-light: #7dd3fc;
+    --classical-dark: #0284c7;
+    --classical-muted: rgba(56, 189, 248, 0.08);
+
+    --deeplearning: #8b5cf6;
+    --deeplearning-light: #a78bfa;
+    --deeplearning-dark: #6d28d9;
+    --deeplearning-muted: rgba(139, 92, 246, 0.08);
+
+    --genai: #f472b6;
+    --genai-light: #f9a8d4;
+    --genai-dark: #db2777;
+    --genai-muted: rgba(244, 114, 182, 0.08);
+
+    --quantum: #00ffc8;
+    --quantum-light: #5cffe0;
+    --quantum-dark: #00b894;
+    --quantum-muted: rgba(0, 255, 200, 0.08);
+
+    /* ── Surface effects ── */
+    --glass-bg: rgba(12, 16, 33, 0.7);
+    --glass-border: rgba(160, 168, 192, 0.08);
+    --gradient-border-bg: #0c1021;
+
+    /* ── Scrollbar ── */
+    --scrollbar-thumb: rgba(160, 168, 192, 0.15);
+    --scrollbar-thumb-hover: rgba(160, 168, 192, 0.3);
+
+    /* ── Selection ── */
+    --selection-bg: rgba(139, 92, 246, 0.3);
+    --selection-color: #f0f2f8;
+
+    /* ── Difficulty levels ── */
+    --difficulty-beginner: #34d399;
+    --difficulty-beginner-bg: rgba(52, 211, 153, 0.10);
+    --difficulty-intermediate: #fbbf24;
+    --difficulty-intermediate-bg: rgba(251, 191, 36, 0.10);
+    --difficulty-advanced: #fb923c;
+    --difficulty-advanced-bg: rgba(251, 146, 60, 0.10);
+    --difficulty-expert: #f87171;
+    --difficulty-expert-bg: rgba(248, 113, 113, 0.10);
+
+    /* ── Starfield ── */
+    --starfield-opacity: 1;
+    --starfield-color: 240, 242, 248;
+  }
+
+  /**
+   * Light mode overrides — activated by adding `.light` class to <html>.
+   * All accent colors are darkened for proper contrast on light backgrounds.
+   */
+  :root.light {
+    --bg-page: #f8f9fc;
+    --bg-surface: #ffffff;
+    --bg-elevated: #f0f1f5;
+    --bg-hover: #e4e5eb;
+
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-tertiary: #6b7280;
+    --text-disabled: #d1d5db;
+
+    --border-default: rgba(0, 0, 0, 0.10);
+    --border-hover: rgba(0, 0, 0, 0.18);
+
+    --classical: #0369a1;
+    --classical-light: #38bdf8;
+    --classical-dark: #075985;
+    --classical-muted: rgba(3, 105, 161, 0.06);
+
+    --deeplearning: #7c3aed;
+    --deeplearning-light: #8b5cf6;
+    --deeplearning-dark: #5b21b6;
+    --deeplearning-muted: rgba(124, 58, 237, 0.06);
+
+    --genai: #db2777;
+    --genai-light: #f472b6;
+    --genai-dark: #9d174d;
+    --genai-muted: rgba(219, 39, 119, 0.06);
+
+    --quantum: #059669;
+    --quantum-light: #10b981;
+    --quantum-dark: #047857;
+    --quantum-muted: rgba(5, 150, 105, 0.06);
+
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --gradient-border-bg: #ffffff;
+
+    --scrollbar-thumb: rgba(0, 0, 0, 0.15);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+
+    --selection-bg: rgba(139, 92, 246, 0.2);
+    --selection-color: #111827;
+
+    --difficulty-beginner: #059669;
+    --difficulty-beginner-bg: rgba(5, 150, 105, 0.10);
+    --difficulty-intermediate: #d97706;
+    --difficulty-intermediate-bg: rgba(217, 119, 6, 0.10);
+    --difficulty-advanced: #ea580c;
+    --difficulty-advanced-bg: rgba(234, 88, 12, 0.10);
+    --difficulty-expert: #dc2626;
+    --difficulty-expert-bg: rgba(220, 38, 38, 0.10);
+
+    --starfield-opacity: 0.15;
+    --starfield-color: 80, 90, 130;
+  }
+
+  /**
+   * Root element: set the background color, default text color,
+   * and font smoothing. This ensures the entire page defaults to
+   * the correct theme even before components render.
+   */
+  html {
+    @apply bg-background-page text-text-primary antialiased;
+    /* Prevent layout shift from scrollbar appearing/disappearing */
+    scrollbar-gutter: stable;
+    /* Smooth scrolling for anchor links */
+    scroll-behavior: smooth;
+    /* Smooth theme transitions */
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body {
+    @apply font-sans text-base;
+    /* Prevent horizontal overflow from any misaligned element */
+    overflow-x: hidden;
+  }
+
+  /**
+   * Reduced motion: disable ALL animations and transitions for users
+   * who have enabled "prefers-reduced-motion: reduce" in their OS.
+   * This is a blanket override — individual components do not need
+   * to check this preference.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /**
+   * Focus-visible styling: show a clear focus ring ONLY for keyboard
+   * navigation (not mouse clicks). Uses the :focus-visible pseudo-class.
+   * This ring must be visible against all backgrounds in the app.
+   */
+  :focus-visible {
+    outline: 2px solid #8b5cf6;
+    outline-offset: 2px;
+  }
+
+  /** Remove default focus for mouse users */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /**
+   * Selection color: when users highlight text, use a semi-transparent
+   * purple that matches the brand identity.
+   */
+  ::selection {
+    background-color: var(--selection-bg);
+    color: var(--selection-color);
+  }
+
+  /**
+   * Custom scrollbar: subtle, theme-aware, does not distract.
+   * Only styled for Webkit/Blink browsers. Firefox uses scrollbar-color.
+   */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+}
+
+/* ─── 4. Component Layer ─── */
+@layer components {
+  /**
+   * .gradient-text: applies the primary gradient (purple → cyan) as text color.
+   * Used for headings and emphasis text.
+   */
+  .gradient-text {
+    @apply bg-gradient-to-r from-gradient-from via-gradient-via to-gradient-to bg-clip-text text-transparent;
+  }
+
+  /**
+   * .gradient-border: creates a gradient border effect using a pseudo-element.
+   * The element needs position: relative and a solid background to mask the inner area.
+   */
+  .gradient-border {
+    position: relative;
+    background: var(--gradient-border-bg);
+    border-radius: 1rem;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      #8b5cf6,
+      #06b6d4
+    );
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+  }
+
+  /**
+   * .glass: frosted-glass panel effect for overlays and elevated surfaces.
+   * Uses CSS variables for theme-aware styling.
+   */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+  }
+
+  /**
+   * .skip-link: screen-reader accessible skip-to-content link.
+   * Only visible when focused via keyboard.
+   */
+  .skip-link {
+    @apply absolute -top-full left-4 z-50 rounded bg-background-elevated px-4 py-2 text-text-primary;
+    @apply focus:top-4;
+  }
+}
+
+/* ─── 5. Utility Layer ─── */
+@layer utilities {
+  /**
+   * .animation-delay-*: stagger animation delays for sequential reveal.
+   * Used with Intersection Observer to stagger card appearances.
+   */
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+}
+
+/* ─── 6. Light Mode Shadow Overrides ─── */
+/* Card shadows are lighter in light mode to match the aesthetic. */
+html.light .shadow-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+html.light .shadow-card-hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.07);
+}

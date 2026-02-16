@@ -1,0 +1,531 @@
+---
+title: "Adding a Layout"
+description: "Guide for creating new layout functions that convert algorithm steps into visual primitives for rendering on the Eigenvue canvas."
+---
+
+A layout is a **pure function** that transforms a `Step` object into a
+`PrimitiveScene` -- the set of visual elements rendered on the canvas. If none
+of the existing 10 layouts fit your algorithm's visualization needs, you will
+need to create a new one.
+
+---
+
+## What Is a Layout?
+
+A layout function reads the `state` and `visualActions` from a `Step` and
+produces a `PrimitiveScene` containing render primitives (elements, connections,
+containers, annotations, and overlays). The rendering engine draws these
+primitives on the HTML5 Canvas.
+
+```
+Step (from generator)
+  │
+  ▼
+Layout Function (pure function)
+  │
+  ▼
+PrimitiveScene (array of render primitives)
+  │
+  ▼
+Canvas Renderer (draws to screen)
+```
+
+Layouts are **pure functions**: given the same `Step` and `CanvasSize`, they
+always return the same `PrimitiveScene`. No side effects, no canvas access, no
+external state.
+
+---
+
+## When to Create a New Layout
+
+You need a new layout when:
+
+- No existing layout can represent your algorithm's visualization
+  (e.g., a circular arrangement, a tree structure, a 3D projection).
+- An existing layout is close but would need significant modifications that
+  would break other algorithms using it.
+
+You do **not** need a new layout when:
+
+- An existing layout already handles your visual pattern. For example, both
+  binary search and linear search use `array-with-pointers`.
+- You only need different colors or pointer names -- those are handled by
+  `meta.json`'s `visual.components` config, not the layout itself.
+
+### Existing Layouts
+
+| Layout                | Used By                                    | Visual Pattern               |
+|-----------------------|--------------------------------------------|------------------------------|
+| `array-with-pointers` | Binary search, linear search               | Horizontal array + pointers  |
+| `array-comparison`    | Bubble sort, quicksort, merge sort         | Array + comparison indicators|
+| `graph-network`       | BFS, DFS, Dijkstra                         | Force-directed graph         |
+| `neuron-diagram`      | Perceptron                                 | Single neuron with inputs    |
+| `layer-network`       | Feedforward network, backpropagation       | Multi-layer network          |
+| `convolution-grid`    | Convolution                                | 2D grid + sliding kernel     |
+| `loss-landscape`      | Gradient descent                           | 3D-like loss surface         |
+| `token-sequence`      | Tokenization (BPE), token embeddings       | Horizontal token chips       |
+| `attention-heatmap`   | Self-attention, multi-head attention       | Token sequence + heatmap     |
+| `layer-diagram`       | Transformer block                          | Vertical block architecture  |
+
+---
+
+## Layout Function Signature
+
+Every layout function has this signature:
+
+```typescript
+type LayoutFunction = (
+  step: Step,
+  canvasSize: CanvasSize,
+  config: Record<string, unknown>,
+) => PrimitiveScene;
+```
+
+**Parameters:**
+
+| Parameter    | Type                        | Description                                       |
+|--------------|-----------------------------|---------------------------------------------------|
+| `step`       | `Step`                      | The current step (state, visual actions, etc.)     |
+| `canvasSize` | `CanvasSize`                | `{ width, height }` in CSS pixels                 |
+| `config`     | `Record<string, unknown>`   | Layout-specific config from `meta.json`'s `visual.components` |
+
+**Returns:** A `PrimitiveScene` object with a `primitives` array.
+
+```typescript
+interface PrimitiveScene {
+  readonly primitives: readonly RenderPrimitive[];
+}
+```
+
+### Implementation Template
+
+Here is a minimal layout to get you started:
+
+```typescript
+// web/src/engine/layouts/my-layout.ts
+
+import type {
+  Step,
+  CanvasSize,
+  PrimitiveScene,
+  RenderPrimitive,
+  ElementPrimitive,
+} from "../types";
+import { LAYOUT_PADDING, Z_INDEX } from "../types";
+import { registerLayout } from "./registry";
+
+function myLayout(
+  step: Step,
+  canvasSize: CanvasSize,
+  _config: Record<string, unknown>,
+): PrimitiveScene {
+  const primitives: RenderPrimitive[] = [];
+
+  // 1. Extract data from step.state
+  const data = (step.state as Record<string, unknown>).values as number[];
+  if (!data || data.length === 0) {
+    return { primitives: [] };
+  }
+
+  // 2. Compute geometry based on canvas size
+  const usableWidth = canvasSize.width - 2 * LAYOUT_PADDING;
+  const usableHeight = canvasSize.height - 2 * LAYOUT_PADDING;
+
+  // 3. Process visual actions to determine highlighting, colors, etc.
+  for (const action of step.visualActions) {
+    switch (action.type) {
+      case "highlightElement": {
+        // Handle highlighting...
+        break;
+      }
+      default:
+        // Unknown actions are silently ignored (open vocabulary contract).
+        break;
+    }
+  }
+
+  // 4. Create primitives
+  for (let i = 0; i < data.length; i++) {
+    const element: ElementPrimitive = {
+      kind: "element",
+      id: `item-${i}`,        // Stable ID for animation diffing
+      x: LAYOUT_PADDING + (i + 0.5) * (usableWidth / data.length),
+      y: canvasSize.height / 2,
+      width: 40,
+      height: 40,
+      shape: "roundedRect",
+      cornerRadius: 6,
+      fillColor: "#1e293b",
+      strokeColor: "#475569",
+      strokeWidth: 1,
+      label: String(data[i]),
+      labelFontSize: 16,
+      labelColor: "#f1f5f9",
+      subLabel: String(i),
+      subLabelFontSize: 11,
+      subLabelColor: "#94a3b8",
+      rotation: 0,
+      opacity: 1,
+      zIndex: Z_INDEX.ELEMENT,
+    };
+    primitives.push(element);
+  }
+
+  return { primitives };
+}
+
+// Self-register
+registerLayout({
+  name: "my-layout",
+  description: "Description of what this layout visualizes.",
+  layout: myLayout,
+});
+```
+
+---
+
+## Visual Primitives
+
+The rendering engine knows how to draw five primitive types. Your layout
+produces these; the renderer handles everything else (drawing, animation,
+DPI scaling).
+
+### Element
+
+A positioned, shaped item: an array cell, a graph node, a neuron, a token chip.
+
+```typescript
+interface ElementPrimitive {
+  readonly kind: "element";
+  readonly id: string;         // Stable ID for animation diffing
+  x: number;                   // Center x (CSS pixels)
+  y: number;                   // Center y (CSS pixels)
+  width: number;               // Bounding box width
+  height: number;              // Bounding box height
+  shape: ElementShape;         // "rect" | "roundedRect" | "circle" | "diamond"
+  cornerRadius: number;        // For "roundedRect" only
+  fillColor: string;           // CSS color
+  strokeColor: string;         // CSS color
+  strokeWidth: number;         // CSS pixels
+  label: string;               // Text inside the element
+  labelFontSize: number;
+  labelColor: string;
+  subLabel: string;            // Text below the element
+  subLabelFontSize: number;
+  subLabelColor: string;
+  rotation: number;            // Radians, clockwise from positive x-axis
+  opacity: number;             // [0, 1]
+  zIndex: number;              // Drawing order (lower = behind)
+}
+```
+
+### Connection
+
+A line or curve between two points: graph edges, neural network weights,
+attention arcs.
+
+```typescript
+interface ConnectionPrimitive {
+  readonly kind: "connection";
+  readonly id: string;
+  x1: number; y1: number;     // Start point
+  x2: number; y2: number;     // End point
+  curveOffset: number;         // Bezier control point offset (0 = straight line)
+  color: string;
+  lineWidth: number;
+  dashPattern: number[];       // e.g., [6, 4] for dashed
+  arrowHead: ArrowHead;        // "none" | "end" | "start" | "both"
+  arrowSize: number;
+  label: string;               // Label at midpoint
+  labelFontSize: number;
+  labelColor: string;
+  opacity: number;
+  zIndex: number;
+}
+```
+
+### Container
+
+A visual grouping box. Does not "contain" children in a tree sense -- it is
+simply a rectangle drawn at its z-index. You position child elements inside
+its bounds manually.
+
+```typescript
+interface ContainerPrimitive {
+  readonly kind: "container";
+  readonly id: string;
+  x: number; y: number;       // Center of the container
+  width: number; height: number;
+  cornerRadius: number;
+  fillColor: string;
+  strokeColor: string;
+  strokeWidth: number;
+  dashPattern: number[];
+  label: string;               // Displayed at top-center of the container
+  labelFontSize: number;
+  labelColor: string;
+  opacity: number;
+  zIndex: number;
+}
+```
+
+### Annotation
+
+Visual indicators: pointers (triangles), brackets, labels, and badges.
+
+```typescript
+interface AnnotationPrimitive {
+  readonly kind: "annotation";
+  readonly id: string;
+  form: AnnotationForm;        // "pointer" | "bracket" | "label" | "badge"
+  x: number; y: number;       // Anchor point (meaning depends on form)
+  text: string;
+  fontSize: number;
+  textColor: string;
+  color: string;               // Shape color
+  // Pointer-specific:
+  pointerHeight: number;       // Triangle height
+  pointerWidth: number;        // Triangle base width
+  // Bracket-specific:
+  bracketWidth: number;
+  bracketTickHeight: number;
+  // Badge-specific:
+  badgePaddingX: number;
+  badgePaddingY: number;
+  opacity: number;
+  zIndex: number;
+}
+```
+
+**Anchor point semantics by form:**
+
+- `"pointer"`: `(x, y)` is the tip of the downward-pointing triangle.
+- `"bracket"`: `(x, y)` is the left end; bracket extends rightward by `bracketWidth`.
+- `"label"`: `(x, y)` is the center of the text.
+- `"badge"`: `(x, y)` is the center of the pill shape.
+
+### Overlay
+
+Full-canvas or region-based effects: grids and heatmaps.
+
+```typescript
+interface OverlayPrimitive {
+  readonly kind: "overlay";
+  readonly id: string;
+  readonly overlayType: OverlayType;  // "grid" | "heatmap"
+  x: number; y: number;              // Top-left corner
+  width: number; height: number;
+  // Grid-specific:
+  gridSpacing: number;
+  gridColor: string;
+  gridLineWidth: number;
+  // Heatmap-specific:
+  heatmapData: number[][];           // Normalized [0, 1] values
+  heatmapColorLow: string;
+  heatmapColorHigh: string;
+  opacity: number;
+  zIndex: number;
+}
+```
+
+---
+
+## Coordinate System
+
+All coordinates are in **CSS pixels** with the origin at the **top-left corner**
+of the canvas:
+
+- **x** increases to the right.
+- **y** increases downward.
+- Angles are in **radians**, measured clockwise from the positive x-axis.
+
+Use `LAYOUT_PADDING` (40px) as the standard margin around the edges:
+
+```typescript
+import { LAYOUT_PADDING } from "../types";
+
+const usableWidth = canvasSize.width - 2 * LAYOUT_PADDING;
+const usableHeight = canvasSize.height - 2 * LAYOUT_PADDING;
+```
+
+Element positions (`x`, `y`) are **center coordinates**, not top-left.
+Container positions are also center coordinates. Overlay positions are
+top-left.
+
+---
+
+## Registering a Layout
+
+Every layout file must self-register by calling `registerLayout()` at module
+load time:
+
+```typescript
+import { registerLayout } from "./registry";
+
+registerLayout({
+  name: "my-layout",           // Must be unique across all layouts
+  description: "Short human-readable description.",
+  layout: myLayoutFunction,    // The pure function
+});
+```
+
+**Location:** `web/src/engine/layouts/registry.ts`
+
+The registry API:
+
+| Function                      | Description                          |
+|-------------------------------|--------------------------------------|
+| `registerLayout(registration)` | Register a layout. Throws if name already exists. |
+| `getLayout(name)`             | Look up a layout by name. Returns `undefined` if not found. |
+| `getRegisteredLayoutNames()`  | List all registered layout names (sorted). |
+| `clearLayoutRegistry()`       | Reset registry (for tests only).     |
+
+After creating your layout file, import it in the layouts index to ensure
+it is loaded:
+
+```typescript
+// web/src/engine/layouts/index.ts
+
+// Add your import:
+import "./my-layout";
+```
+
+---
+
+## Testing Layouts
+
+### Unit Tests
+
+Test that your layout produces the expected primitives for known step data:
+
+```typescript
+import { describe, it, expect, beforeEach } from "vitest";
+import { clearLayoutRegistry, getLayout } from "../registry";
+import "../my-layout"; // Triggers self-registration
+
+describe("my-layout", () => {
+  beforeEach(() => {
+    // Reset registry between tests to avoid pollution.
+    clearLayoutRegistry();
+    // Re-import to re-register (dynamic import or manual re-call).
+  });
+
+  it("produces correct number of elements for a 5-item array", () => {
+    const layout = getLayout("my-layout")!;
+    const scene = layout(
+      {
+        index: 0,
+        id: "test",
+        title: "Test",
+        explanation: "Test step",
+        state: { values: [1, 2, 3, 4, 5] },
+        visualActions: [],
+        codeHighlight: { language: "pseudocode", lines: [1] },
+        isTerminal: false,
+      },
+      { width: 800, height: 600 },
+      {},
+    );
+
+    const elements = scene.primitives.filter((p) => p.kind === "element");
+    expect(elements.length).toBe(5);
+  });
+
+  it("handles empty state gracefully", () => {
+    const layout = getLayout("my-layout")!;
+    const scene = layout(
+      {
+        index: 0,
+        id: "test",
+        title: "Test",
+        explanation: "Test step",
+        state: { values: [] },
+        visualActions: [],
+        codeHighlight: { language: "pseudocode", lines: [1] },
+        isTerminal: true,
+      },
+      { width: 800, height: 600 },
+      {},
+    );
+
+    expect(scene.primitives.length).toBe(0);
+  });
+
+  it("all element IDs are unique", () => {
+    const layout = getLayout("my-layout")!;
+    const scene = layout(
+      {
+        index: 0,
+        id: "test",
+        title: "Test",
+        explanation: "Test step",
+        state: { values: [10, 20, 30] },
+        visualActions: [],
+        codeHighlight: { language: "pseudocode", lines: [1] },
+        isTerminal: false,
+      },
+      { width: 800, height: 600 },
+      {},
+    );
+
+    const ids = scene.primitives.map((p) => p.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+});
+```
+
+### What to Test
+
+- **Correct primitive count** for various input sizes.
+- **Primitive IDs are unique** within a scene (required for animation diffing).
+- **Primitives stay within canvas bounds** (no negative coordinates, no
+  overflow past `canvasSize`).
+- **Visual actions are processed correctly** (highlight colors, pointer
+  positions, dimming).
+- **Empty / edge case inputs** return empty scenes gracefully.
+- **Different canvas sizes** produce proportionally scaled output.
+
+---
+
+## Existing Layouts as Reference
+
+The best way to learn the layout pattern is to read existing implementations:
+
+| File                          | Complexity | Good For Learning                    |
+|-------------------------------|------------|--------------------------------------|
+| `array-with-pointers.ts`     | Simple     | Basic elements + annotations         |
+| `array-comparison.ts`        | Simple     | Elements + swap animations           |
+| `graph-network.ts`           | Medium     | Elements + connections               |
+| `neuron-diagram.ts`          | Medium     | Custom geometry + connections        |
+| `attention-heatmap.ts`       | Complex    | Overlays + dynamic data              |
+
+All layout files are in `web/src/engine/layouts/`. Start by reading
+`array-with-pointers.ts` -- it is the simplest and most thoroughly commented.
+
+### Design Tips
+
+1. **Use the Z_INDEX constants** for consistent layering:
+   ```typescript
+   import { Z_INDEX } from "../types";
+   // Z_INDEX.OVERLAY_BACKGROUND = 0
+   // Z_INDEX.CONTAINER = 10
+   // Z_INDEX.CONNECTION = 20
+   // Z_INDEX.ELEMENT = 30
+   // Z_INDEX.ANNOTATION = 40
+   // Z_INDEX.OVERLAY_FOREGROUND = 50
+   ```
+
+2. **Keep IDs stable across steps.** The animation engine diffs scenes by
+   primitive ID. If `cell-3` in step N maps to `cell-3` in step N+1, the
+   engine smoothly animates the transition. If you change the ID, the engine
+   treats it as a new element (fade in) and the old one as removed (fade out).
+
+3. **Respond to canvas size.** Layouts should scale gracefully. Use relative
+   positioning based on `canvasSize` and `LAYOUT_PADDING`, not hardcoded
+   pixel values.
+
+4. **Process all visual actions, ignore unknowns.** Use a `switch` with a
+   `default: break;` case. Never throw on unrecognized action types.
+
+5. **Use the theme constants** from your layout file (like `array-with-pointers`
+   does with its `THEME` object) for consistent colors across the dark UI.

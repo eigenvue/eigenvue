@@ -1,0 +1,1132 @@
+---
+title: "Adding an Algorithm"
+description: "End-to-end walkthrough for adding a new algorithm to Eigenvue, from planning through TypeScript and Python generators, tests, registration, and pull request submission."
+---
+
+This is the definitive guide for adding a new algorithm to Eigenvue. We will walk
+through every step using **Linear Search** as a concrete example, from initial
+planning to a merge-ready pull request.
+
+By the end of this guide you will have created:
+
+1. A `meta.json` with full algorithm metadata
+2. A TypeScript generator that yields step-by-step visualization data
+3. Test fixtures and unit tests (Vitest)
+4. A Python generator producing identical output
+5. Cross-language parity validation
+6. Pre-computed step data for zero-latency initial page loads
+
+---
+
+## Step 1: Plan Your Algorithm
+
+Before writing any code, decide three things:
+
+| Decision     | Value for Our Example       | Where It Matters                           |
+|--------------|-----------------------------|--------------------------------------------|
+| **ID**       | `linear-search`             | Directory name, URL slug, all cross-refs   |
+| **Category** | `classical`                 | Directory path, catalog grouping           |
+| **Layout**   | `array-with-pointers`       | Visual rendering strategy                  |
+
+The **algorithm ID** must be URL-safe, lowercase, and hyphen-separated. It must
+match the regex `^[a-z0-9][a-z0-9-]*$`.
+
+The **layout** determines which visual rendering function interprets your
+generator's step data. Browse the
+[10 existing layouts](/docs/api-reference/layout-system/) to find one that fits, or
+[create a new layout](/docs/contributing/adding-a-layout/) if none does.
+
+Available layouts:
+
+| Layout                | Best For                                        |
+|-----------------------|-------------------------------------------------|
+| `array-with-pointers` | Array algorithms with named pointers            |
+| `array-comparison`    | Sorting algorithms with element comparisons     |
+| `graph-network`       | Graph traversal and shortest path               |
+| `neuron-diagram`      | Single neuron / perceptron                       |
+| `layer-network`       | Multi-layer neural networks                     |
+| `convolution-grid`    | 2D convolution operations                       |
+| `loss-landscape`      | Gradient descent and optimization               |
+| `token-sequence`      | Tokenization and text processing                |
+| `attention-heatmap`   | Self-attention and multi-head attention          |
+| `layer-diagram`       | Transformer block architecture                  |
+
+---
+
+## Step 2: Create Directory Structure
+
+Create the algorithm directory and all required files:
+
+```bash
+mkdir -p algorithms/classical/linear-search/tests
+touch algorithms/classical/linear-search/meta.json
+touch algorithms/classical/linear-search/generator.ts
+touch algorithms/classical/linear-search/tests/generator.test.ts
+```
+
+Your directory should look like this:
+
+```
+algorithms/classical/linear-search/
+  meta.json              # Algorithm metadata (display info, inputs, education)
+  generator.ts           # TypeScript step generator
+  tests/
+    generator.test.ts    # Vitest unit tests
+    found.fixture.json   # Golden test fixture: target found
+    not-found.fixture.json  # Golden test fixture: target not found
+    single-element.fixture.json  # Golden test fixture: edge case
+```
+
+---
+
+## Step 3: Write `meta.json`
+
+The `meta.json` file is the single source of truth for everything about your
+algorithm that is **data** (not logic): display information, input schemas,
+educational content, visual configuration, and SEO metadata.
+
+Here is the complete `meta.json` for Linear Search, annotated with explanations:
+
+```json
+{
+  // URL-safe unique identifier. Must match directory name.
+  "id": "linear-search",
+
+  // Human-readable display name shown in the catalog and page title.
+  "name": "Linear Search",
+
+  // Category determines the catalog section and directory path.
+  // Options: "classical", "deep-learning", "generative-ai", "quantum"
+  "category": "classical",
+
+  "description": {
+    // Short description for cards and meta tags. Max 80 characters.
+    "short": "Scan an array element by element to find a target value.",
+    // Long description supports markdown. Shown on the algorithm page.
+    "long": "Linear search (also called sequential search) checks every element in an array one by one until it finds the target or reaches the end. While simple, it works on unsorted arrays — unlike binary search, which requires sorted input. Linear search has O(n) time complexity, making it practical for small datasets or unsorted collections."
+  },
+
+  "complexity": {
+    "time": "O(n)",
+    "space": "O(1)",
+    // Options: "beginner", "intermediate", "advanced", "expert"
+    "level": "beginner"
+  },
+
+  "visual": {
+    // Must match a registered layout name in web/src/engine/layouts/registry.ts
+    "layout": "array-with-pointers",
+    "theme": {
+      "primary": "#38bdf8",
+      "secondary": "#0284c7"
+    },
+    // Layout-specific configuration. Shape depends on the layout.
+    "components": {
+      "pointers": [
+        { "id": "i", "label": "i", "color": "#f472b6" }
+      ],
+      "showIndices": true,
+      "showValues": true,
+      "highlightColor": "#fbbf24",
+      "foundColor": "#22c55e",
+      "dimColor": "rgba(160, 168, 192, 0.15)",
+      "compareColor": "#f472b6"
+    }
+  },
+
+  "inputs": {
+    // JSON Schema for input validation and UI generation.
+    "schema": {
+      "array": {
+        "type": "array",
+        "items": { "type": "number", "minimum": -999, "maximum": 999 },
+        "minItems": 1,
+        "maxItems": 20,
+        "description": "The array to search through (does not need to be sorted)."
+      },
+      "target": {
+        "type": "number",
+        "minimum": -999,
+        "maximum": 999,
+        "description": "The value to search for."
+      }
+    },
+    // Default values shown when the page first loads.
+    "defaults": {
+      "array": [4, 2, 7, 1, 9, 3, 8, 5],
+      "target": 3
+    },
+    // Named presets users can select from a dropdown.
+    "examples": [
+      {
+        "name": "Default (target found)",
+        "values": { "array": [4, 2, 7, 1, 9, 3, 8, 5], "target": 3 }
+      },
+      {
+        "name": "Target not found",
+        "values": { "array": [4, 2, 7, 1, 9], "target": 6 }
+      },
+      {
+        "name": "Single element (found)",
+        "values": { "array": [42], "target": 42 }
+      },
+      {
+        "name": "Target is first element",
+        "values": { "array": [3, 7, 1, 9, 5], "target": 3 }
+      },
+      {
+        "name": "Target is last element",
+        "values": { "array": [3, 7, 1, 9, 5], "target": 5 }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      // At minimum, "pseudocode" must be present.
+      "pseudocode": "function linearSearch(array, target):\n  for i = 0 to length(array) - 1:\n    if array[i] == target:\n      return i          // Found!\n  return -1               // Not found",
+      "python": "def linear_search(array: list[int], target: int) -> int:\n    for i in range(len(array)):\n        if array[i] == target:\n            return i\n    return -1",
+      "javascript": "function linearSearch(array, target) {\n  for (let i = 0; i < array.length; i++) {\n    if (array[i] === target) {\n      return i;\n    }\n  }\n  return -1;\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Sequential Scan",
+        "description": "Linear search examines each element in order from index 0 to n-1. It is the simplest search algorithm and requires no preconditions on the array (unlike binary search, which needs sorted input)."
+      },
+      {
+        "title": "Linear Time Complexity",
+        "description": "In the worst case, every element must be checked, giving O(n) time. On average, the target is found after n/2 comparisons. Best case is O(1) if the target is the first element."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Using linear search on sorted data",
+        "description": "If the array is sorted, binary search is O(log n) — exponentially faster. Linear search should only be preferred when the data is unsorted or the array is very small."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "What is the average number of comparisons for linear search on an array of 100 elements?",
+        "options": ["10", "50", "100", "7"],
+        "correctIndex": 1,
+        "explanation": "On average, the target is equally likely to be at any position, so the expected number of comparisons is (1 + 2 + ... + n) / n = (n + 1) / 2, which is about 50 for n = 100."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Linear Search — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Linear_search",
+        "type": "reference"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "linear search visualization",
+      "sequential search algorithm",
+      "linear search step by step",
+      "linear search animation"
+    ],
+    "ogDescription": "Interactive step-by-step visualization of linear search. Watch how the algorithm scans an array to find a target value."
+  },
+
+  "prerequisites": [],
+  "related": ["binary-search", "bubble-sort"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}
+```
+
+:::note
+JSON does not officially support comments. The comments above are for
+illustration. Your actual `meta.json` must be valid JSON (no comments). Use the
+schema at `shared/meta.schema.json` to validate your file.
+:::
+
+---
+
+## Step 4: Write the TypeScript Generator
+
+The generator is the heart of your algorithm. It is a JavaScript generator
+function (`function*`) that yields `Step` objects at each "interesting moment"
+of the algorithm's execution.
+
+Create `algorithms/classical/linear-search/generator.ts`:
+
+```typescript
+/**
+ * @fileoverview Linear Search — Step Generator
+ *
+ * Generates a step-by-step visualization of linear search on an array.
+ *
+ * ALGORITHM:
+ *   Iterate through the array from index 0 to n-1. At each position,
+ *   compare array[i] with the target. If equal, return i. If the loop
+ *   completes without finding the target, return -1.
+ *
+ * STEP GENERATION STRATEGY:
+ *   - Initialization: show the full array and target
+ *   - Each comparison: highlight the current element, show result
+ *   - Found / Not found: terminal step with result
+ *
+ * STATE SNAPSHOT SAFETY:
+ *   The array is spread-copied in every state snapshot: [...array].
+ *   Primitive values (i, target) are safe by value.
+ */
+
+import { createGenerator } from "@/engine/generator";
+
+// ── Input Type ────────────────────────────────────────────────────────────
+
+/**
+ * Input parameters for linear search.
+ *
+ * CONSTRAINTS (enforced by meta.json schema):
+ * - array: 1-20 elements, each value in [-999, 999]
+ * - target: a number in [-999, 999]
+ */
+interface LinearSearchInputs extends Record<string, unknown> {
+  readonly array: readonly number[];
+  readonly target: number;
+}
+
+// ── Generator ─────────────────────────────────────────────────────────────
+
+export default createGenerator<LinearSearchInputs>({
+  // Must match the "id" field in meta.json exactly.
+  id: "linear-search",
+
+  *generate(inputs, step) {
+    const { array, target } = inputs;
+
+    // ── Step: Initialize ──────────────────────────────────────────────
+    // Show the full array. No pointer yet.
+    yield step({
+      id: "initialize",
+      title: "Initialize Search",
+      explanation:
+        `Searching for ${target} in an array of ${array.length} ` +
+        `element${array.length === 1 ? "" : "s"}. ` +
+        `Will check each element from left to right.`,
+      state: {
+        array: [...array],  // IMPORTANT: spread copy, not reference
+        target,
+        i: -1,
+        result: null,
+      },
+      visualActions: [
+        // Highlight the entire array as the search space.
+        { type: "highlightRange", from: 0, to: array.length - 1, color: "highlight" },
+      ],
+      codeHighlight: { language: "pseudocode", lines: [1] },
+      phase: "initialization",
+    });
+
+    // ── Main loop ─────────────────────────────────────────────────────
+    for (let i = 0; i < array.length; i++) {
+      // ── Step: Compare ─────────────────────────────────────────────
+      const isMatch = array[i] === target;
+
+      yield step({
+        id: "compare",
+        title: `Compare Element at Index ${i}`,
+        explanation:
+          `Checking array[${i}] = ${array[i]}. ` +
+          (isMatch
+            ? `It equals the target ${target}!`
+            : `${array[i]} !== ${target}, moving to the next element.`),
+        state: {
+          array: [...array],
+          target,
+          i,
+          result: null,
+        },
+        visualActions: [
+          // Dim elements we have already checked.
+          ...(i > 0 ? [{ type: "dimRange" as const, from: 0, to: i - 1 }] : []),
+          // Highlight the current element being compared.
+          { type: "highlightElement", index: i, color: "compare" },
+          // Move the pointer to the current position.
+          { type: "movePointer", id: "i", to: i },
+        ],
+        codeHighlight: { language: "pseudocode", lines: [2, 3] },
+        phase: "search",
+      });
+
+      if (isMatch) {
+        // ── Step: Found ─────────────────────────────────────────────
+        yield step({
+          id: "found",
+          title: "Target Found!",
+          explanation:
+            `array[${i}] = ${array[i]} equals target ${target}. ` +
+            `Found at index ${i} after checking ${i + 1} element${i === 0 ? "" : "s"}.`,
+          state: {
+            array: [...array],
+            target,
+            i,
+            result: i,
+          },
+          visualActions: [
+            { type: "markFound", index: i },
+            { type: "movePointer", id: "i", to: i },
+            {
+              type: "showMessage",
+              text: `Found ${target} at index ${i}!`,
+              messageType: "success",
+            },
+          ],
+          codeHighlight: { language: "pseudocode", lines: [4] },
+          phase: "result",
+          isTerminal: true,  // This is the final step.
+        });
+        return; // Generator ends here.
+      }
+    }
+
+    // ── Step: Not Found ─────────────────────────────────────────────
+    yield step({
+      id: "not_found",
+      title: "Target Not Found",
+      explanation:
+        `Checked all ${array.length} elements. ` +
+        `${target} is not in the array. Returning -1.`,
+      state: {
+        array: [...array],
+        target,
+        i: array.length,
+        result: -1,
+      },
+      visualActions: [
+        { type: "dimRange", from: 0, to: array.length - 1 },
+        { type: "markNotFound" },
+        {
+          type: "showMessage",
+          text: `${target} was not found in the array.`,
+          messageType: "warning",
+        },
+      ],
+      codeHighlight: { language: "pseudocode", lines: [5] },
+      phase: "result",
+      isTerminal: true,  // This is the final step.
+    });
+  },
+});
+```
+
+### Key Generator Rules
+
+Understanding these rules prevents the most common generator mistakes:
+
+1. **Always yield at least one step.** The runner rejects generators that produce zero steps.
+
+2. **Exactly one step must have `isTerminal: true`, and it must be the last.**
+   The runner validates this invariant after the generator finishes.
+
+3. **State snapshots must be independent.** Use `[...array]` (spread) or
+   `structuredClone()` for mutable data. Never pass a reference to a variable
+   that will be mutated later. If you do, all steps will point to the same
+   mutated object, and stepping backward in the UI will show incorrect state.
+
+4. **Step IDs can repeat.** The `id` field is a template identifier, not a
+   unique key. For example, `"compare"` appears once per loop iteration. The
+   `index` field (auto-assigned by the runner) is the unique identifier.
+
+5. **Code highlight lines are 1-indexed.** Line 1 means the first line of the
+   pseudocode in `meta.json`.
+
+6. **The generator must terminate.** The runner enforces a default limit of
+   10,000 steps as a safety net against infinite loops.
+
+---
+
+## Step 5: Write Test Fixtures
+
+Test fixtures are golden JSON files that define the expected step output for
+specific inputs. They are the ground truth for both TypeScript and Python
+generators.
+
+Create `algorithms/classical/linear-search/tests/found.fixture.json`:
+
+```json
+{
+  "description": "Target 3 found at index 5 in [4, 2, 7, 1, 9, 3, 8, 5].",
+  "inputs": {
+    "array": [4, 2, 7, 1, 9, 3, 8, 5],
+    "target": 3
+  },
+  "expected": {
+    "stepCount": 8,
+    "terminalStepId": "found",
+    "result": 5,
+    "stepIds": [
+      "initialize",
+      "compare",
+      "compare",
+      "compare",
+      "compare",
+      "compare",
+      "compare",
+      "found"
+    ],
+    "keyStates": [
+      { "stepIndex": 0, "field": "i", "value": -1 },
+      { "stepIndex": 1, "field": "i", "value": 0 },
+      { "stepIndex": 6, "field": "i", "value": 5 },
+      { "stepIndex": 7, "field": "result", "value": 5 }
+    ]
+  }
+}
+```
+
+Create `algorithms/classical/linear-search/tests/not-found.fixture.json`:
+
+```json
+{
+  "description": "Target 6 not found in [4, 2, 7, 1, 9].",
+  "inputs": {
+    "array": [4, 2, 7, 1, 9],
+    "target": 6
+  },
+  "expected": {
+    "stepCount": 7,
+    "terminalStepId": "not_found",
+    "result": -1,
+    "stepIds": [
+      "initialize",
+      "compare",
+      "compare",
+      "compare",
+      "compare",
+      "compare",
+      "not_found"
+    ],
+    "keyStates": [
+      { "stepIndex": 0, "field": "i", "value": -1 },
+      { "stepIndex": 5, "field": "i", "value": 4 },
+      { "stepIndex": 6, "field": "result", "value": -1 }
+    ]
+  }
+}
+```
+
+Create `algorithms/classical/linear-search/tests/single-element.fixture.json`:
+
+```json
+{
+  "description": "Single element array, target found.",
+  "inputs": {
+    "array": [42],
+    "target": 42
+  },
+  "expected": {
+    "stepCount": 3,
+    "terminalStepId": "found",
+    "result": 0,
+    "stepIds": [
+      "initialize",
+      "compare",
+      "found"
+    ],
+    "keyStates": [
+      { "stepIndex": 0, "field": "i", "value": -1 },
+      { "stepIndex": 1, "field": "i", "value": 0 },
+      { "stepIndex": 2, "field": "result", "value": 0 }
+    ]
+  }
+}
+```
+
+### Fixture Design Principles
+
+- **Cover the core paths.** At minimum, create fixtures for: found, not found,
+  and single-element cases.
+
+- **Include edge cases.** Target at the first index, target at the last index,
+  and duplicate values are all worth testing.
+
+- **Keep fixtures small.** Use arrays of 5--10 elements. Smaller arrays make
+  the expected step sequences easy to compute by hand and verify.
+
+- **State checks should be surgical.** Only assert on the fields that matter
+  for the specific test. The `keyStates` array lets you spot-check specific
+  state fields at specific step indices without writing out the entire step.
+
+---
+
+## Step 6: Write Unit Tests (Vitest)
+
+Create `algorithms/classical/linear-search/tests/generator.test.ts`:
+
+```typescript
+/**
+ * @fileoverview Linear Search Generator — Unit Tests
+ */
+
+import { describe, it, expect } from "vitest";
+import { runGenerator } from "@/engine/generator";
+import linearSearchGenerator from "../generator";
+
+// Import fixtures.
+import foundFixture from "./found.fixture.json";
+import notFoundFixture from "./not-found.fixture.json";
+import singleElementFixture from "./single-element.fixture.json";
+
+// ── Helper ────────────────────────────────────────────────────────────────
+
+function assertFixture(fixture: {
+  description: string;
+  inputs: { array: number[]; target: number };
+  expected: {
+    stepCount: number;
+    terminalStepId: string;
+    result: number;
+    stepIds: string[];
+    keyStates: Array<{ stepIndex: number; field: string; value: unknown }>;
+  };
+}) {
+  const result = runGenerator(linearSearchGenerator, fixture.inputs);
+  const { steps } = result;
+
+  // 1. Step count.
+  expect(steps.length).toBe(fixture.expected.stepCount);
+
+  // 2. Terminal step ID.
+  const terminalStep = steps[steps.length - 1]!;
+  expect(terminalStep.id).toBe(fixture.expected.terminalStepId);
+  expect(terminalStep.isTerminal).toBe(true);
+
+  // 3. Result value in terminal state.
+  expect(terminalStep.state.result).toBe(fixture.expected.result);
+
+  // 4. Step ID sequence.
+  const actualStepIds = steps.map((s) => s.id);
+  expect(actualStepIds).toEqual(fixture.expected.stepIds);
+
+  // 5. Key state values.
+  for (const check of fixture.expected.keyStates) {
+    const stepState = steps[check.stepIndex]!.state;
+    expect(stepState[check.field]).toEqual(check.value);
+  }
+}
+
+// ── Fixture Tests ─────────────────────────────────────────────────────────
+
+describe("Linear Search Generator — Fixture Tests", () => {
+  it("found: default example", () => {
+    assertFixture(foundFixture);
+  });
+
+  it("not found: target absent from array", () => {
+    assertFixture(notFoundFixture);
+  });
+
+  it("single element: target found", () => {
+    assertFixture(singleElementFixture);
+  });
+});
+
+// ── Format Compliance Tests ───────────────────────────────────────────────
+
+describe("Linear Search Generator — Format Compliance", () => {
+  const result = runGenerator(linearSearchGenerator, {
+    array: [4, 2, 7, 1, 9, 3],
+    target: 9,
+  });
+
+  it("produces a valid StepSequence", () => {
+    expect(result.formatVersion).toBe(1);
+    expect(result.algorithmId).toBe("linear-search");
+    expect(result.generatedBy).toBe("typescript");
+    expect(result.steps.length).toBeGreaterThan(0);
+  });
+
+  it("all step indices are contiguous and 0-based", () => {
+    result.steps.forEach((step, i) => {
+      expect(step.index).toBe(i);
+    });
+  });
+
+  it("exactly one step is terminal and it is the last", () => {
+    const terminalSteps = result.steps.filter((s) => s.isTerminal);
+    expect(terminalSteps.length).toBe(1);
+    expect(terminalSteps[0]!.index).toBe(result.steps.length - 1);
+  });
+
+  it("all step IDs match the required pattern", () => {
+    const pattern = /^[a-z0-9][a-z0-9_-]*$/;
+    for (const step of result.steps) {
+      expect(step.id).toMatch(pattern);
+    }
+  });
+
+  it("all code highlight lines are positive integers", () => {
+    for (const step of result.steps) {
+      for (const line of step.codeHighlight.lines) {
+        expect(Number.isInteger(line)).toBe(true);
+        expect(line).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+});
+
+// ── State Immutability Tests ──────────────────────────────────────────────
+
+describe("Linear Search Generator — State Immutability", () => {
+  it("step states are independent snapshots", () => {
+    const result = runGenerator(linearSearchGenerator, {
+      array: [10, 20, 30],
+      target: 20,
+    });
+
+    const arrays = result.steps.map((s) => s.state.array as number[]);
+
+    // All arrays should contain the same values.
+    for (const arr of arrays) {
+      expect(arr).toEqual([10, 20, 30]);
+    }
+
+    // But they should NOT be the same reference.
+    for (let i = 0; i < arrays.length - 1; i++) {
+      expect(arrays[i]).not.toBe(arrays[i + 1]);
+    }
+  });
+});
+
+// ── Edge Case Tests ───────────────────────────────────────────────────────
+
+describe("Linear Search Generator — Edge Cases", () => {
+  it("target is the first element (best case)", () => {
+    const result = runGenerator(linearSearchGenerator, {
+      array: [5, 3, 8, 1],
+      target: 5,
+    });
+    const terminal = result.steps[result.steps.length - 1]!;
+    expect(terminal.id).toBe("found");
+    expect(terminal.state.result).toBe(0);
+  });
+
+  it("target is the last element (worst case for found)", () => {
+    const result = runGenerator(linearSearchGenerator, {
+      array: [5, 3, 8, 1],
+      target: 1,
+    });
+    const terminal = result.steps[result.steps.length - 1]!;
+    expect(terminal.id).toBe("found");
+    expect(terminal.state.result).toBe(3);
+  });
+
+  it("all duplicate elements, target found", () => {
+    const result = runGenerator(linearSearchGenerator, {
+      array: [7, 7, 7, 7],
+      target: 7,
+    });
+    const terminal = result.steps[result.steps.length - 1]!;
+    expect(terminal.id).toBe("found");
+    // Linear search finds the first occurrence.
+    expect(terminal.state.result).toBe(0);
+  });
+
+  it("step count is bounded by n + 2", () => {
+    // n elements => 1 init + n compares + 1 result = n + 2 max
+    const result = runGenerator(linearSearchGenerator, {
+      array: [1, 2, 3, 4, 5, 6, 7, 8],
+      target: 999,
+    });
+    expect(result.steps.length).toBeLessThanOrEqual(10); // 8 + 2
+  });
+});
+```
+
+Run the tests:
+
+```bash
+cd web
+npx vitest run algorithms/classical/linear-search/tests/generator.test.ts
+```
+
+---
+
+## Step 7: Write the Python Generator
+
+Every TypeScript generator must have a corresponding Python generator that
+produces **identical** output for the same inputs. This is required for the
+PyPI package and for JOSS reproducibility.
+
+Create `python/src/eigenvue/generators/classical/linear_search.py`:
+
+```python
+"""
+Linear Search — Step Generator (Python)
+
+Produces step-by-step visualization data identical to the TypeScript
+generator when given the same inputs. Uses snake_case internally but
+outputs camelCase JSON via the Step dataclass's to_dict() method.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from eigenvue._step_types import Step, VisualAction, CodeHighlight
+
+
+def generate(inputs: dict[str, Any]) -> list[Step]:
+    """Generate linear search steps.
+
+    Parameters
+    ----------
+    inputs : dict
+        Must contain:
+        - array: list[int] — The array to search.
+        - target: int — The value to search for.
+
+    Returns
+    -------
+    list[Step]
+        Ordered list of Step dataclass objects.
+    """
+    array: list[int] = list(inputs["array"])
+    target: int = inputs["target"]
+    steps: list[Step] = []
+    n = len(array)
+
+    # ── Step: Initialize ──────────────────────────────────────────────
+    steps.append(Step(
+        index=0,
+        id="initialize",
+        title="Initialize Search",
+        explanation=(
+            f"Searching for {target} in an array of {n} "
+            f"element{'s' if n != 1 else ''}. "
+            f"Will check each element from left to right."
+        ),
+        state={
+            "array": list(array),  # Copy!
+            "target": target,
+            "i": -1,
+            "result": None,
+        },
+        visual_actions=[
+            VisualAction(type="highlightRange", from_=0, to=n - 1, color="highlight"),
+        ],
+        code_highlight=CodeHighlight(language="pseudocode", lines=[1]),
+        is_terminal=False,
+        phase="initialization",
+    ))
+
+    # ── Main loop ─────────────────────────────────────────────────────
+    step_index = 1
+    for i in range(n):
+        is_match = array[i] == target
+
+        # ── Step: Compare ─────────────────────────────────────────────
+        dim_actions: list[VisualAction] = []
+        if i > 0:
+            dim_actions.append(
+                VisualAction(type="dimRange", from_=0, to=i - 1)
+            )
+
+        steps.append(Step(
+            index=step_index,
+            id="compare",
+            title=f"Compare Element at Index {i}",
+            explanation=(
+                f"Checking array[{i}] = {array[i]}. "
+                + (
+                    f"It equals the target {target}!"
+                    if is_match
+                    else f"{array[i]} !== {target}, moving to the next element."
+                )
+            ),
+            state={
+                "array": list(array),
+                "target": target,
+                "i": i,
+                "result": None,
+            },
+            visual_actions=[
+                *dim_actions,
+                VisualAction(type="highlightElement", index=i, color="compare"),
+                VisualAction(type="movePointer", id="i", to=i),
+            ],
+            code_highlight=CodeHighlight(language="pseudocode", lines=[2, 3]),
+            is_terminal=False,
+            phase="search",
+        ))
+        step_index += 1
+
+        if is_match:
+            # ── Step: Found ───────────────────────────────────────────
+            steps.append(Step(
+                index=step_index,
+                id="found",
+                title="Target Found!",
+                explanation=(
+                    f"array[{i}] = {array[i]} equals target {target}. "
+                    f"Found at index {i} after checking "
+                    f"{i + 1} element{'s' if i > 0 else ''}."
+                ),
+                state={
+                    "array": list(array),
+                    "target": target,
+                    "i": i,
+                    "result": i,
+                },
+                visual_actions=[
+                    VisualAction(type="markFound", index=i),
+                    VisualAction(type="movePointer", id="i", to=i),
+                    VisualAction(
+                        type="showMessage",
+                        text=f"Found {target} at index {i}!",
+                        message_type="success",
+                    ),
+                ],
+                code_highlight=CodeHighlight(language="pseudocode", lines=[4]),
+                is_terminal=True,
+                phase="result",
+            ))
+            return steps
+
+    # ── Step: Not Found ───────────────────────────────────────────────
+    steps.append(Step(
+        index=step_index,
+        id="not_found",
+        title="Target Not Found",
+        explanation=(
+            f"Checked all {n} elements. "
+            f"{target} is not in the array. Returning -1."
+        ),
+        state={
+            "array": list(array),
+            "target": target,
+            "i": n,
+            "result": -1,
+        },
+        visual_actions=[
+            VisualAction(type="dimRange", from_=0, to=n - 1),
+            VisualAction(type="markNotFound"),
+            VisualAction(
+                type="showMessage",
+                text=f"{target} was not found in the array.",
+                message_type="warning",
+            ),
+        ],
+        code_highlight=CodeHighlight(language="pseudocode", lines=[5]),
+        is_terminal=True,
+        phase="result",
+    ))
+
+    return steps
+```
+
+### TypeScript vs Python: Key Differences
+
+| Aspect                | TypeScript                           | Python                              |
+|-----------------------|--------------------------------------|-------------------------------------|
+| Pattern               | Generator function (`function*`)     | Regular function returning `list`   |
+| Index tracking        | Automatic (runner assigns indices)   | Manual (you set `index` yourself)   |
+| State copy            | `[...array]`                         | `list(array)`                       |
+| Naming                | camelCase (`isTerminal`)             | snake_case (`is_terminal`)          |
+| JSON output           | camelCase natively                   | `to_dict()` converts to camelCase   |
+
+---
+
+## Step 8: Validate Cross-Language Parity
+
+After writing both generators, verify that they produce identical output:
+
+```bash
+python scripts/verify-step-parity.py
+```
+
+This script loads the golden fixtures, deserializes them into Python dataclasses,
+re-serializes them, and compares the JSON byte-for-byte.
+
+For a deeper manual check, you can run both generators on the same input and
+diff the output:
+
+```bash
+# Generate steps from TypeScript
+cd web
+npx tsx -e "
+  import gen from '../algorithms/classical/linear-search/generator';
+  import { runGenerator } from './src/engine/generator';
+  const result = runGenerator(gen, { array: [4,2,7,1,9,3,8,5], target: 3 });
+  console.log(JSON.stringify(result.steps, null, 2));
+" > /tmp/ts-steps.json
+
+# Generate steps from Python
+cd python
+python -c "
+from eigenvue.runner import run_generator
+import json
+steps = run_generator('linear-search', {'array': [4,2,7,1,9,3,8,5], 'target': 3})
+print(json.dumps(steps, indent=2))
+" > /tmp/py-steps.json
+
+# Diff
+diff /tmp/ts-steps.json /tmp/py-steps.json
+```
+
+The diff should be empty. If not, see
+[Cross-Language Parity](/docs/contributing/cross-language-parity/) for debugging
+strategies.
+
+---
+
+## Step 9: Register the Algorithm
+
+### TypeScript Side
+
+The TypeScript generator is auto-discovered from its file path. No manual
+registration is needed -- the build system scans `algorithms/*/generator.ts`.
+
+### Python Side
+
+Add the generator to the registry in
+`python/src/eigenvue/generators/__init__.py`:
+
+```python
+_REGISTRY_MAP: dict[str, tuple[str, str]] = {
+    # ... existing entries ...
+
+    # Add your new algorithm:
+    "linear-search": ("eigenvue.generators.classical.linear_search", "generate"),
+}
+```
+
+---
+
+## Step 10: Pre-compute Steps
+
+For zero-latency initial page loads, Eigenvue pre-computes steps for default
+inputs at build time. Create the pre-computed directory and generate the data:
+
+```bash
+mkdir -p algorithms/classical/linear-search/precomputed
+```
+
+The build script (`scripts/bundle-python-data.py`) handles pre-computation
+automatically. It runs each algorithm's generator with default inputs from
+`meta.json` and writes the result to the `precomputed/` directory.
+
+---
+
+## Step 11: Test End-to-End
+
+Run the full test suite to make sure nothing is broken:
+
+```bash
+# TypeScript tests
+cd web
+npm run test
+
+# Python tests
+cd python
+pytest
+
+# Cross-language parity
+python scripts/verify-step-parity.py
+
+# TypeScript linting and type checking
+cd web
+npm run lint
+npm run typecheck
+
+# Python linting and type checking
+cd python
+ruff check .
+mypy src/
+```
+
+Start the dev server and visually inspect your algorithm:
+
+```bash
+cd web
+npm run dev
+# Open http://localhost:3000/algorithms/linear-search
+```
+
+Verify:
+
+- The visualization renders correctly with the default inputs.
+- Stepping forward and backward works smoothly.
+- All example presets from `meta.json` produce correct visualizations.
+- The code panel highlights the correct lines at each step.
+- The explanation text accurately describes each step.
+
+---
+
+## Step 12: Submit Your Pull Request
+
+Once all tests pass and the visualization looks correct:
+
+```bash
+# Stage your new files
+git add algorithms/classical/linear-search/
+git add python/src/eigenvue/generators/classical/linear_search.py
+git add python/src/eigenvue/generators/__init__.py
+
+# Commit with Conventional Commits format
+git commit -m "feat(algorithms): add linear search visualization
+
+Adds complete linear search implementation with:
+- meta.json with full metadata, education, and SEO content
+- TypeScript generator with annotated step generation
+- Python generator with cross-language parity
+- Test fixtures and unit tests (Vitest)
+- Pre-computed default steps"
+
+# Push and create a PR
+git push -u origin feature/add-linear-search
+```
+
+### PR Checklist
+
+Before requesting review, verify all of the following:
+
+- [ ] `meta.json` validates against `shared/meta.schema.json`
+- [ ] TypeScript generator passes all Vitest tests
+- [ ] Python generator passes all pytest tests
+- [ ] Cross-language parity script passes
+- [ ] Linting passes (`npm run lint` and `ruff check .`)
+- [ ] Type checking passes (`npm run typecheck` and `mypy src/`)
+- [ ] Algorithm renders correctly in the browser
+- [ ] All example presets work
+- [ ] Code highlights match pseudocode lines
+- [ ] Step explanations are accurate and educational
+
+---
+
+## Summary
+
+The complete file tree for a new algorithm looks like this:
+
+```
+algorithms/classical/linear-search/
+  meta.json
+  generator.ts
+  precomputed/
+    default.json          # Auto-generated by build script
+  tests/
+    generator.test.ts
+    found.fixture.json
+    not-found.fixture.json
+    single-element.fixture.json
+
+python/src/eigenvue/generators/classical/
+  linear_search.py        # Python generator (parity with TypeScript)
+
+python/src/eigenvue/generators/__init__.py   # Updated registry
+```
+
+That is 4 new files you write by hand, 1 file you edit (the registry), and 1
+file that is auto-generated (pre-computed steps). The entire process, once you
+are familiar with it, takes about 2--4 hours for a simple algorithm and up to a
+day for something complex like multi-head attention.

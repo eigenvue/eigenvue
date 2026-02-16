@@ -1,0 +1,44 @@
+{
+  "description": "Transformer block verifying residual connections and layer norm postconditions",
+  "inputs": {
+    "tokens": ["Hello", "world"],
+    "embeddingDim": 4,
+    "ffnDim": 8,
+    "numHeads": 1
+  },
+  "expectedStepCount": 11,
+  "keyStates": [
+    {
+      "stepId": "show-input",
+      "state": {
+        "tokens": ["Hello", "world"],
+        "embeddingDim": 4
+      }
+    },
+    {
+      "stepId": "residual-1",
+      "checks": {
+        "residualIsInputPlusSublayerOutput": true
+      }
+    },
+    {
+      "stepId": "layer-norm-1",
+      "checks": {
+        "meanApproxZero": true,
+        "varianceApproxOne": true
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["Hello", "world"]
+      }
+    }
+  ],
+  "invariants": {
+    "residualConnectionsCorrect": true,
+    "layerNormMeanApproxZero": true,
+    "layerNormVarianceApproxOne": true,
+    "noNaNOrInfinity": true
+  }
+}

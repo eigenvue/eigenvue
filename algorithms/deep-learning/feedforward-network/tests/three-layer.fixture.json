@@ -1,0 +1,14 @@
+{
+  "description": "3-4-4-2 deep network with relu, seed deep-net",
+  "inputs": {
+    "inputValues": [0.3, 0.7, 0.5],
+    "layerSizes": [3, 4, 4, 2],
+    "activationFunction": "relu",
+    "seed": "deep-net"
+  },
+  "expectedStepCount": 5,
+  "keyStates": [
+    { "stepId": "architecture", "state": { "layerSizes": [3, 4, 4, 2] } }
+  ],
+  "notes": "3 layers of forward propagation. 5 steps: architecture + 3 propagation + output."
+}

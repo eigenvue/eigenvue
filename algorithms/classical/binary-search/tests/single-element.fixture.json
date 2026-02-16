@@ -1,0 +1,19 @@
+{
+  "description": "Single element array, target found.",
+  "inputs": {
+    "array": [42],
+    "target": 42
+  },
+  "expected": {
+    "stepCount": 3,
+    "terminalStepId": "found",
+    "result": 0,
+    "stepIds": ["initialize", "calculate_mid", "found"],
+    "keyStates": [
+      { "stepIndex": 0, "field": "left", "value": 0 },
+      { "stepIndex": 0, "field": "right", "value": 0 },
+      { "stepIndex": 1, "field": "mid", "value": 0 },
+      { "stepIndex": 2, "field": "result", "value": 0 }
+    ]
+  }
+}

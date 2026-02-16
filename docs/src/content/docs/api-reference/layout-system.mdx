@@ -1,0 +1,259 @@
+---
+title: "Layout System"
+description: "Reference for the layout system."
+---
+
+The layout system is the bridge between abstract visual actions and concrete rendering on screen. A layout defines how algorithm data is spatially arranged, which visual primitives are used, and how visual actions translate to visual changes.
+
+---
+
+## Concept
+
+A **layout** is a rendering strategy. It determines:
+
+- How the algorithm's state is spatially arranged (e.g., array cells in a row, graph nodes in a force-directed layout, a heatmap grid).
+- Which visual primitives (elements, connections, containers, annotations, overlays) are available.
+- How each visual action type maps to changes in those primitives.
+- What layout-specific configuration is read from the algorithm's `meta.json` `visual.components` field.
+
+Layouts are not tied to individual algorithms. Multiple algorithms share the same layout. For example, binary search, bubble sort, and quicksort all use the `array-with-pointers` layout with different configurations.
+
+---
+
+## Layout Registry
+
+Layouts are managed through a registry that maps layout names (strings) to layout implementations.
+
+### `registerLayout`
+
+Registers a new layout implementation in the global registry.
+
+```typescript
+function registerLayout(name: string, factory: LayoutFactory): void
+```
+
+| Parameter | Type             | Description                                                       |
+| --------- | ---------------- | ----------------------------------------------------------------- |
+| `name`    | `string`         | The layout identifier. Must match the `visual.layout` values used in `meta.json`. |
+| `factory` | `LayoutFactory`  | A factory function that creates a layout instance given configuration. |
+
+### `getLayout`
+
+Retrieves a registered layout by name.
+
+```typescript
+function getLayout(name: string): LayoutFactory | undefined
+```
+
+| Parameter | Type     | Description                              |
+| --------- | -------- | ---------------------------------------- |
+| `name`    | `string` | The layout identifier to look up.        |
+
+Returns `undefined` if no layout is registered with the given name.
+
+---
+
+## Registered Layouts
+
+Eigenvue ships with 10 built-in layouts, organized by domain.
+
+| Layout Name           | Category         | Visual Primitives                                    | Algorithms                                                   |
+| --------------------- | ---------------- | ---------------------------------------------------- | ------------------------------------------------------------ |
+| `array-with-pointers` | Classical        | Array cells, named pointers, value labels, index labels | Binary search, bubble sort, quicksort (partition view)       |
+| `array-comparison`    | Classical        | Dual array tracks, merge indicators, comparison arcs | Merge sort                                                    |
+| `graph-network`       | Classical        | Nodes, edges, labels, visited/unvisited states       | BFS, DFS, Dijkstra                                            |
+| `neuron-diagram`      | Deep Learning    | Neurons, connections, activation values, bias nodes  | Single neuron, perceptron, activation functions                |
+| `layer-network`       | Deep Learning    | Layer columns, inter-layer connections, weight labels, gradient overlays | Forward propagation, backpropagation, neural network training |
+| `convolution-grid`    | Deep Learning    | Input grid, kernel overlay, output grid, product annotations | 2D convolution                                           |
+| `loss-landscape`      | Deep Learning    | 3D/contour surface, position marker, gradient arrows, trajectory path | Gradient descent, SGD, momentum, Adam                  |
+| `token-sequence`      | Generative AI    | Token cells, merge animations, embedding vectors, bar charts | BPE tokenization, token embeddings                      |
+| `attention-heatmap`   | Generative AI    | Token rows/columns, heatmap cells, Q/K/V matrices, score annotations | Self-attention, multi-head attention                  |
+| `layer-diagram`       | Generative AI    | Sublayer blocks, data flow arrows, residual connections, norm indicators | Transformer block                                   |
+
+---
+
+## Layout Function Contract
+
+Every layout must implement the following contract.
+
+### Initialization
+
+The layout receives its configuration from the algorithm's `meta.json` at initialization time:
+
+```typescript
+interface LayoutConfig {
+  /** The visual.components object from meta.json. */
+  readonly components: Readonly<Record<string, unknown>>;
+  /** The visual.theme overrides from meta.json. */
+  readonly theme?: {
+    readonly primary?: string;
+    readonly secondary?: string;
+  };
+  /** Canvas dimensions (set by the canvas manager). */
+  readonly width: number;
+  readonly height: number;
+}
+```
+
+### Rendering
+
+The layout's primary responsibility is to render a step's visual state onto the canvas. This involves:
+
+1. **Reading the step's `state`** to determine positions, values, and structural data.
+2. **Processing the step's `visualActions`** in order, mapping each action type to changes in visual primitives.
+3. **Drawing visual primitives** onto the canvas using the rendering engine's drawing API.
+
+### Action Handling
+
+The layout maintains a mapping from action types to handler functions:
+
+```typescript
+type ActionHandler = (action: VisualAction, state: Record<string, unknown>) => void;
+```
+
+For unknown action types, the layout must silently skip the action (no-op). This preserves the open vocabulary design -- new action types can be added without breaking existing layouts.
+
+---
+
+## Layout Configuration from meta.json
+
+Each algorithm's `meta.json` specifies its layout and optional configuration in the `visual` section:
+
+```json
+{
+  "visual": {
+    "layout": "array-with-pointers",
+    "theme": {
+      "primary": "#38bdf8",
+      "secondary": "#0284c7"
+    },
+    "components": {
+      "pointers": [
+        { "id": "left", "label": "L", "color": "#38bdf8" },
+        { "id": "right", "label": "R", "color": "#38bdf8" },
+        { "id": "mid", "label": "M", "color": "#f472b6" }
+      ],
+      "showIndices": true,
+      "showValues": true,
+      "highlightColor": "#fbbf24",
+      "foundColor": "#22c55e"
+    }
+  }
+}
+```
+
+The `components` object is entirely layout-specific. The rendering engine passes it through to the layout without interpretation. Each layout defines its own expected configuration shape.
+
+---
+
+## Layout-Specific Configuration
+
+### `array-with-pointers`
+
+| Component Key    | Type       | Description                                       |
+| ---------------- | ---------- | ------------------------------------------------- |
+| `pointers`       | `array`    | Array of pointer definitions with `id`, `label`, and `color`. |
+| `showIndices`    | `boolean`  | Whether to display 0-based index labels below cells. |
+| `showValues`     | `boolean`  | Whether to display values inside array cells.     |
+| `highlightColor` | `string`   | Default highlight color (hex).                    |
+| `foundColor`     | `string`   | Color for the found element (hex).                |
+| `dimColor`       | `string`   | Color for dimmed/eliminated elements.             |
+| `compareColor`   | `string`   | Color for elements being compared.                |
+
+### `array-comparison`
+
+| Component Key    | Type       | Description                                       |
+| ---------------- | ---------- | ------------------------------------------------- |
+| `tracks`         | `number`   | Number of array tracks to display (typically 2).  |
+| `showMergeZone`  | `boolean`  | Whether to show the merge output zone.            |
+
+### `graph-network`
+
+| Component Key    | Type       | Description                                       |
+| ---------------- | ---------- | ------------------------------------------------- |
+| `directed`       | `boolean`  | Whether edges have direction (arrows).            |
+| `weighted`       | `boolean`  | Whether to display edge weights.                  |
+| `nodeRadius`     | `number`   | Radius of graph nodes in pixels.                  |
+
+### `neuron-diagram`
+
+| Component Key    | Type       | Description                                       |
+| ---------------- | ---------- | ------------------------------------------------- |
+| `showBias`       | `boolean`  | Whether to display bias inputs.                   |
+| `activationFn`   | `string`   | Default activation function to display.           |
+
+### `layer-network`
+
+| Component Key    | Type       | Description                                       |
+| ---------------- | ---------- | ------------------------------------------------- |
+| `layerSizes`     | `number[]` | Number of neurons per layer for initial layout.   |
+| `showWeights`    | `boolean`  | Whether to display weight values on connections.  |
+| `showGradients`  | `boolean`  | Whether gradient display is enabled.              |
+
+### `convolution-grid`
+
+| Component Key    | Type       | Description                                       |
+| ---------------- | ---------- | ------------------------------------------------- |
+| `inputSize`      | `number[]` | Input grid dimensions `[rows, cols]`.             |
+| `kernelSize`     | `number[]` | Kernel dimensions `[rows, cols]`.                 |
+| `showProducts`   | `boolean`  | Whether to show element-wise products.            |
+
+### `loss-landscape`
+
+| Component Key    | Type       | Description                                       |
+| ---------------- | ---------- | ------------------------------------------------- |
+| `surfaceType`    | `string`   | Surface rendering mode: `"contour"` or `"3d"`.   |
+| `showTrajectory` | `boolean`  | Whether to display the optimization trajectory.   |
+| `showGradient`   | `boolean`  | Whether to show gradient arrows.                  |
+
+### `token-sequence`
+
+| Component Key    | Type       | Description                                       |
+| ---------------- | ---------- | ------------------------------------------------- |
+| `showIds`        | `boolean`  | Whether to display token IDs.                     |
+| `showEmbeddings` | `boolean`  | Whether the embedding vector panel is visible.    |
+
+### `attention-heatmap`
+
+| Component Key    | Type       | Description                                       |
+| ---------------- | ---------- | ------------------------------------------------- |
+| `showScores`     | `boolean`  | Whether to show raw scores alongside weights.     |
+| `showProjections`| `boolean`  | Whether Q/K/V projection panels are visible.      |
+| `colorScale`     | `string`   | Color scale for heatmap cells (e.g., `"blues"`, `"viridis"`). |
+
+### `layer-diagram`
+
+| Component Key    | Type       | Description                                       |
+| ---------------- | ---------- | ------------------------------------------------- |
+| `sublayers`      | `string[]` | Ordered list of sublayer IDs to display.          |
+| `showResidual`   | `boolean`  | Whether to show residual connection arrows.       |
+| `showNorm`       | `boolean`  | Whether to show layer normalization indicators.   |
+
+---
+
+## Creating a Custom Layout
+
+To add a new layout to the system:
+
+1. **Create the layout module** implementing the layout factory interface.
+2. **Register it** using `registerLayout()` during application initialization.
+3. **Reference it** in algorithm `meta.json` files via the `visual.layout` field.
+
+```typescript
+import { registerLayout } from "@/engine/layout";
+
+registerLayout("my-custom-layout", (config: LayoutConfig) => {
+  // Return a layout instance that implements the rendering contract
+  return {
+    render(step, canvas) {
+      // Read step.state and step.visualActions
+      // Draw primitives onto the canvas
+    },
+    dispose() {
+      // Clean up any resources
+    },
+  };
+});
+```
+
+The layout name in `registerLayout` must exactly match the string used in `meta.json`'s `visual.layout` field.

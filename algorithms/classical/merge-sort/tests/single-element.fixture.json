@@ -1,0 +1,5 @@
+{
+  "description": "Single-element array is trivially sorted",
+  "inputs": { "array": [42] },
+  "expected": { "terminalStepId": "already_sorted", "sortedArray": [42], "stepCount": 1 }
+}

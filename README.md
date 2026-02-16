@@ -53,6 +53,22 @@ pip install -e ".[dev]"
 pytest
 ```
 
+### Node Package
+
+```bash
+npm install eigenvue
+```
+
+Or for development:
+
+```bash
+cd node
+npm install
+python ../scripts/bundle-node-data.py
+npm run build
+npm test
+```
+
 ## Project Structure
 
 ```
@@ -60,6 +76,7 @@ eigenvue/
   algorithms/    # Algorithm definitions and metadata (shared across platforms)
   web/           # Next.js web application (TypeScript, Canvas 2D, Tailwind CSS)
   python/        # Python package for algorithm engines and utilities
+  node/          # npm package (TypeScript, zero runtime dependencies)
   shared/        # Shared types, schemas, and constants
   scripts/       # Build, codegen, and maintenance scripts
   tests/         # Cross-platform integration tests

@@ -1,0 +1,333 @@
+---
+title: "meta.json Schema"
+description: "Algorithm metadata format reference."
+---
+
+Every algorithm in Eigenvue has a `meta.json` file that describes everything about the algorithm that is genuinely data (not logic): display information, educational content, visual configuration, SEO keywords, input schema, code samples for display, and relationships to other algorithms.
+
+The `meta.json` file is located in the algorithm's directory:
+
+```
+algorithms/
+  classical/
+    binary-search/
+      meta.json          <-- algorithm metadata
+      generator.ts       <-- step generator
+```
+
+---
+
+## AlgorithmMeta Interface
+
+```typescript
+interface AlgorithmMeta {
+  readonly id: string;
+  readonly name: string;
+  readonly category: AlgorithmCategory;
+  readonly description: { readonly short: string; readonly long: string };
+  readonly complexity: { readonly time: string; readonly space: string; readonly level: DifficultyLevel };
+  readonly visual: { readonly layout: string; readonly theme?: { readonly primary?: string; readonly secondary?: string }; readonly components?: Readonly<Record<string, unknown>> };
+  readonly inputs: { readonly schema: Readonly<Record<string, unknown>>; readonly defaults: Readonly<Record<string, unknown>>; readonly examples: readonly InputExample[] };
+  readonly code: { readonly implementations: { readonly pseudocode: string; readonly python?: string; readonly javascript?: string; readonly [key: string]: string | undefined }; readonly defaultLanguage: string };
+  readonly education: { readonly keyConcepts: readonly EducationEntry[]; readonly pitfalls: readonly EducationEntry[]; readonly quiz: readonly QuizQuestion[]; readonly resources: readonly ResourceLink[] };
+  readonly seo: { readonly keywords: readonly string[]; readonly ogDescription: string };
+  readonly prerequisites: readonly string[];
+  readonly related: readonly string[];
+  readonly author: string;
+  readonly version: string;
+}
+```
+
+---
+
+## Field Reference
+
+### Top-Level Fields
+
+| Field           | Type                | Required | Description                                                                                                     | Constraints                                                          |
+| --------------- | ------------------- | -------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `id`            | `string`            | Yes      | URL-safe unique identifier for this algorithm. Used in URLs, file paths, and cross-references.                  | Must match `^[a-z0-9][a-z0-9-]*$`.                                  |
+| `name`          | `string`            | Yes      | Human-readable display name.                                                                                    | Non-empty.                                                           |
+| `category`      | `AlgorithmCategory` | Yes      | Domain category.                                                                                                | One of: `"classical"`, `"deep-learning"`, `"generative-ai"`, `"quantum"`. |
+| `description`   | `object`            | Yes      | Short and long descriptions. See below.                                                                         |                                                                      |
+| `complexity`    | `object`            | Yes      | Time/space complexity and difficulty. See below.                                                                 |                                                                      |
+| `visual`        | `object`            | Yes      | Layout and visual configuration. See below.                                                                      |                                                                      |
+| `inputs`        | `object`            | Yes      | Input schema, defaults, and example presets. See below.                                                          |                                                                      |
+| `code`          | `object`            | Yes      | Display-only code implementations. See below.                                                                    |                                                                      |
+| `education`     | `object`            | Yes      | Educational content (concepts, pitfalls, quiz, resources). See below.                                            |                                                                      |
+| `seo`           | `object`            | Yes      | SEO keywords and Open Graph description. See below.                                                              |                                                                      |
+| `prerequisites` | `string[]`          | Yes      | IDs of algorithms that should be understood before this one. May be empty.                                       | Each value must be a valid algorithm ID.                             |
+| `related`       | `string[]`          | Yes      | IDs of related algorithms. May be empty.                                                                         | Each value must be a valid algorithm ID.                             |
+| `author`        | `string`            | Yes      | GitHub username of the primary author/contributor.                                                               | Non-empty.                                                           |
+| `version`       | `string`            | Yes      | Semantic version string.                                                                                        | Must follow semver (e.g., `"1.0.0"`).                               |
+
+### `description`
+
+| Field   | Type     | Required | Description                                              | Constraints            |
+| ------- | -------- | -------- | -------------------------------------------------------- | ---------------------- |
+| `short` | `string` | Yes      | Short description for cards and meta tags.               | Maximum 80 characters. |
+| `long`  | `string` | Yes      | Full description. Supports markdown formatting.          | Non-empty.             |
+
+### `complexity`
+
+| Field   | Type              | Required | Description                                              | Constraints                                                               |
+| ------- | ----------------- | -------- | -------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `time`  | `string`          | Yes      | Time complexity in Big-O notation.                       | E.g., `"O(log n)"`, `"O(n^2)"`, `"O(V + E)"`.                          |
+| `space` | `string`          | Yes      | Space complexity in Big-O notation.                      | E.g., `"O(1)"`, `"O(n)"`.                                               |
+| `level` | `DifficultyLevel` | Yes      | Difficulty level for this algorithm.                     | One of: `"beginner"`, `"intermediate"`, `"advanced"`, `"expert"`.        |
+
+### `visual`
+
+| Field        | Type     | Required | Description                                                                                      | Constraints                              |
+| ------------ | -------- | -------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------- |
+| `layout`     | `string` | Yes      | Name of the layout to use for rendering. Must be a registered layout in the rendering engine.    | See [Layout System](/docs/api-reference/layout-system) for valid values. |
+| `theme`      | `object` | No       | Color theme overrides.                                                                           |                                          |
+| `theme.primary`   | `string` | No  | Primary accent color override (hex).                                                             | Hex color string (e.g., `"#38bdf8"`).   |
+| `theme.secondary` | `string` | No  | Secondary accent color override (hex).                                                           | Hex color string (e.g., `"#0284c7"`).   |
+| `components` | `object` | No       | Layout-specific configuration. Shape depends on the layout. Read by the layout at initialization. |                                          |
+
+### `inputs`
+
+| Field      | Type                  | Required | Description                                                                                  | Constraints                |
+| ---------- | --------------------- | -------- | -------------------------------------------------------------------------------------------- | -------------------------- |
+| `schema`   | `object`              | Yes      | JSON Schema object defining the algorithm's input parameters. Used to generate the input editor UI and validate user-provided inputs. | Must be a valid JSON Schema fragment. |
+| `defaults` | `object`              | Yes      | Default parameter values for initial load.                                                   | Must conform to `schema`.  |
+| `examples` | `InputExample[]`      | Yes      | Named presets users can load from a dropdown.                                                | Array may be empty.        |
+
+#### `InputExample`
+
+| Field    | Type     | Required | Description                                            |
+| -------- | -------- | -------- | ------------------------------------------------------ |
+| `name`   | `string` | Yes      | Display name for this preset (e.g., "Large Sorted Array"). |
+| `values` | `object` | Yes      | Parameter values for this preset. Shape must match `inputs.schema`. |
+
+### `code`
+
+| Field             | Type     | Required | Description                                                                                              | Constraints                            |
+| ----------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| `implementations` | `object` | Yes      | Display-only code shown in the code panel. These are clean, readable implementations for education -- NOT the generators. | `pseudocode` key is required. Others are optional. |
+| `implementations.pseudocode` | `string` | Yes | Pseudocode implementation. Always required.                                                      | Non-empty string.                      |
+| `implementations.python`     | `string` | No  | Python implementation.                                                                           |                                        |
+| `implementations.javascript` | `string` | No  | JavaScript implementation.                                                                       |                                        |
+| `defaultLanguage` | `string` | Yes      | Which language tab to show by default in the code panel.                                                 | Must be a key in `implementations`.    |
+
+### `education`
+
+| Field         | Type                | Required | Description                                | Constraints                   |
+| ------------- | ------------------- | -------- | ------------------------------------------ | ----------------------------- |
+| `keyConcepts` | `EducationEntry[]`  | Yes      | Key concepts the learner should understand.| Minimum 1 entry.              |
+| `pitfalls`    | `EducationEntry[]`  | Yes      | Common mistakes and misconceptions.        | Array may be empty.           |
+| `quiz`        | `QuizQuestion[]`    | Yes      | Self-assessment quiz questions.            | Array may be empty.           |
+| `resources`   | `ResourceLink[]`    | Yes      | External learning resources.               | Array may be empty.           |
+
+#### `EducationEntry`
+
+| Field         | Type     | Required | Description                                |
+| ------------- | -------- | -------- | ------------------------------------------ |
+| `title`       | `string` | Yes      | Entry title.                               |
+| `description` | `string` | Yes      | Entry description/explanation.             |
+
+#### `QuizQuestion`
+
+| Field          | Type       | Required | Description                                                                     | Constraints                                        |
+| -------------- | ---------- | -------- | ------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `question`     | `string`   | Yes      | The quiz question.                                                              | Non-empty.                                         |
+| `options`      | `string[]` | Yes      | Array of answer option strings.                                                 | Minimum 2, maximum 6 options.                      |
+| `correctIndex` | `number`   | Yes      | 0-based index of the correct option.                                            | Must satisfy: `0 <= correctIndex < options.length`. |
+| `explanation`  | `string`   | Yes      | Explanation shown after the user answers.                                       | Non-empty.                                         |
+
+#### `ResourceLink`
+
+| Field   | Type     | Required | Description                                              | Constraints                                                                                    |
+| ------- | -------- | -------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `title` | `string` | Yes      | Link title.                                              | Non-empty.                                                                                     |
+| `url`   | `string` | Yes      | URL of the resource.                                     | Must be a valid URL.                                                                           |
+| `type`  | `string` | Yes      | Type of resource, for icon selection.                    | One of: `"article"`, `"video"`, `"paper"`, `"course"`, `"documentation"`, `"interactive"`.     |
+
+### `seo`
+
+| Field           | Type       | Required | Description                                     | Constraints            |
+| --------------- | ---------- | -------- | ----------------------------------------------- | ---------------------- |
+| `keywords`      | `string[]` | Yes      | Search engine keywords for this algorithm.      | Non-empty array.       |
+| `ogDescription` | `string`   | Yes      | Open Graph description override.                | Maximum 160 characters.|
+
+---
+
+## Supporting Types
+
+```typescript
+type AlgorithmCategory = "classical" | "deep-learning" | "generative-ai" | "quantum";
+
+type DifficultyLevel = "beginner" | "intermediate" | "advanced" | "expert";
+```
+
+---
+
+## Complete Annotated Example
+
+Below is a complete `meta.json` file for binary search, annotated with comments (note: actual JSON files do not support comments -- they are shown here for documentation purposes).
+
+```json
+{
+  "id": "binary-search",
+  "name": "Binary Search",
+  "category": "classical",
+
+  "description": {
+    "short": "Efficiently find a target in a sorted array by halving the search space.",
+    "long": "Binary search is a divide-and-conquer algorithm that finds a target value in a sorted array. At each step, it compares the target with the middle element and eliminates half of the remaining search space. This gives it O(log n) time complexity."
+  },
+
+  "complexity": {
+    "time": "O(log n)",
+    "space": "O(1)",
+    "level": "beginner"
+  },
+
+  "visual": {
+    "layout": "array-with-pointers",
+    "theme": {
+      "primary": "#38bdf8",
+      "secondary": "#0284c7"
+    },
+    "components": {
+      "pointers": [
+        { "id": "left", "label": "L", "color": "#38bdf8" },
+        { "id": "right", "label": "R", "color": "#38bdf8" },
+        { "id": "mid", "label": "M", "color": "#f472b6" }
+      ],
+      "showIndices": true,
+      "showValues": true,
+      "highlightColor": "#fbbf24",
+      "foundColor": "#22c55e",
+      "dimColor": "rgba(160, 168, 192, 0.15)",
+      "compareColor": "#f472b6"
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "array": {
+        "type": "array",
+        "items": { "type": "number", "minimum": -999, "maximum": 999 },
+        "minItems": 1,
+        "maxItems": 20,
+        "description": "A sorted array of numbers. Must be in ascending order.",
+        "sorted": true
+      },
+      "target": {
+        "type": "number",
+        "minimum": -999,
+        "maximum": 999,
+        "description": "The value to search for."
+      }
+    },
+    "defaults": {
+      "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+      "target": 13
+    },
+    "examples": [
+      {
+        "name": "Default (target found)",
+        "values": { "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19], "target": 13 }
+      },
+      {
+        "name": "Target not found",
+        "values": { "array": [2, 4, 6, 8, 10, 12, 14], "target": 5 }
+      },
+      {
+        "name": "Single element (found)",
+        "values": { "array": [42], "target": 42 }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function binarySearch(array, target):\n  left = 0\n  right = length(array) - 1\n\n  while left <= right:\n    mid = floor((left + right) / 2)\n\n    if array[mid] == target:\n      return mid\n\n    if array[mid] < target:\n      left = mid + 1\n    else:\n      right = mid - 1\n\n  return -1",
+      "python": "def binary_search(array: list[int], target: int) -> int:\n    left = 0\n    right = len(array) - 1\n\n    while left <= right:\n        mid = (left + right) // 2\n\n        if array[mid] == target:\n            return mid\n\n        if array[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n\n    return -1",
+      "javascript": "function binarySearch(array, target) {\n  let left = 0;\n  let right = array.length - 1;\n\n  while (left <= right) {\n    const mid = Math.floor((left + right) / 2);\n\n    if (array[mid] === target) {\n      return mid;\n    }\n\n    if (array[mid] < target) {\n      left = mid + 1;\n    } else {\n      right = mid - 1;\n    }\n  }\n\n  return -1;\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Divide and Conquer",
+        "description": "Binary search works by repeatedly dividing the search interval in half."
+      },
+      {
+        "title": "Sorted Input Requirement",
+        "description": "Binary search only works on sorted arrays."
+      },
+      {
+        "title": "Logarithmic Time Complexity",
+        "description": "Each comparison eliminates half the remaining elements."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Off-by-one in boundaries",
+        "description": "Using < instead of <= in the while condition causes bugs."
+      },
+      {
+        "title": "Unsorted input",
+        "description": "Binary search silently produces wrong results on unsorted arrays."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "What is the maximum number of comparisons binary search needs for an array of 1024 elements?",
+        "options": ["10", "11", "32", "1024"],
+        "correctIndex": 1,
+        "explanation": "ceil(log2(1024)) = 10, plus one final check gives at most 11."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Binary Search - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Binary_search_algorithm",
+        "type": "article"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "binary search visualization",
+      "binary search algorithm",
+      "binary search step by step",
+      "binary search animation"
+    ],
+    "ogDescription": "Interactive step-by-step visualization of binary search."
+  },
+
+  "prerequisites": [],
+  "related": ["bubble-sort", "quicksort", "merge-sort"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}
+```
+
+---
+
+## Validation
+
+The `meta.json` file is validated at build time. The following rules are enforced:
+
+1. All required fields must be present.
+2. `id` must match the pattern `^[a-z0-9][a-z0-9-]*$` and must match the directory name.
+3. `category` must be one of the recognized category values.
+4. `complexity.level` must be one of the recognized difficulty levels.
+5. `visual.layout` must be a registered layout name.
+6. `inputs.defaults` must conform to `inputs.schema`.
+7. Each `inputs.examples[].values` must conform to `inputs.schema`.
+8. `code.implementations` must contain at least `pseudocode`.
+9. `code.defaultLanguage` must be a key in `code.implementations`.
+10. `education.keyConcepts` must have at least one entry.
+11. Each `quiz[].correctIndex` must be a valid index into the corresponding `options` array.
+12. Each `resources[].type` must be one of the recognized resource types.
+13. `seo.ogDescription` must not exceed 160 characters.
+14. `description.short` must not exceed 80 characters.
+15. `prerequisites` and `related` must reference valid algorithm IDs (checked across the registry).

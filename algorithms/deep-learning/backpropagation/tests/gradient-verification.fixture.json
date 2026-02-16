@@ -1,0 +1,17 @@
+{
+  "description": "2-3-1 network for numerical gradient verification, seed 'grad-check'",
+  "inputs": {
+    "inputValues": [0.5, 0.8],
+    "targets": [0.7],
+    "layerSizes": [2, 3, 1],
+    "activationFunction": "sigmoid",
+    "lossFunction": "mse",
+    "learningRate": 0.1,
+    "seed": "grad-check"
+  },
+  "expectedStepCount": 9,
+  "keyStates": [
+    { "stepId": "forward-start", "state": { "layerSizes": [2, 3, 1] } }
+  ],
+  "notes": "Primary fixture for numerical gradient verification tests. 9 steps: forward-start + 2 forward layers + compute-loss + backward-output + backward-hidden-1 + update-weights-1 + update-weights-2 + complete."
+}

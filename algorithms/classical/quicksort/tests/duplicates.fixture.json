@@ -1,0 +1,8 @@
+{
+  "description": "Array with duplicate elements",
+  "inputs": { "array": [5, 3, 8, 3, 2, 5, 1] },
+  "expected": {
+    "terminalStepId": "complete",
+    "sortedArray": [1, 2, 3, 3, 5, 5, 8]
+  }
+}

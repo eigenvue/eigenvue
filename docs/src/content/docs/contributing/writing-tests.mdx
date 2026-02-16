@@ -1,0 +1,592 @@
+---
+title: "Writing Tests"
+description: "Complete testing strategy for Eigenvue, covering test fixtures, TypeScript generator tests (Vitest), Python generator tests (pytest), cross-language parity, layout tests, and E2E tests."
+---
+
+Testing is central to Eigenvue's reliability. Every algorithm has both
+TypeScript and Python generators, and both must produce **identical** output.
+This page explains every layer of the testing strategy.
+
+---
+
+## Test Fixture Format
+
+Test fixtures are golden JSON files that define the expected step output for a
+specific set of inputs. They are the single source of truth that both TypeScript
+and Python tests validate against.
+
+### Fixture Location
+
+Fixtures live alongside the TypeScript generator they test:
+
+```
+algorithms/classical/binary-search/tests/
+  found.fixture.json
+  not-found.fixture.json
+  single-element.fixture.json
+  edge-left.fixture.json
+  edge-right.fixture.json
+  generator.test.ts
+```
+
+### Fixture Schema
+
+```json
+{
+  "description": "Human-readable description of this test case.",
+  "inputs": {
+    "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+    "target": 13
+  },
+  "expected": {
+    "stepCount": 9,
+    "terminalStepId": "found",
+    "result": 6,
+    "stepIds": [
+      "initialize",
+      "calculate_mid",
+      "search_right",
+      "calculate_mid",
+      "search_left",
+      "calculate_mid",
+      "search_right",
+      "calculate_mid",
+      "found"
+    ],
+    "keyStates": [
+      { "stepIndex": 0, "field": "left", "value": 0 },
+      { "stepIndex": 0, "field": "right", "value": 9 },
+      { "stepIndex": 1, "field": "mid", "value": 4 },
+      { "stepIndex": 8, "field": "result", "value": 6 }
+    ]
+  }
+}
+```
+
+### Field Reference
+
+| Field                       | Type       | Description                                    |
+|-----------------------------|------------|------------------------------------------------|
+| `description`               | `string`   | What this test case verifies                   |
+| `inputs`                    | `object`   | Algorithm input parameters                     |
+| `expected.stepCount`        | `number`   | Total number of steps                          |
+| `expected.terminalStepId`   | `string`   | The `id` of the final (terminal) step          |
+| `expected.result`           | `any`      | The `result` field in the terminal step's state|
+| `expected.stepIds`          | `string[]` | Ordered list of step IDs                       |
+| `expected.keyStates`        | `array`    | Spot-checks on specific state fields           |
+
+### Fixture Design Guidelines
+
+1. **Cover the core paths.** At minimum: success case, failure case, edge cases.
+2. **Keep arrays small.** 5--10 elements. Easy to compute expected values by hand.
+3. **Use surgical state checks.** Only assert the fields that matter for the test.
+   Writing out the entire expected state of every step is brittle and hard to
+   maintain.
+4. **Name files descriptively.** `found.fixture.json`, `not-found.fixture.json`,
+   `single-element.fixture.json`, `edge-left.fixture.json`.
+
+---
+
+## TypeScript Generator Tests (Vitest)
+
+### Test File Location
+
+```
+algorithms/<category>/<algorithm>/tests/generator.test.ts
+```
+
+### Test Structure
+
+Every generator test file follows the same pattern:
+
+```typescript
+import { describe, it, expect } from "vitest";
+import { runGenerator } from "@/engine/generator";
+import myGenerator from "../generator";
+
+// Import fixtures
+import foundFixture from "./found.fixture.json";
+import notFoundFixture from "./not-found.fixture.json";
+
+// ── Helper ────────────────────────────────────────────────────────────────
+
+function assertFixture(fixture: {
+  description: string;
+  inputs: Record<string, unknown>;
+  expected: {
+    stepCount: number;
+    terminalStepId: string;
+    result: unknown;
+    stepIds: string[];
+    keyStates: Array<{ stepIndex: number; field: string; value: unknown }>;
+  };
+}) {
+  const result = runGenerator(myGenerator, fixture.inputs);
+  const { steps } = result;
+
+  expect(steps.length).toBe(fixture.expected.stepCount);
+
+  const terminal = steps[steps.length - 1]!;
+  expect(terminal.id).toBe(fixture.expected.terminalStepId);
+  expect(terminal.isTerminal).toBe(true);
+  expect(terminal.state.result).toBe(fixture.expected.result);
+
+  expect(steps.map((s) => s.id)).toEqual(fixture.expected.stepIds);
+
+  for (const check of fixture.expected.keyStates) {
+    expect(steps[check.stepIndex]!.state[check.field]).toEqual(check.value);
+  }
+}
+```
+
+### Test Categories
+
+Every generator test file should include these four categories:
+
+#### 1. Fixture Tests
+
+Validate against golden fixtures:
+
+```typescript
+describe("Fixture Tests", () => {
+  it("found: default example", () => assertFixture(foundFixture));
+  it("not found: target absent", () => assertFixture(notFoundFixture));
+});
+```
+
+#### 2. Format Compliance Tests
+
+Verify structural invariants of the step format:
+
+```typescript
+describe("Format Compliance", () => {
+  const result = runGenerator(myGenerator, defaultInputs);
+
+  it("produces a valid StepSequence", () => {
+    expect(result.formatVersion).toBe(1);
+    expect(result.algorithmId).toBe("my-algorithm");
+    expect(result.generatedBy).toBe("typescript");
+  });
+
+  it("all step indices are contiguous", () => {
+    result.steps.forEach((step, i) => expect(step.index).toBe(i));
+  });
+
+  it("exactly one terminal step, it is the last", () => {
+    const terminals = result.steps.filter((s) => s.isTerminal);
+    expect(terminals.length).toBe(1);
+    expect(terminals[0]!.index).toBe(result.steps.length - 1);
+  });
+
+  it("all step IDs match pattern", () => {
+    for (const step of result.steps) {
+      expect(step.id).toMatch(/^[a-z0-9][a-z0-9_-]*$/);
+    }
+  });
+
+  it("all code highlight lines are positive integers", () => {
+    for (const step of result.steps) {
+      for (const line of step.codeHighlight.lines) {
+        expect(Number.isInteger(line)).toBe(true);
+        expect(line).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+});
+```
+
+#### 3. State Immutability Tests
+
+Verify that state snapshots are independent:
+
+```typescript
+describe("State Immutability", () => {
+  it("step states are independent snapshots", () => {
+    const result = runGenerator(myGenerator, someInputs);
+    const arrays = result.steps.map((s) => s.state.array as number[]);
+
+    // All arrays should contain the same values.
+    for (const arr of arrays) {
+      expect(arr).toEqual(someInputs.array);
+    }
+
+    // But they should NOT be the same reference.
+    for (let i = 0; i < arrays.length - 1; i++) {
+      expect(arrays[i]).not.toBe(arrays[i + 1]);
+    }
+  });
+
+  it("mutating one step's state does not affect others", () => {
+    const result = runGenerator(myGenerator, someInputs);
+    const step0Array = result.steps[0]!.state.array as number[];
+    step0Array[0] = 9999;
+    expect((result.steps[1]!.state.array as number[])[0]).not.toBe(9999);
+  });
+});
+```
+
+#### 4. Edge Case Tests
+
+Cover boundary conditions specific to your algorithm:
+
+```typescript
+describe("Edge Cases", () => {
+  it("single element, target found", () => {
+    const result = runGenerator(myGenerator, { array: [42], target: 42 });
+    const terminal = result.steps[result.steps.length - 1]!;
+    expect(terminal.state.result).toBe(0);
+  });
+
+  it("single element, target not found", () => {
+    const result = runGenerator(myGenerator, { array: [42], target: 99 });
+    const terminal = result.steps[result.steps.length - 1]!;
+    expect(terminal.state.result).toBe(-1);
+  });
+});
+```
+
+### Running TypeScript Tests
+
+```bash
+cd web
+
+# Run all tests
+npm run test
+
+# Run tests for a specific algorithm
+npx vitest run algorithms/classical/binary-search/tests/
+
+# Watch mode (re-runs on file changes)
+npx vitest watch algorithms/classical/binary-search/tests/
+
+# With coverage report
+npx vitest run --coverage
+```
+
+---
+
+## Python Generator Tests (pytest)
+
+### Test Location
+
+```
+python/tests/generators/classical/test_binary_search.py
+```
+
+### Test Structure
+
+```python
+"""Binary Search Generator — Python Tests."""
+
+import pytest
+from eigenvue.runner import run_generator
+
+
+class TestBinarySearchFound:
+    """Test cases where the target is found."""
+
+    def test_default_example(self) -> None:
+        steps = run_generator("binary-search", {
+            "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+            "target": 13,
+        })
+        assert len(steps) == 9
+        assert steps[-1]["id"] == "found"
+        assert steps[-1]["isTerminal"] is True
+        assert steps[-1]["state"]["result"] == 6
+
+    def test_single_element(self) -> None:
+        steps = run_generator("binary-search", {
+            "array": [42],
+            "target": 42,
+        })
+        assert steps[-1]["id"] == "found"
+        assert steps[-1]["state"]["result"] == 0
+
+
+class TestBinarySearchNotFound:
+    """Test cases where the target is not found."""
+
+    def test_target_absent(self) -> None:
+        steps = run_generator("binary-search", {
+            "array": [2, 4, 6, 8, 10],
+            "target": 5,
+        })
+        assert steps[-1]["id"] == "not_found"
+        assert steps[-1]["state"]["result"] == -1
+
+
+class TestBinarySearchInvariants:
+    """Test structural invariants of the step sequence."""
+
+    def test_index_contiguity(self) -> None:
+        steps = run_generator("binary-search", {
+            "array": [1, 3, 5, 7, 9],
+            "target": 5,
+        })
+        for i, step in enumerate(steps):
+            assert step["index"] == i
+
+    def test_single_terminal(self) -> None:
+        steps = run_generator("binary-search")
+        terminals = [s for s in steps if s.get("isTerminal", False)]
+        assert len(terminals) == 1
+        assert terminals[0] is steps[-1]
+```
+
+### Running Python Tests
+
+```bash
+cd python
+
+# Run all tests
+pytest
+
+# Run tests for a specific module
+pytest tests/generators/classical/test_binary_search.py
+
+# Verbose output
+pytest -v
+
+# Stop on first failure
+pytest -x
+
+# With coverage
+pytest --cov=eigenvue
+```
+
+---
+
+## Cross-Language Parity Tests
+
+The parity test verifies that Python and TypeScript produce **identical** JSON
+output. This is the most important test in the project.
+
+### How It Works
+
+The script `scripts/verify-step-parity.py`:
+
+1. Loads each golden fixture (already in camelCase JSON format).
+2. Deserializes it into Python `Step` dataclasses via `from_dict()`.
+3. Re-serializes it back to camelCase dicts via `to_dict()`.
+4. Compares the re-serialized output to the original JSON byte-for-byte.
+
+If the round-trip is clean, the Python dataclasses are proven wire-compatible
+with the TypeScript interfaces.
+
+### Running the Parity Test
+
+```bash
+python scripts/verify-step-parity.py
+```
+
+Expected output:
+
+```
+============================================================
+Cross-Language Step Parity Verification
+============================================================
+
+Verifying: binary-search-found.fixture.json
+  PASS
+Verifying: binary-search-not-found.fixture.json
+  PASS
+Verifying: single-element.fixture.json
+  PASS
+Verifying: minimal-valid.fixture.json
+  PASS
+
+============================================================
+ALL FIXTURES PASSED
+============================================================
+```
+
+### When Parity Fails
+
+See [Cross-Language Parity](/docs/contributing/cross-language-parity/) for debugging
+strategies for common parity failures.
+
+---
+
+## Layout Tests
+
+Layout tests verify that layout functions produce correct primitives for
+known step data.
+
+### Test Location
+
+```
+web/src/engine/layouts/__tests__/
+```
+
+### What to Test
+
+```typescript
+import { describe, it, expect } from "vitest";
+
+describe("array-with-pointers layout", () => {
+  it("produces N elements for an N-element array", () => {
+    // Create a mock step with a known array
+    // Call the layout function
+    // Assert the number of element primitives
+  });
+
+  it("all primitive IDs are unique", () => {
+    // IDs must be unique for animation diffing
+    const ids = scene.primitives.map((p) => p.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("elements fit within canvas bounds", () => {
+    for (const p of scene.primitives) {
+      if (p.kind === "element") {
+        expect(p.x).toBeGreaterThanOrEqual(0);
+        expect(p.x).toBeLessThanOrEqual(canvasSize.width);
+        expect(p.y).toBeGreaterThanOrEqual(0);
+        expect(p.y).toBeLessThanOrEqual(canvasSize.height);
+      }
+    }
+  });
+
+  it("handles empty array gracefully", () => {
+    // Should return an empty primitives array, not throw
+  });
+
+  it("processes highlightElement visual action", () => {
+    // Create a step with a highlightElement action
+    // Verify the corresponding element has the correct fill color
+  });
+});
+```
+
+---
+
+## E2E Tests (Playwright)
+
+End-to-end tests verify that algorithms render correctly in the browser and
+that user interactions (stepping forward/backward, changing inputs) work.
+
+### Test Location
+
+```
+tests/e2e/
+```
+
+### Example E2E Test
+
+```typescript
+import { test, expect } from "@playwright/test";
+
+test("binary search visualization loads and steps forward", async ({ page }) => {
+  await page.goto("/algorithms/binary-search");
+
+  // Wait for the visualization to load
+  await expect(page.locator("canvas")).toBeVisible();
+
+  // Verify the step counter starts at 1
+  await expect(page.locator("[data-testid='step-counter']")).toContainText("1");
+
+  // Click the "Next" button
+  await page.click("[data-testid='next-step']");
+
+  // Verify the step counter advances
+  await expect(page.locator("[data-testid='step-counter']")).toContainText("2");
+});
+
+test("binary search handles custom inputs", async ({ page }) => {
+  await page.goto("/algorithms/binary-search");
+
+  // Open the input editor
+  await page.click("[data-testid='edit-inputs']");
+
+  // Modify the target value
+  await page.fill("[data-testid='input-target']", "99");
+
+  // Run the algorithm
+  await page.click("[data-testid='run-algorithm']");
+
+  // Should reach "not found" terminal state
+  // Navigate to the last step
+  await page.click("[data-testid='last-step']");
+  await expect(page.locator("[data-testid='step-title']")).toContainText("Not Found");
+});
+```
+
+### Running E2E Tests
+
+```bash
+# Install Playwright browsers (first time only)
+npx playwright install
+
+# Run E2E tests
+npx playwright test
+
+# Run with UI mode (interactive)
+npx playwright test --ui
+
+# Run a specific test file
+npx playwright test tests/e2e/binary-search.spec.ts
+```
+
+---
+
+## Floating-Point Tolerance
+
+Many algorithms involve floating-point arithmetic (attention weights, gradient
+values, loss computations). When comparing floating-point values across
+TypeScript and Python, use a tolerance of **+/-1e-9**.
+
+### In Vitest (TypeScript)
+
+```typescript
+// For individual values
+expect(actual).toBeCloseTo(expected, 9);  // 9 decimal digits
+
+// For arrays of floats
+for (let i = 0; i < actual.length; i++) {
+  expect(actual[i]).toBeCloseTo(expected[i], 9);
+}
+```
+
+### In pytest (Python)
+
+```python
+import pytest
+
+# For individual values
+assert actual == pytest.approx(expected, abs=1e-9)
+
+# For lists of floats
+assert actual_list == pytest.approx(expected_list, abs=1e-9)
+```
+
+### Why 1e-9?
+
+JavaScript uses IEEE 754 double-precision (64-bit) floats, and Python's `float`
+is also IEEE 754 double-precision. Both have about 15--17 significant decimal
+digits of precision. A tolerance of 1e-9 allows for small accumulation errors
+from different ordering of operations while still catching meaningful numerical
+bugs.
+
+:::caution
+The parity validation script compares JSON strings byte-for-byte. For
+floating-point values that appear in step state, both generators must produce
+the **exact same** string representation. This means the order of floating-point
+operations matters. See [Cross-Language Parity](/docs/contributing/cross-language-parity/)
+for common pitfalls and solutions.
+:::
+
+---
+
+## Test Checklist
+
+Before submitting a PR, verify:
+
+- [ ] All Vitest tests pass: `cd web && npm run test`
+- [ ] All pytest tests pass: `cd python && pytest`
+- [ ] Cross-language parity passes: `python scripts/verify-step-parity.py`
+- [ ] New algorithm has fixtures for: found, not found, single element
+- [ ] Format compliance tests are included
+- [ ] State immutability tests are included
+- [ ] Edge case tests cover algorithm-specific boundaries
+- [ ] No test uses random data (all tests are deterministic)

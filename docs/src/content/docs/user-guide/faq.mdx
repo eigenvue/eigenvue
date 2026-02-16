@@ -1,0 +1,136 @@
+---
+title: "Frequently Asked Questions"
+description: "Answers to common questions about Eigenvue, covering pricing, offline use, classroom integration, browser support, embedding, contributing, and troubleshooting."
+---
+
+## Is Eigenvue free?
+
+Yes. Eigenvue is **free and open-source** under the MIT licence. Both the web
+application at [eigenvue.web.app](https://eigenvue.web.app) and the Python package
+(`pip install eigenvue`) are available at no cost. You can inspect, modify, and
+redistribute the source code on
+[GitHub](https://github.com/AmarAbbwormo/eigenvue).
+
+## Can I use Eigenvue offline?
+
+The web application requires an internet connection on the first visit. After
+the initial load, most assets are cached by the service worker, so basic
+browsing may work offline. For a fully offline experience, use the **Python
+package**: once installed, `eigenvue.show()` and `eigenvue.jupyter()` run a
+local server and do not need network access.
+
+## Can I use Eigenvue in the classroom?
+
+Absolutely. Educators are encouraged to use Eigenvue for lectures, assignments,
+and labs. You can:
+
+- Project the web app and step through an algorithm live during a lecture.
+- Share a URL with a specific step and input set so students can explore on
+  their own (see [Sharing & URLs](/docs/user-guide/sharing-and-urls/)).
+- Assign notebook-based exercises that use `eigenvue.jupyter()` to visualize
+  solutions.
+
+No licence fees apply for educational or commercial use.
+
+## Which browsers are supported?
+
+Eigenvue supports the **latest two major versions** of:
+
+- Google Chrome
+- Mozilla Firefox
+- Microsoft Edge
+- Apple Safari (macOS and iOS)
+
+JavaScript must be enabled. The visualizer relies on the Canvas API and modern
+ES modules, so very old browsers (Internet Explorer, legacy Edge) are not
+supported.
+
+## Can I embed a visualization in my own website?
+
+Not yet as a first-class feature, but you can embed the visualizer using an
+`<iframe>`:
+
+```html
+<iframe
+  src="https://eigenvue.web.app/algo/merge-sort?data=[9,4,7,2,1]&step=0"
+  width="100%"
+  height="600"
+  frameborder="0"
+  allow="fullscreen"
+></iframe>
+```
+
+The embedded page includes the full three-panel layout and playback controls. A
+dedicated embed mode with a slimmer UI is on the roadmap.
+
+## How do I report a bug?
+
+Open an issue on the
+[GitHub issue tracker](https://github.com/AmarAbbwormo/eigenvue/issues). Please
+include:
+
+1. A description of the unexpected behaviour.
+2. The algorithm name and the inputs you used.
+3. Your browser (or Python version) and operating system.
+4. Screenshots or console output if available.
+
+The maintainers triage new issues regularly and aim to respond within a few
+days.
+
+## How do I request a new algorithm?
+
+File a **feature request** on the
+[GitHub issue tracker](https://github.com/AmarAbbwormo/eigenvue/issues) with
+the label `enhancement`. Describe the algorithm, link to a reference (paper,
+textbook chapter, Wikipedia article), and explain why it would be a good fit for
+the platform. Community upvotes help prioritise which algorithms are built next.
+
+If you want to implement it yourself, see the contributing guide for
+instructions on adding a new algorithm generator.
+
+## I get an error when I run `pip install eigenvue`. What should I do?
+
+Try the following steps in order:
+
+1. **Check your Python version.** Eigenvue requires Python 3.10 or later.
+   Run `python --version` to confirm.
+2. **Upgrade pip.**
+   ```bash
+   python -m pip install --upgrade pip
+   ```
+3. **Use a virtual environment** to avoid conflicts with system packages:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate   # macOS / Linux
+   .venv\Scripts\activate      # Windows
+   pip install eigenvue
+   ```
+4. **Check your network.** The package is hosted on PyPI, so you need internet
+   access for the initial install.
+
+If the issue persists, open a GitHub issue with the full error output.
+
+## Can I upload my own model for visualization?
+
+Not in the current release. The visualizations are based on built-in algorithm
+generators that ship with the package. Support for user-supplied model weights
+and custom architectures is planned for a future version. In the meantime, you
+can contribute a new generator if your algorithm fits the existing generator
+interface.
+
+## How does Eigenvue handle floating-point numbers?
+
+All numeric computations in the web app use JavaScript's IEEE 754
+double-precision floating point. In the Python package, standard Python `float`
+(also IEEE 754 double precision) is used. This means:
+
+- Very small rounding differences may appear in deep-learning and
+  generative-AI visualizations (for example, softmax outputs that sum to
+  0.9999999 instead of 1.0).
+- The state inspector displays values rounded to a sensible number of decimal
+  places for readability, but the underlying computation uses full precision.
+- If you need exact comparisons in your own code, use a tolerance (for example,
+  `math.isclose(a, b, rel_tol=1e-9)`) rather than strict equality.
+
+Floating-point behaviour is consistent across browsers and matches the Python
+package output for identical inputs.

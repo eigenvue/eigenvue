@@ -1,5 +1,11 @@
 # Contributing to Eigenvue
 
+**Full Contributor Guide:** For comprehensive documentation including the
+Generator API, layout system, testing strategy, and code style guide, visit
+the [Eigenvue Contributor Docs](https://eigenvue.web.app/docs/contributing/development-setup).
+
+The guide below covers the essentials for getting started quickly.
+
 Thank you for your interest in contributing to Eigenvue! This guide will help you get set up and explain the workflows we follow.
 
 ## Prerequisites
@@ -32,6 +38,18 @@ pytest
 ```
 
 This installs the Python package in editable mode with all development dependencies and runs the test suite to verify everything is working.
+
+### Node Package
+
+```bash
+cd node
+npm install
+python ../scripts/bundle-node-data.py  # Bundle meta.json files
+npm run build
+npm test
+```
+
+This installs the Node package dependencies, bundles the algorithm metadata, builds the TypeScript source into `dist/`, and runs the test suite.
 
 ## Git Branching Strategy
 
@@ -132,10 +150,6 @@ Adding a new algorithm to Eigenvue generally involves the following steps:
 5. **Update documentation** as needed to reflect the new addition.
 
 A more detailed guide for adding algorithms will be provided as the project matures.
-
-## Code of Conduct
-
-This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the project maintainers.
 
 ## Questions?
 

@@ -1,0 +1,10 @@
+{
+  "description": "Simple 6-node graph, find path A→F via DFS",
+  "inputs": {
+    "adjacencyList": { "A": ["B", "C"], "B": ["A", "D", "E"], "C": ["A", "F"], "D": ["B"], "E": ["B", "F"], "F": ["C", "E"] },
+    "positions": { "A": {"x": 0.1, "y": 0.5}, "B": {"x": 0.35, "y": 0.2}, "C": {"x": 0.35, "y": 0.8}, "D": {"x": 0.65, "y": 0.1}, "E": {"x": 0.65, "y": 0.5}, "F": {"x": 0.9, "y": 0.8} },
+    "startNode": "A",
+    "targetNode": "F"
+  },
+  "expected": { "terminalStepId": "target_found" }
+}

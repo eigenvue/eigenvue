@@ -1,0 +1,28 @@
+{
+  "description": "Self-attention over 4 tokens with dim=4. Tests larger sequence.",
+  "inputs": {
+    "tokens": ["The", "cat", "sat", "down"],
+    "embeddingDim": 4
+  },
+  "expectedStepCount": 12,
+  "keyStates": [
+    {
+      "stepId": "show-input",
+      "state": {
+        "tokens": ["The", "cat", "sat", "down"],
+        "embeddingDim": 4
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["The", "cat", "sat", "down"]
+      }
+    }
+  ],
+  "invariants": {
+    "attentionWeightRowsSumToOne": true,
+    "allWeightsNonNegative": true,
+    "noNaNOrInfinity": true
+  }
+}

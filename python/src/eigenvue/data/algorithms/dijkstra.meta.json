@@ -1,0 +1,135 @@
+{
+  "id": "dijkstra",
+  "name": "Dijkstra's Shortest Path",
+  "category": "classical",
+  "description": {
+    "short": "Find shortest paths between nodes in a weighted graph using a greedy approach.",
+    "long": "Dijkstra's algorithm finds the shortest paths from a source node to all other nodes in a weighted graph. It works by maintaining a priority queue of tentative distances and greedily selecting the closest unvisited node at each step. It requires all edge weights to be non-negative."
+  },
+  "complexity": { "time": "O((V + E) log V)", "space": "O(V)", "level": "advanced" },
+  "visual": {
+    "layout": "graph-network",
+    "theme": { "primary": "#38bdf8", "secondary": "#22c55e" },
+    "components": {}
+  },
+  "inputs": {
+    "schema": {
+      "adjacencyList": { "type": "object", "description": "Weighted adjacency list: nodeId → [{to, weight}]" },
+      "positions": { "type": "object", "description": "Node positions: nodeId → {x, y} in [0,1]" },
+      "startNode": { "type": "string", "description": "Source node for shortest paths" },
+      "targetNode": { "type": "string", "description": "Optional target node" }
+    },
+    "defaults": {
+      "adjacencyList": {
+        "A": [{"to": "B", "weight": 4}, {"to": "C", "weight": 2}],
+        "B": [{"to": "A", "weight": 4}, {"to": "C", "weight": 1}, {"to": "D", "weight": 5}],
+        "C": [{"to": "A", "weight": 2}, {"to": "B", "weight": 1}, {"to": "D", "weight": 8}, {"to": "E", "weight": 10}],
+        "D": [{"to": "B", "weight": 5}, {"to": "C", "weight": 8}, {"to": "E", "weight": 2}],
+        "E": [{"to": "C", "weight": 10}, {"to": "D", "weight": 2}]
+      },
+      "positions": {
+        "A": {"x": 0.1, "y": 0.3},
+        "B": {"x": 0.4, "y": 0.1},
+        "C": {"x": 0.4, "y": 0.5},
+        "D": {"x": 0.7, "y": 0.3},
+        "E": {"x": 0.9, "y": 0.5}
+      },
+      "startNode": "A",
+      "targetNode": "E"
+    },
+    "examples": [
+      {
+        "name": "5-node weighted graph",
+        "values": {
+          "adjacencyList": {
+            "A": [{"to": "B", "weight": 4}, {"to": "C", "weight": 2}],
+            "B": [{"to": "A", "weight": 4}, {"to": "C", "weight": 1}, {"to": "D", "weight": 5}],
+            "C": [{"to": "A", "weight": 2}, {"to": "B", "weight": 1}, {"to": "D", "weight": 8}, {"to": "E", "weight": 10}],
+            "D": [{"to": "B", "weight": 5}, {"to": "C", "weight": 8}, {"to": "E", "weight": 2}],
+            "E": [{"to": "C", "weight": 10}, {"to": "D", "weight": 2}]
+          },
+          "positions": {"A": {"x": 0.1, "y": 0.3}, "B": {"x": 0.4, "y": 0.1}, "C": {"x": 0.4, "y": 0.5}, "D": {"x": 0.7, "y": 0.3}, "E": {"x": 0.9, "y": 0.5}},
+          "startNode": "A",
+          "targetNode": "E"
+        }
+      },
+      {
+        "name": "Linear chain",
+        "values": {
+          "adjacencyList": {
+            "A": [{"to": "B", "weight": 3}],
+            "B": [{"to": "A", "weight": 3}, {"to": "C", "weight": 5}],
+            "C": [{"to": "B", "weight": 5}, {"to": "D", "weight": 2}],
+            "D": [{"to": "C", "weight": 2}]
+          },
+          "positions": {"A": {"x": 0.1, "y": 0.5}, "B": {"x": 0.35, "y": 0.5}, "C": {"x": 0.65, "y": 0.5}, "D": {"x": 0.9, "y": 0.5}},
+          "startNode": "A",
+          "targetNode": "D"
+        }
+      },
+      {
+        "name": "Unreachable target",
+        "values": {
+          "adjacencyList": {
+            "A": [{"to": "B", "weight": 1}],
+            "B": [{"to": "A", "weight": 1}],
+            "C": []
+          },
+          "positions": {"A": {"x": 0.2, "y": 0.5}, "B": {"x": 0.5, "y": 0.5}, "C": {"x": 0.8, "y": 0.5}},
+          "startNode": "A",
+          "targetNode": "C"
+        }
+      }
+    ]
+  },
+  "code": {
+    "implementations": {
+      "pseudocode": "function dijkstra(graph, source):\n  dist[source] = 0\n  for each vertex v ≠ source:\n    dist[v] = ∞\n  PQ = priority queue with (source, 0)\n  while PQ is not empty:\n    u = PQ.extractMin()\n    for each neighbor v of u:\n      newDist = dist[u] + weight(u, v)\n      if newDist < dist[v]:\n        dist[v] = newDist\n        predecessor[v] = u\n        PQ.insert(v, newDist)\n  return dist, predecessor",
+      "python": "import heapq\n\ndef dijkstra(graph, source):\n    dist = {v: float('inf') for v in graph}\n    dist[source] = 0\n    pq = [(0, source)]\n    predecessor = {v: None for v in graph}\n    visited = set()\n    \n    while pq:\n        d, u = heapq.heappop(pq)\n        if u in visited:\n            continue\n        visited.add(u)\n        for v, w in graph[u]:\n            if dist[u] + w < dist[v]:\n                dist[v] = dist[u] + w\n                predecessor[v] = u\n                heapq.heappush(pq, (dist[v], v))\n    return dist, predecessor"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+  "education": {
+    "keyConcepts": [
+      { "title": "Greedy Strategy", "description": "Dijkstra's greedily picks the unvisited node with the smallest tentative distance. This works because with non-negative weights, once we process a node, we've already found its shortest path." },
+      { "title": "Relaxation", "description": "When we find a shorter path to a node through a newly processed node, we 'relax' the edge by updating the distance. This is the core operation: dist[v] = min(dist[v], dist[u] + weight(u,v))." },
+      { "title": "Priority Queue", "description": "The priority queue efficiently extracts the minimum-distance node. Using a binary heap gives O(log V) extraction and insertion." },
+      { "title": "Non-Negative Weights Required", "description": "Dijkstra's fails with negative edge weights because the greedy assumption breaks. Use Bellman-Ford for graphs with negative edges." }
+    ],
+    "pitfalls": [
+      { "title": "Negative edge weights", "description": "If any edge has a negative weight, Dijkstra's can produce incorrect results. Always verify all weights ≥ 0." },
+      { "title": "Stale PQ entries", "description": "When using a simple heap, the same node may appear multiple times. Always check if visited when extracting." }
+    ],
+    "quiz": [
+      {
+        "question": "Why does Dijkstra's algorithm fail with negative edge weights?",
+        "options": [
+          "It would cause an infinite loop",
+          "The greedy minimum extraction may process a node before finding its true shortest path",
+          "Negative numbers can't be stored in the priority queue",
+          "The algorithm was not designed for negative numbers"
+        ],
+        "correctIndex": 1,
+        "explanation": "With negative edges, a node processed early might have its distance improved later through a negative-weight edge. The greedy extraction assumes the extracted distance is final."
+      },
+      {
+        "question": "What is the time complexity of Dijkstra's with a binary heap?",
+        "options": ["O(V²)", "O(V + E)", "O((V + E) log V)", "O(V × E)"],
+        "correctIndex": 2,
+        "explanation": "With a binary heap: V extractions × O(log V) + E relaxations × O(log V) = O((V+E) log V)."
+      }
+    ],
+    "resources": [
+      { "title": "Wikipedia: Dijkstra's Algorithm", "url": "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm", "type": "article" },
+      { "title": "Computerphile: Dijkstra's Algorithm", "url": "https://www.youtube.com/watch?v=GazC3A4OQTE", "type": "video" }
+    ]
+  },
+  "seo": {
+    "keywords": ["dijkstra algorithm", "shortest path visualization", "dijkstra step by step", "graph algorithm", "weighted graph shortest path"],
+    "ogDescription": "Watch Dijkstra's algorithm find the shortest path step by step. See priority queue operations, edge relaxation, and distance updates."
+  },
+  "prerequisites": ["bfs"],
+  "related": ["bfs", "dfs"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

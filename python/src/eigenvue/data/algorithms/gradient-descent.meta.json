@@ -1,0 +1,187 @@
+{
+  "id": "gradient-descent",
+  "name": "Gradient Descent",
+  "category": "deep-learning",
+  "description": {
+    "short": "Optimization by following the steepest downhill direction on the loss landscape.",
+    "long": "Gradient descent is the optimization algorithm that trains neural networks by iteratively adjusting parameters to minimize a loss function. At each step, it computes the gradient (vector of partial derivatives) of the loss with respect to the parameters, which points in the direction of steepest ascent. Moving parameters in the opposite direction (downhill) reduces the loss. The learning rate controls step size. Variants include SGD (stochastic gradient descent, which uses mini-batches), SGD with momentum (which accumulates velocity to overcome local plateaus), and Adam (which adapts the learning rate per parameter using first and second moment estimates). Gradient descent visualized on a 2D loss landscape shows the optimization trajectory converging toward a minimum."
+  },
+  "complexity": {
+    "time": "O(T × d)",
+    "space": "O(d)",
+    "level": "intermediate"
+  },
+  "visual": {
+    "layout": "loss-landscape",
+    "theme": {
+      "primary": "#22c55e",
+      "secondary": "#16a34a"
+    },
+    "components": {
+      "showContours": true,
+      "showTrajectory": true,
+      "showGradientArrow": true,
+      "showLossValue": true,
+      "contourColor": "#64748b",
+      "trajectoryColor": "#22c55e",
+      "gradientColor": "#ef4444",
+      "minimumColor": "#f59e0b"
+    }
+  },
+  "inputs": {
+    "schema": {
+      "startX": {
+        "type": "number",
+        "minimum": -5,
+        "maximum": 5,
+        "description": "Starting x parameter value."
+      },
+      "startY": {
+        "type": "number",
+        "minimum": -5,
+        "maximum": 5,
+        "description": "Starting y parameter value."
+      },
+      "learningRate": {
+        "type": "number",
+        "minimum": 0.001,
+        "maximum": 1,
+        "description": "Step size for each gradient descent update."
+      },
+      "optimizer": {
+        "type": "string",
+        "enum": [
+          "sgd",
+          "momentum",
+          "adam"
+        ],
+        "description": "Optimization algorithm to use."
+      },
+      "numSteps": {
+        "type": "number",
+        "minimum": 5,
+        "maximum": 50,
+        "description": "Number of gradient descent steps to take."
+      }
+    },
+    "defaults": {
+      "startX": 3,
+      "startY": 3,
+      "learningRate": 0.1,
+      "optimizer": "sgd",
+      "numSteps": 20
+    },
+    "examples": [
+      {
+        "name": "Default (SGD)",
+        "values": {
+          "startX": 3,
+          "startY": 3,
+          "learningRate": 0.1,
+          "optimizer": "sgd",
+          "numSteps": 20
+        }
+      },
+      {
+        "name": "Momentum optimizer",
+        "values": {
+          "startX": -3,
+          "startY": 4,
+          "learningRate": 0.05,
+          "optimizer": "momentum",
+          "numSteps": 30
+        }
+      },
+      {
+        "name": "Adam optimizer",
+        "values": {
+          "startX": 4,
+          "startY": -2,
+          "learningRate": 0.1,
+          "optimizer": "adam",
+          "numSteps": 25
+        }
+      }
+    ]
+  },
+  "code": {
+    "implementations": {
+      "pseudocode": "function gradientDescent(f, startParams, learningRate, numSteps):\n  params = startParams\n  trajectory = [params]\n\n  for step in range(numSteps):\n    grad = computeGradient(f, params)  // ∂f/∂params\n    params = params - learningRate * grad  // step downhill\n    trajectory.append(params)\n\n  return trajectory"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Gradient as Direction of Steepest Ascent",
+        "description": "The gradient ∇f(x) is a vector pointing in the direction where the function increases fastest. To minimize, we move in the opposite direction: x_new = x_old - η × ∇f(x_old)."
+      },
+      {
+        "title": "Learning Rate",
+        "description": "The learning rate η controls how large each step is. Too large → overshooting and divergence. Too small → slow convergence. Finding the right learning rate is one of the most important hyperparameter choices in deep learning."
+      },
+      {
+        "title": "Momentum",
+        "description": "Momentum accumulates a velocity vector from past gradients, helping the optimizer build speed in consistent directions and dampen oscillations. It is like a ball rolling downhill that carries momentum past small bumps."
+      },
+      {
+        "title": "Adam Optimizer",
+        "description": "Adam (Adaptive Moment Estimation) adapts the learning rate for each parameter individually using running averages of the first moment (mean) and second moment (variance) of gradients. This makes it robust across a wide range of problems."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Local minima and saddle points",
+        "description": "Gradient descent can get stuck at local minima or saddle points where the gradient is zero. Momentum and Adam help escape these by maintaining velocity."
+      },
+      {
+        "title": "Learning rate too high causes divergence",
+        "description": "If the learning rate is too large, the optimizer overshoots the minimum and the loss increases instead of decreasing, potentially diverging to infinity."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "In gradient descent, why do we subtract the gradient rather than add it?",
+        "options": [
+          "To increase the function value",
+          "Because the gradient points uphill and we want to go downhill",
+          "To normalize the parameters",
+          "Because subtraction is faster than addition"
+        ],
+        "correctIndex": 1,
+        "explanation": "The gradient points in the direction of steepest ascent. Since we want to minimize the loss, we move in the opposite direction by subtracting."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Adam: A Method for Stochastic Optimization (Kingma & Ba, 2015)",
+        "url": "https://arxiv.org/abs/1412.6980",
+        "type": "paper"
+      },
+      {
+        "title": "Gradient Descent — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Gradient_descent",
+        "type": "article"
+      }
+    ]
+  },
+  "seo": {
+    "keywords": [
+      "gradient descent visualization",
+      "loss landscape animation",
+      "SGD momentum Adam comparison",
+      "optimization step by step",
+      "how gradient descent works"
+    ],
+    "ogDescription": "Interactive visualization of gradient descent on a loss landscape. Compare SGD, Momentum, and Adam optimizers as they navigate toward the minimum."
+  },
+  "prerequisites": [
+    "backpropagation"
+  ],
+  "related": [
+    "backpropagation",
+    "feedforward-network"
+  ],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

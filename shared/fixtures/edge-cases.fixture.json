@@ -1,0 +1,156 @@
+{
+  "description": "Invalid step sequences used to test that validators correctly reject bad input.",
+  "cases": [
+    {
+      "name": "empty_steps_array",
+      "data": {
+        "formatVersion": 1,
+        "algorithmId": "test",
+        "inputs": {},
+        "steps": [],
+        "generatedAt": "2026-02-14T00:00:00.000Z",
+        "generatedBy": "precomputed"
+      },
+      "expectedErrorSubstrings": ["minItems"]
+    },
+    {
+      "name": "wrong_format_version",
+      "data": {
+        "formatVersion": 99,
+        "algorithmId": "test",
+        "inputs": {},
+        "steps": [
+          {
+            "index": 0, "id": "step0", "title": "Step", "explanation": "Desc",
+            "state": {}, "visualActions": [], "codeHighlight": { "language": "pseudocode", "lines": [1] },
+            "isTerminal": true
+          }
+        ],
+        "generatedAt": "2026-02-14T00:00:00.000Z",
+        "generatedBy": "precomputed"
+      },
+      "expectedErrorSubstrings": ["const"]
+    },
+    {
+      "name": "index_mismatch",
+      "data": {
+        "formatVersion": 1,
+        "algorithmId": "test",
+        "inputs": {},
+        "steps": [
+          {
+            "index": 5, "id": "step0", "title": "Step", "explanation": "Desc",
+            "state": {}, "visualActions": [], "codeHighlight": { "language": "pseudocode", "lines": [1] },
+            "isTerminal": true
+          }
+        ],
+        "generatedAt": "2026-02-14T00:00:00.000Z",
+        "generatedBy": "precomputed"
+      },
+      "expectedErrorSubstrings": ["index"]
+    },
+    {
+      "name": "no_terminal_step",
+      "data": {
+        "formatVersion": 1,
+        "algorithmId": "test",
+        "inputs": {},
+        "steps": [
+          {
+            "index": 0, "id": "step0", "title": "Step", "explanation": "Desc",
+            "state": {}, "visualActions": [], "codeHighlight": { "language": "pseudocode", "lines": [1] },
+            "isTerminal": false
+          }
+        ],
+        "generatedAt": "2026-02-14T00:00:00.000Z",
+        "generatedBy": "precomputed"
+      },
+      "expectedErrorSubstrings": ["terminal", "isTerminal"]
+    },
+    {
+      "name": "premature_terminal",
+      "data": {
+        "formatVersion": 1,
+        "algorithmId": "test",
+        "inputs": {},
+        "steps": [
+          {
+            "index": 0, "id": "step0", "title": "Step", "explanation": "Desc",
+            "state": {}, "visualActions": [], "codeHighlight": { "language": "pseudocode", "lines": [1] },
+            "isTerminal": true
+          },
+          {
+            "index": 1, "id": "step1", "title": "Step 2", "explanation": "Desc",
+            "state": {}, "visualActions": [], "codeHighlight": { "language": "pseudocode", "lines": [2] },
+            "isTerminal": true
+          }
+        ],
+        "generatedAt": "2026-02-14T00:00:00.000Z",
+        "generatedBy": "precomputed"
+      },
+      "expectedErrorSubstrings": ["terminal", "Multiple"]
+    },
+    {
+      "name": "invalid_step_id_pattern",
+      "data": {
+        "formatVersion": 1,
+        "algorithmId": "test",
+        "inputs": {},
+        "steps": [
+          {
+            "index": 0, "id": "Invalid ID With Spaces!", "title": "Step", "explanation": "Desc",
+            "state": {}, "visualActions": [], "codeHighlight": { "language": "pseudocode", "lines": [1] },
+            "isTerminal": true
+          }
+        ],
+        "generatedAt": "2026-02-14T00:00:00.000Z",
+        "generatedBy": "precomputed"
+      },
+      "expectedErrorSubstrings": ["pattern"]
+    },
+    {
+      "name": "attention_weights_do_not_sum_to_one",
+      "data": {
+        "formatVersion": 1,
+        "algorithmId": "test",
+        "inputs": {},
+        "steps": [
+          {
+            "index": 0, "id": "step0", "title": "Step", "explanation": "Desc",
+            "state": {},
+            "visualActions": [
+              { "type": "showAttentionWeights", "queryIdx": 0, "weights": [0.5, 0.3, 0.1] }
+            ],
+            "codeHighlight": { "language": "pseudocode", "lines": [1] },
+            "isTerminal": true
+          }
+        ],
+        "generatedAt": "2026-02-14T00:00:00.000Z",
+        "generatedBy": "precomputed"
+      },
+      "expectedErrorSubstrings": ["weights sum to", "0.9"]
+    },
+    {
+      "name": "highlight_range_from_greater_than_to",
+      "data": {
+        "formatVersion": 1,
+        "algorithmId": "test",
+        "inputs": {},
+        "steps": [
+          {
+            "index": 0, "id": "step0", "title": "Step", "explanation": "Desc",
+            "state": {},
+            "visualActions": [
+              { "type": "highlightRange", "from": 5, "to": 2 }
+            ],
+            "codeHighlight": { "language": "pseudocode", "lines": [1] },
+            "isTerminal": true
+          }
+        ],
+        "generatedAt": "2026-02-14T00:00:00.000Z",
+        "generatedBy": "precomputed"
+      },
+      "expectedErrorSubstrings": ["from=5 > to=2"]
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+---
+title: "Development Setup"
+description: "Set up your local development environment for contributing to Eigenvue, including prerequisites, workspace installation, running services, and CI requirements."
+---
+
+This guide walks you through everything you need to start contributing to Eigenvue.
+By the end, you will have the web app, documentation site, and Python package
+running locally with all tests passing.
+
+## Prerequisites
+
+Before you begin, make sure the following tools are installed and available on
+your `PATH`:
+
+| Tool       | Minimum Version | Check Command        |
+|------------|-----------------|----------------------|
+| Node.js    | 20.0            | `node --version`     |
+| npm        | 10.0            | `npm --version`      |
+| Python     | 3.10            | `python --version`   |
+| pip        | 22.0            | `pip --version`      |
+| Git        | 2.30            | `git --version`      |
+
+:::tip
+We recommend using [nvm](https://github.com/nvm-sh/nvm) (or
+[nvm-windows](https://github.com/coreybutler/nvm-windows)) to manage Node.js
+versions and [pyenv](https://github.com/pyenv/pyenv) to manage Python versions.
+:::
+
+## Clone and Install
+
+Eigenvue is a monorepo with three installable workspaces: `web/`, `python/`, and
+`docs/`. Clone the repository and install each workspace:
+
+```bash
+# Clone the repository
+git clone https://github.com/ashutoshm1771/eigenvue.git
+cd eigenvue
+```
+
+### Web Application (Next.js)
+
+```bash
+cd web
+npm install
+```
+
+### Documentation Site (Starlight)
+
+```bash
+cd docs
+npm install
+```
+
+### Python Package
+
+```bash
+cd python
+pip install -e ".[dev]"
+```
+
+The `-e` flag installs the package in **editable mode** so your local changes
+are reflected immediately. The `[dev]` extra pulls in Ruff, mypy, pytest, and
+other development dependencies.
+
+## Running Locally
+
+### Web Dev Server
+
+```bash
+cd web
+npm run dev
+```
+
+This starts the Next.js development server at **http://localhost:3000** with hot
+module reloading. Changes to files in `web/`, `shared/`, and `algorithms/` are
+picked up automatically.
+
+### Docs Dev Server
+
+```bash
+cd docs
+npm run dev
+```
+
+The Astro Starlight docs site starts at **http://localhost:4321**. MDX changes
+appear instantly in the browser.
+
+### Running Tests
+
+```bash
+# TypeScript tests (from web/)
+cd web
+npm run test           # Run all Vitest tests
+npm run test -- --watch  # Watch mode
+
+# Python tests (from python/)
+cd python
+pytest                 # Run all pytest tests
+pytest -x              # Stop on first failure
+```
+
+## Project Structure Overview
+
+Understanding the monorepo layout helps you navigate the codebase:
+
+```
+eigenvue/
+  algorithms/           # Algorithm definitions (meta.json + generators)
+    classical/          #   Binary search, sorting, graph traversal, etc.
+    deep-learning/      #   Perceptron, backpropagation, convolution, etc.
+    generative-ai/      #   Tokenization, attention, transformer block, etc.
+  web/                  # Next.js web application
+    src/
+      engine/           #   Rendering engine (layouts, animation, canvas)
+        generator/      #     Generator runner and types
+        layouts/        #     Layout functions and registry
+        animation/      #     Animation and interpolation
+        canvas/         #     Canvas manager and DPI handling
+      components/       #   React components
+  python/               # PyPI package (eigenvue)
+    src/eigenvue/
+      generators/       #   Python generator implementations
+      runner.py         #   Python generator runner
+  docs/                 # Astro Starlight documentation site
+    src/content/docs/   #   MDX documentation pages
+  shared/               # Cross-language types and schemas
+    types/              #   Step, VisualAction, CodeHighlight definitions
+    fixtures/           #   Golden test fixtures
+    validation/         #   JSON Schema validators
+  scripts/              # Build and validation scripts
+    verify-step-parity.py  # Cross-language parity checker
+  tests/                # Integration and end-to-end tests
+```
+
+### Key Relationships
+
+- **`algorithms/`** contains `meta.json` (metadata) and `generator.ts`
+  (TypeScript generator) for each algorithm. Python generators live under
+  `python/src/eigenvue/generators/`.
+
+- **`shared/types/step.ts`** is the single source of truth for the `Step`
+  interface. Both TypeScript and Python must produce identical JSON output
+  for the same inputs.
+
+- **`web/src/engine/layouts/`** contains layout functions that convert `Step`
+  objects into `PrimitiveScene` objects for rendering. Each layout self-registers
+  via `registerLayout()` in `registry.ts`.
+
+## Branch Strategy
+
+| Branch         | Purpose                                             |
+|----------------|-----------------------------------------------------|
+| `main`         | Stable, releasable state. Protected by CI.          |
+| `feature/*`    | New features (e.g., `feature/add-linear-search`).   |
+| `fix/*`        | Bug fixes (e.g., `fix/canvas-dpi-scaling`).         |
+| `docs/*`       | Documentation changes (e.g., `docs/update-api-ref`).|
+
+All work happens on feature branches created from `main`. When your branch is
+ready, open a pull request targeting `main`. At least one approval and all CI
+checks must pass before merging.
+
+```bash
+# Create a feature branch
+git checkout main
+git pull origin main
+git checkout -b feature/add-linear-search
+```
+
+## Commit Message Format
+
+We follow the [Conventional Commits](https://www.conventionalcommits.org/)
+specification. Every commit message must follow this structure:
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### Types
+
+| Type       | When to Use                                        |
+|------------|----------------------------------------------------|
+| `feat`     | A new feature (algorithm, layout, UI component)    |
+| `fix`      | A bug fix                                          |
+| `docs`     | Documentation-only changes                         |
+| `style`    | Formatting, whitespace, no logic change            |
+| `refactor` | Code restructuring without behavior change         |
+| `test`     | Adding or updating tests                           |
+| `chore`    | Build system, CI, dependencies, tooling            |
+
+### Scopes
+
+Use the workspace name as the scope: `web`, `python`, `docs`, `shared`,
+`algorithms`, or `scripts`.
+
+### Examples
+
+```
+feat(algorithms): add linear search generator and meta.json
+fix(python): correct integer overflow in LCG PRNG implementation
+test(web): add layout snapshot tests for array-with-pointers
+docs: add contributing guide for cross-language parity
+chore(web): upgrade Next.js to 15.1
+```
+
+## CI Checks That Must Pass
+
+Every pull request runs the following CI jobs. All must pass before merge:
+
+### Web CI
+
+| Check       | Command                 | What It Verifies                  |
+|-------------|-------------------------|-----------------------------------|
+| Lint        | `npm run lint`          | ESLint rules, no warnings         |
+| Typecheck   | `npm run typecheck`     | TypeScript strict mode, no errors |
+| Test        | `npm run test`          | All Vitest tests pass             |
+| Build       | `npm run build`         | Next.js production build succeeds |
+
+### Python CI
+
+| Check       | Command                    | What It Verifies                  |
+|-------------|----------------------------|-----------------------------------|
+| Lint        | `ruff check .`             | Ruff linting, no violations       |
+| Typecheck   | `mypy src/`                | mypy strict mode, no errors       |
+| Test        | `pytest`                   | All pytest tests pass             |
+
+### Cross-Language Parity
+
+```bash
+python scripts/verify-step-parity.py
+```
+
+This script verifies that Python dataclasses round-trip through JSON identically
+to the TypeScript interfaces. It is the final gate ensuring both languages
+produce byte-identical step output.
+
+:::caution
+Run all CI checks locally before pushing. A failing CI check blocks the entire
+PR from merging, even if your specific change is unrelated to the failure.
+
+```bash
+# Quick local CI check
+cd web && npm run lint && npm run typecheck && npm run test && cd ..
+cd python && ruff check . && mypy src/ && pytest && cd ..
+python scripts/verify-step-parity.py
+```
+:::
+
+## Next Steps
+
+Once your development environment is ready:
+
+- **Adding an algorithm?** Read [Adding an Algorithm](/docs/contributing/adding-an-algorithm/).
+- **Working on layouts?** Read [Adding a Layout](/docs/contributing/adding-a-layout/).
+- **Writing tests?** Read [Writing Tests](/docs/contributing/writing-tests/).
+- **Need API details?** Read [The Generator API](/docs/contributing/generator-api/).

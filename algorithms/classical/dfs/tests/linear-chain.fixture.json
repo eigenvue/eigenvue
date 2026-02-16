@@ -1,0 +1,10 @@
+{
+  "description": "Linear chain A-B-C-D",
+  "inputs": {
+    "adjacencyList": { "A": ["B"], "B": ["A", "C"], "C": ["B", "D"], "D": ["C"] },
+    "positions": { "A": {"x": 0.1, "y": 0.5}, "B": {"x": 0.35, "y": 0.5}, "C": {"x": 0.65, "y": 0.5}, "D": {"x": 0.9, "y": 0.5} },
+    "startNode": "A",
+    "targetNode": "D"
+  },
+  "expected": { "terminalStepId": "target_found" }
+}

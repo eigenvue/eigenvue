@@ -1,0 +1,17 @@
+{
+  "description": "OR gate with step activation: inputs [1, 0] → output 1",
+  "inputs": {
+    "inputs": [1, 0],
+    "weights": [0.5, 0.5],
+    "bias": -0.2,
+    "activationFunction": "step"
+  },
+  "expectedStepCount": 6,
+  "keyStates": [
+    { "stepId": "show-inputs", "state": { "inputs": [1, 0], "n": 2 } },
+    { "stepId": "weighted-inputs", "state": { "weightedInputs": [0.5, 0] } },
+    { "stepId": "pre-activation", "state": { "z": 0.3 } },
+    { "stepId": "output", "state": { "output": 1, "z": 0.3 } }
+  ],
+  "notes": "z = 1×0.5 + 0×0.5 + (-0.2) = 0.3. step(0.3) = 1."
+}

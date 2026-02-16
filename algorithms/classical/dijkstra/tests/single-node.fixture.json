@@ -1,0 +1,12 @@
+{
+  "description": "Single-node graph",
+  "inputs": {
+    "adjacencyList": { "A": [] },
+    "positions": { "A": {"x": 0.5, "y": 0.5} },
+    "startNode": "A"
+  },
+  "expected": {
+    "terminalStepId": "complete",
+    "distances": { "A": 0 }
+  }
+}

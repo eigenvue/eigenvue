@@ -1,0 +1,433 @@
+---
+title: "Cross-Language Parity"
+description: "Ensuring TypeScript and Python generators produce identical step output, including validation scripts, common pitfalls like PRNG mismatches and float ordering, and debugging strategies."
+---
+
+Eigenvue's TypeScript and Python generators must produce **identical** step
+output for the same inputs. This is not a "nice to have" -- it is a hard
+requirement. The JOSS (Journal of Open Source Software) review process demands
+reproducible results, and users of the Python package must see the exact same
+visualization as users of the web application.
+
+---
+
+## Why Parity Matters
+
+1. **JOSS Requirement.** The paper submission requires that the software produce
+   reproducible, verifiable results. A reviewer running the Python package must
+   get the same step sequence as someone using the web app.
+
+2. **User Trust.** If a student sees different behavior between the web app and
+   their Jupyter notebook, they lose trust in the platform.
+
+3. **Pre-computed Steps.** Build-time pre-computation uses the Python generator.
+   Runtime uses the TypeScript generator. If they disagree, the initial page
+   load shows different steps than stepping through manually.
+
+4. **Test Fixtures.** Golden test fixtures are shared between both languages. If
+   either language drifts, the fixture tests catch it.
+
+---
+
+## What "Identical" Means
+
+Two step sequences are identical if, when serialized to JSON with
+deterministic settings (sorted keys, consistent indentation), they produce
+**byte-identical strings**.
+
+For floating-point values, "identical" means the JSON string representation
+is the same. In practice, this requires that both languages:
+
+- Perform floating-point operations in the **same order**.
+- Use the **same rounding** strategy.
+- Produce the **same string** when serializing a float (e.g., both produce
+  `"0.7071067811865476"`, not one producing `"0.7071067811865475"`).
+
+For values where exact agreement is impractical (e.g., long chains of
+floating-point operations), the tolerance is **+/-1e-9**. However, the
+parity verification script uses byte-identical comparison, so in practice
+you must achieve exact agreement or round both sides to the same precision.
+
+---
+
+## Parity Validation Script
+
+### Location
+
+```
+scripts/verify-step-parity.py
+```
+
+### What It Does
+
+1. Loads golden fixture files from `shared/fixtures/`.
+2. Deserializes each fixture into Python `Step` dataclasses via `from_dict()`.
+3. Re-serializes back to camelCase dicts via `to_dict()`.
+4. Compares the re-serialized JSON to the original fixture JSON.
+
+If the round-trip produces identical JSON, the Python types are proven
+wire-compatible with the TypeScript types.
+
+### Running It
+
+```bash
+python scripts/verify-step-parity.py
+```
+
+### Output
+
+```
+============================================================
+Cross-Language Step Parity Verification
+============================================================
+
+Verifying: binary-search-found.fixture.json
+  PASS
+Verifying: binary-search-not-found.fixture.json
+  PASS
+Verifying: single-element.fixture.json
+  PASS
+Verifying: minimal-valid.fixture.json
+  PASS
+
+============================================================
+ALL FIXTURES PASSED
+============================================================
+```
+
+Exit code 0 means all fixtures passed. Exit code 1 means at least one failed.
+
+### Adding Your Algorithm's Fixtures
+
+When you add a new algorithm, add its fixtures to the parity test by placing
+them in `shared/fixtures/` with the naming convention
+`<algorithm-id>-<case>.fixture.json` and adding them to the `valid_fixtures`
+list in the script.
+
+---
+
+## Common Pitfalls
+
+These are the most common causes of parity failures, ordered by frequency.
+Each includes the symptom, root cause, and fix.
+
+### 1. PRNG Mismatch (LCG Parameters)
+
+**Symptom:** Steps involving random initialization (neural network weights,
+shuffle operations) produce different values.
+
+**Root cause:** TypeScript and Python use different default random number
+generators. Even if you seed both with the same value, the sequences differ.
+
+**Fix:** Use the same **Linear Congruential Generator (LCG)** implementation
+in both languages. The Eigenvue LCG uses these parameters:
+
+```typescript
+// TypeScript
+function lcg(seed: number): () => number {
+  let state = seed;
+  return () => {
+    // Multiplier and increment from Numerical Recipes
+    state = (state * 1664525 + 1013904223) >>> 0;  // Force unsigned 32-bit
+    return state / 0x100000000;  // Normalize to [0, 1)
+  };
+}
+```
+
+```python
+# Python
+def lcg(seed: int) -> Callable[[], float]:
+    state = seed
+
+    def next_value() -> float:
+        nonlocal state
+        state = (state * 1664525 + 1013904223) & 0xFFFFFFFF  # Force unsigned 32-bit
+        return state / 0x100000000  # Normalize to [0, 1)
+
+    return next_value
+```
+
+:::caution
+The critical detail is unsigned 32-bit truncation:
+- TypeScript: `>>> 0` (unsigned right shift by 0 forces 32-bit unsigned)
+- Python: `& 0xFFFFFFFF` (bitwise AND with 32-bit mask)
+
+These are **not** interchangeable with `>> 0` in TypeScript (which is signed)
+or `% 2**32` in Python (which handles negatives differently).
+:::
+
+### 2. Integer Overflow and Unsigned 32-bit Arithmetic
+
+**Symptom:** Hash values, LCG states, or bitwise operations produce different
+results for large numbers.
+
+**Root cause:** JavaScript numbers are 64-bit floats. Python integers are
+arbitrary precision. When JavaScript does `>>> 0`, it truncates to unsigned
+32-bit. Python has no equivalent automatic truncation.
+
+**Fix:** In Python, explicitly mask every intermediate result that should be
+32-bit unsigned:
+
+```python
+# WRONG: Python integers grow without bound
+result = a * b + c  # Could be 50+ bits
+
+# CORRECT: Mask to 32-bit unsigned after every operation
+result = ((a * b) + c) & 0xFFFFFFFF
+```
+
+In TypeScript, use `>>> 0` to force unsigned 32-bit:
+
+```typescript
+// WRONG: May produce negative number (signed 32-bit)
+const result = (a * b + c) | 0;
+
+// CORRECT: Unsigned 32-bit
+const result = (a * b + c) >>> 0;
+```
+
+### 3. Float Order of Operations
+
+**Symptom:** Floating-point values differ by tiny amounts (e.g.,
+`0.7071067811865476` vs `0.7071067811865475`).
+
+**Root cause:** Floating-point addition is not associative.
+`(a + b) + c !== a + (b + c)` in general. If the TypeScript generator
+computes a sum left-to-right and the Python generator uses `sum()` (which
+may use a different accumulation order), the results can differ.
+
+**Fix:** Ensure both generators compute floating-point operations in the
+**exact same order**:
+
+```typescript
+// TypeScript: explicit left-to-right accumulation
+let total = 0;
+for (let i = 0; i < values.length; i++) {
+  total += values[i];
+}
+```
+
+```python
+# Python: explicit left-to-right accumulation (NOT sum())
+total = 0.0
+for v in values:
+    total += v
+```
+
+Do **not** use Python's `sum()`, `math.fsum()`, or `numpy.sum()` unless the
+TypeScript side uses the exact same algorithm. Python's `sum()` is a simple
+left-to-right accumulation (same as the explicit loop), but `math.fsum()` uses
+Shewchuk's algorithm for perfect precision, which will produce different
+results.
+
+### 4. Sorting Stability
+
+**Symptom:** When sorting elements with equal keys, the order of tied elements
+differs between languages.
+
+**Root cause:** Both JavaScript's `Array.prototype.sort()` and Python's
+`sorted()` / `list.sort()` are stable sorts (they preserve relative order of
+equal elements). However, if you use a comparison function that does not
+fully specify the order, different implementations may break ties differently.
+
+**Fix:** Always use a **total ordering** in sort comparisons. If two elements
+have the same primary key, sort by a secondary key (e.g., original index):
+
+```typescript
+// WRONG: Ties are broken arbitrarily
+nodes.sort((a, b) => a.distance - b.distance);
+
+// CORRECT: Break ties by node ID for deterministic order
+nodes.sort((a, b) => a.distance - b.distance || a.id.localeCompare(b.id));
+```
+
+```python
+# CORRECT: Break ties by node ID
+nodes.sort(key=lambda n: (n.distance, n.id))
+```
+
+### 5. Object Key Ordering in JSON
+
+**Symptom:** JSON serialization produces different output because keys appear
+in a different order.
+
+**Root cause:** JavaScript objects iterate keys in insertion order (for string
+keys). Python dicts (3.7+) also maintain insertion order. But if the two
+generators build state objects in a different order, the JSON output differs.
+
+**Fix:** Build state objects with keys in the **same order** in both
+generators. The parity script uses `sort_keys=True` for comparison, which
+normalizes key order. But for step-by-step comparison, matching insertion
+order makes debugging much easier.
+
+```typescript
+// TypeScript
+state: {
+  array: [...array],
+  target,
+  left,
+  right,
+  mid,
+  result: null,
+}
+```
+
+```python
+# Python: same key order
+state={
+    "array": list(array),
+    "target": target,
+    "left": left,
+    "right": right,
+    "mid": mid,
+    "result": None,
+}
+```
+
+### 6. String Representation of Numbers
+
+**Symptom:** JSON output differs in how numbers are formatted (e.g., `1.0` vs
+`1`, or `1e-10` vs `0.0000000001`).
+
+**Root cause:** JavaScript's `JSON.stringify` and Python's `json.dumps` have
+different default number formatting. JavaScript omits trailing zeros
+(`1` not `1.0`), while Python may include them depending on the value.
+
+**Fix:** Both languages represent integers the same way (`1`, `42`, `-5`).
+For floating-point values, ensure you use the same type in both languages.
+If a value is always an integer (like an array index), use integer types in
+both languages.
+
+```typescript
+// TypeScript: result is a number (integer or -1)
+state: { result: foundIndex }  // Will serialize as 6 or -1
+```
+
+```python
+# Python: result is an int
+state={"result": found_index}  # Will serialize as 6 or -1
+```
+
+If you must store a float, ensure both languages produce the same string.
+JavaScript's `JSON.stringify(0.1)` produces `"0.1"`, and Python's
+`json.dumps(0.1)` also produces `"0.1"`. But for computed values, the exact
+float bits may differ, producing different strings.
+
+### 7. None/null vs Missing Keys
+
+**Symptom:** One language includes a key with value `null`/`None`, the other
+omits the key entirely.
+
+**Root cause:** TypeScript's `undefined` is omitted by `JSON.stringify`, but
+`null` is included. Python's `None` maps to `null` in JSON.
+
+**Fix:** Use `null` (TypeScript) / `None` (Python) for "no value" instead of
+`undefined`. Always include the key with a `null` value rather than omitting it.
+
+```typescript
+// CORRECT: explicit null
+state: { result: null }
+
+// WRONG: undefined is omitted from JSON
+state: { result: undefined }
+```
+
+---
+
+## Debugging Parity Failures
+
+When the parity test fails, follow this systematic approach:
+
+### Step 1: Generate Both Outputs
+
+```bash
+# TypeScript output
+cd web
+npx tsx -e "
+  import gen from '../algorithms/classical/my-algo/generator';
+  import { runGenerator } from './src/engine/generator';
+  const result = runGenerator(gen, { array: [1,2,3], target: 2 });
+  console.log(JSON.stringify(result.steps, null, 2));
+" > /tmp/ts-steps.json
+
+# Python output
+cd python
+python -c "
+from eigenvue.runner import run_generator
+import json
+steps = run_generator('my-algo', {'array': [1,2,3], 'target': 2})
+print(json.dumps(steps, indent=2, sort_keys=True))
+" > /tmp/py-steps.json
+```
+
+### Step 2: Diff
+
+```bash
+diff /tmp/ts-steps.json /tmp/py-steps.json
+```
+
+### Step 3: Identify the First Divergent Step
+
+Look at the diff output. The first difference tells you which step diverged.
+Note the step index and which field differs.
+
+### Step 4: Trace the Computation
+
+Add logging to both generators at the divergent step. Print the intermediate
+values that feed into the differing field.
+
+### Step 5: Check the Common Pitfalls
+
+Most parity failures fall into one of the categories above. Check:
+
+1. Is there unsigned 32-bit arithmetic involved? Check `>>> 0` vs `& 0xFFFFFFFF`.
+2. Is there floating-point accumulation? Check operation order.
+3. Is there sorting? Check tie-breaking.
+4. Is there randomness? Check LCG parameters.
+5. Is there `null` vs `undefined`? Check key presence.
+
+### Step 6: Fix and Verify
+
+After fixing, run the parity test again:
+
+```bash
+python scripts/verify-step-parity.py
+```
+
+And run both test suites:
+
+```bash
+cd web && npm run test
+cd python && pytest
+```
+
+---
+
+## Parity Test Integration
+
+The parity test runs as part of CI on every pull request. It is a blocking
+check -- your PR cannot merge if parity fails.
+
+To run it locally before pushing:
+
+```bash
+python scripts/verify-step-parity.py
+```
+
+This is fast (under 2 seconds) and catches most issues before CI.
+
+---
+
+## Summary
+
+| Rule                                     | TypeScript               | Python                     |
+|------------------------------------------|--------------------------|----------------------------|
+| Unsigned 32-bit truncation               | `>>> 0`                  | `& 0xFFFFFFFF`             |
+| Float accumulation                       | Explicit `for` loop      | Explicit `for` loop        |
+| Random numbers                           | Custom LCG with seed     | Same LCG with same seed    |
+| Sort tie-breaking                        | Total ordering in comparator | Total ordering in key  |
+| Missing values                           | `null` (not `undefined`) | `None`                     |
+| State key order                          | Match Python's order     | Match TypeScript's order   |
+| Integer vs float                         | Use integer types        | Use `int` types            |
+| String formatting                        | Template literals        | f-strings with same format |
+| Tolerance for computed floats            | +/-1e-9                  | +/-1e-9                    |

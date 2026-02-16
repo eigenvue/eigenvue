@@ -1,0 +1,35 @@
+{
+  "description": "Default example: target 13 found in [1,3,5,7,9,11,13,15,17,19] at index 6.",
+  "inputs": {
+    "array": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19],
+    "target": 13
+  },
+  "expected": {
+    "stepCount": 9,
+    "terminalStepId": "found",
+    "result": 6,
+    "stepIds": [
+      "initialize",
+      "calculate_mid",
+      "search_right",
+      "calculate_mid",
+      "search_left",
+      "calculate_mid",
+      "search_right",
+      "calculate_mid",
+      "found"
+    ],
+    "keyStates": [
+      { "stepIndex": 0, "field": "left", "value": 0 },
+      { "stepIndex": 0, "field": "right", "value": 9 },
+      { "stepIndex": 1, "field": "mid", "value": 4 },
+      { "stepIndex": 2, "field": "left", "value": 5 },
+      { "stepIndex": 3, "field": "mid", "value": 7 },
+      { "stepIndex": 4, "field": "right", "value": 6 },
+      { "stepIndex": 5, "field": "mid", "value": 5 },
+      { "stepIndex": 6, "field": "left", "value": 6 },
+      { "stepIndex": 7, "field": "mid", "value": 6 },
+      { "stepIndex": 8, "field": "result", "value": 6 }
+    ]
+  }
+}

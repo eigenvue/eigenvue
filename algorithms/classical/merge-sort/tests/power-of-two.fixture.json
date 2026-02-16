@@ -1,0 +1,5 @@
+{
+  "description": "Power-of-two length array (8 elements) for clean splits",
+  "inputs": { "array": [8, 3, 6, 1, 5, 2, 7, 4] },
+  "expected": { "terminalStepId": "complete", "sortedArray": [1, 2, 3, 4, 5, 6, 7, 8] }
+}

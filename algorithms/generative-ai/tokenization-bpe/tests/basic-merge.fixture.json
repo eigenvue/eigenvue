@@ -1,0 +1,23 @@
+{
+  "description": "Basic BPE merge: 'ab' with one merge rule [('a','b') → 'ab']",
+  "inputs": {
+    "text": "ab",
+    "mergeRules": [[["a", "b"], "ab"]]
+  },
+  "expectedStepCount": 4,
+  "keyStates": [
+    {
+      "stepId": "character-split",
+      "state": {
+        "tokens": ["a", "b"]
+      }
+    },
+    {
+      "stepId": "complete",
+      "state": {
+        "tokens": ["ab"],
+        "finalTokenCount": 1
+      }
+    }
+  ]
+}

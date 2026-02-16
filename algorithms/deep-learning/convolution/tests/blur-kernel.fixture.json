@@ -1,0 +1,13 @@
+{
+  "description": "4×4 input with 2×2 averaging (blur) kernel",
+  "inputs": {
+    "input": [[1, 2, 3, 0], [4, 5, 6, 1], [7, 8, 9, 2], [0, 1, 2, 3]],
+    "kernel": [[0.25, 0.25], [0.25, 0.25]]
+  },
+  "expectedStepCount": 11,
+  "keyStates": [
+    { "stepId": "show-input", "state": { "outputHeight": 3, "outputWidth": 3 } },
+    { "stepId": "conv-0-0", "state": { "sum": 3.0 } }
+  ],
+  "notes": "Blur kernel averages 2×2 patches. Output at (0,0) = 0.25*(1+2+4+5) = 3.0."
+}

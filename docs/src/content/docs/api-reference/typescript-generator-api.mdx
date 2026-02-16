@@ -1,0 +1,397 @@
+---
+title: "TypeScript Generator API"
+description: "Reference for the generator framework."
+---
+
+The TypeScript Generator API provides the framework for writing algorithm generators that produce step sequences. Generators are JavaScript generator functions (`function*`) that yield `Step` objects via a provided step builder. The runner executes these generators, validates the output, and packages it into a `StepSequence`.
+
+All exports are available from `@/engine/generator`:
+
+```typescript
+import {
+  createGenerator,
+  runGenerator,
+  GeneratorError,
+} from "@/engine/generator";
+
+import type {
+  StepInput,
+  StepBuilderFn,
+  GeneratorFunction,
+  GeneratorDefinition,
+  CreateGeneratorConfig,
+  RunOptions,
+  Step,
+  VisualAction,
+  CodeHighlight,
+  StepSequence,
+} from "@/engine/generator";
+```
+
+---
+
+## `createGenerator`
+
+Factory function that creates a type-safe `GeneratorDefinition`. This is the primary entry point for defining a new algorithm generator.
+
+### Signature
+
+```typescript
+function createGenerator<TInputs extends Record<string, unknown>>(
+  config: CreateGeneratorConfig<TInputs>,
+): GeneratorDefinition<TInputs>
+```
+
+### Parameters
+
+| Parameter | Type                             | Description                                           |
+| --------- | -------------------------------- | ----------------------------------------------------- |
+| `config`  | `CreateGeneratorConfig<TInputs>` | The algorithm ID and generator function. See below.   |
+
+### Returns
+
+`GeneratorDefinition<TInputs>` -- An object that the runner can execute.
+
+### Throws
+
+- `Error` if `config.id` does not match the pattern `^[a-z0-9][a-z0-9-]*$`.
+
+### Example
+
+```typescript
+import { createGenerator } from "@/engine/generator";
+
+interface BinarySearchInputs {
+  array: number[];
+  target: number;
+}
+
+export default createGenerator<BinarySearchInputs>({
+  id: "binary-search",
+  *generate(inputs, step) {
+    const { array, target } = inputs;
+    let left = 0;
+    let right = array.length - 1;
+
+    yield step({
+      id: "init",
+      title: "Initialize Binary Search",
+      explanation: `Set left = 0, right = ${right}, searching for ${target}.`,
+      state: { array: [...array], target, left, right, mid: null },
+      visualActions: [
+        { type: "highlightRange", from: 0, to: right, color: "highlight" },
+        { type: "movePointer", id: "left", to: 0 },
+        { type: "movePointer", id: "right", to: right },
+      ],
+      codeHighlight: { language: "pseudocode", lines: [2, 3] },
+      phase: "initialization",
+    });
+
+    // ... search loop steps ...
+
+    yield step({
+      id: "result",
+      title: "Search Complete",
+      explanation: "The algorithm has finished.",
+      state: { array: [...array], target, left, right, mid: null },
+      visualActions: [],
+      codeHighlight: { language: "pseudocode", lines: [15] },
+      isTerminal: true,
+      phase: "result",
+    });
+  },
+});
+```
+
+---
+
+## `runGenerator`
+
+Executes a generator definition with the given inputs and returns a validated `StepSequence`.
+
+### Signature
+
+```typescript
+function runGenerator<TInputs extends Record<string, unknown>>(
+  definition: GeneratorDefinition<TInputs>,
+  inputs: TInputs,
+  options?: RunOptions,
+): StepSequence
+```
+
+### Parameters
+
+| Parameter    | Type                           | Required | Description                                                        |
+| ------------ | ------------------------------ | -------- | ------------------------------------------------------------------ |
+| `definition` | `GeneratorDefinition<TInputs>` | Yes      | The generator definition (from `createGenerator()`).               |
+| `inputs`     | `TInputs`                      | Yes      | The algorithm's input parameters.                                  |
+| `options`    | `RunOptions`                   | No       | Optional configuration. See `RunOptions` below.                    |
+
+### Returns
+
+`StepSequence` -- A complete, validated step sequence ready for rendering.
+
+### Throws
+
+`GeneratorError` in the following cases:
+
+- The generator function itself throws an exception.
+- The generator exceeds the `maxSteps` limit.
+- The generated steps violate any step format invariant (empty sequence, non-contiguous indices, missing terminal step, multiple terminal steps, terminal step not last).
+- A visual action violates its constraints (e.g., `highlightRange` with `from > to`, `showAttentionWeights` with weights not summing to 1.0).
+
+### Invariants Enforced
+
+The runner validates the complete step sequence before returning:
+
+1. **Non-empty**: At least one step must exist.
+2. **Index contiguity**: `steps[i].index === i` for all `i`.
+3. **Single terminal**: Exactly one step has `isTerminal === true`.
+4. **Terminal is last**: The terminal step is `steps[steps.length - 1]`.
+5. **Visual action constraints**: Action-specific rules (range ordering, attention weight summation, label/value length matching).
+
+### Example
+
+```typescript
+import binarySearchGenerator from "@/algorithms/classical/binary-search/generator";
+import { runGenerator } from "@/engine/generator";
+
+const result = runGenerator(binarySearchGenerator, {
+  array: [1, 3, 5, 7, 9, 11, 13],
+  target: 7,
+});
+
+console.log(result.formatVersion);  // 1
+console.log(result.algorithmId);    // "binary-search"
+console.log(result.steps.length);   // e.g., 5
+console.log(result.generatedBy);    // "typescript"
+console.log(result.steps[result.steps.length - 1].isTerminal); // true
+```
+
+---
+
+## `RunOptions`
+
+Configuration object for `runGenerator()`.
+
+```typescript
+interface RunOptions {
+  readonly maxSteps?: number;
+}
+```
+
+| Field      | Type     | Default   | Description                                                                                      |
+| ---------- | -------- | --------- | ------------------------------------------------------------------------------------------------ |
+| `maxSteps` | `number` | `10_000`  | Maximum number of steps the generator may produce. Exceeding this limit throws `GeneratorError`. This is a safety limit to prevent infinite loops from locking the browser. |
+
+### Example
+
+```typescript
+// Allow up to 50,000 steps for a complex algorithm
+const result = runGenerator(complexGenerator, inputs, {
+  maxSteps: 50_000,
+});
+```
+
+---
+
+## `GeneratorDefinition`
+
+The output of `createGenerator()`. Bundles the algorithm ID with its generate function.
+
+```typescript
+interface GeneratorDefinition<TInputs extends Record<string, unknown>> {
+  readonly id: string;
+  readonly generate: GeneratorFunction<TInputs>;
+}
+```
+
+| Field      | Type                        | Description                                            |
+| ---------- | --------------------------- | ------------------------------------------------------ |
+| `id`       | `string`                    | The algorithm's URL-safe identifier (e.g., `"binary-search"`). Must match the `id` field in the algorithm's `meta.json`. |
+| `generate` | `GeneratorFunction<TInputs>` | The generator function.                               |
+
+---
+
+## `GeneratorFunction`
+
+The type signature for generator functions.
+
+```typescript
+type GeneratorFunction<TInputs extends Record<string, unknown>> =
+  (inputs: TInputs, step: StepBuilderFn) => Generator<Step, void, undefined>;
+```
+
+A generator function receives:
+
+1. `inputs` -- The algorithm's typed input parameters.
+2. `step` -- The step builder function (see `StepBuilderFn` below).
+
+It must be a JavaScript generator function (`function*`) that yields `Step` objects created via the `step` builder.
+
+### Rules
+
+1. The generator **must** yield at least one step.
+2. The last yielded step **must** have `isTerminal: true`.
+3. No step other than the last may have `isTerminal: true`.
+4. The generator **must** terminate (no infinite loops).
+5. State objects in steps **must** be independent snapshots (deep copies of mutable data).
+
+---
+
+## `StepBuilderFn`
+
+The function signature provided to generators for creating steps.
+
+```typescript
+type StepBuilderFn = (input: StepInput) => Step;
+```
+
+The step builder is provided by the runner. Generators call it to convert a `StepInput` into a complete `Step` object. The builder automatically:
+
+1. Assigns the correct `index` (auto-incrementing from 0).
+2. Sets `isTerminal` to `false` if not provided.
+3. Validates the step ID format, title length, and code highlight line numbers.
+
+Generators should never construct `Step` objects directly. Always use the step builder.
+
+---
+
+## `StepInput`
+
+The fields a generator provides when yielding a step. This is the input to the step builder function.
+
+```typescript
+interface StepInput {
+  readonly id: string;
+  readonly title: string;
+  readonly explanation: string;
+  readonly state: Record<string, unknown>;
+  readonly visualActions: readonly VisualAction[];
+  readonly codeHighlight: CodeHighlight;
+  readonly isTerminal?: boolean;
+  readonly phase?: string;
+}
+```
+
+| Field           | Type                       | Required | Description                                                              |
+| --------------- | -------------------------- | -------- | ------------------------------------------------------------------------ |
+| `id`            | `string`                   | Yes      | Template identifier (e.g., `"compare_mid"`). Must match `^[a-z0-9][a-z0-9_-]*$`. Not unique within a sequence. |
+| `title`         | `string`                   | Yes      | Short heading (1--200 characters).                                       |
+| `explanation`   | `string`                   | Yes      | Plain-language narration of what is happening.                           |
+| `state`         | `Record<string, unknown>`  | Yes      | Snapshot of all algorithm variables. **Must be an independent copy** -- never pass mutable references. |
+| `visualActions` | `readonly VisualAction[]`  | Yes      | Ordered array of rendering instructions.                                 |
+| `codeHighlight` | `CodeHighlight`            | Yes      | Source code line mapping. Lines are 1-indexed positive integers.          |
+| `isTerminal`    | `boolean`                  | No       | Set to `true` only on the final step. Defaults to `false`.               |
+| `phase`         | `string`                   | No       | Grouping label (e.g., `"initialization"`, `"search"`, `"result"`).       |
+
+### State Snapshot Warning
+
+The `state` field must contain an independent snapshot of the algorithm's variables. If you pass a reference to a mutable object, all steps will point to the same (mutated) object, producing incorrect behavior when the user steps backward.
+
+```typescript
+// CORRECT: spread creates a shallow copy
+yield step({
+  state: { array: [...array], target, left, right, mid },
+  // ...
+});
+
+// CORRECT: structuredClone for deeply nested state
+yield step({
+  state: structuredClone({ graph, visited, distances }),
+  // ...
+});
+
+// WRONG: array is a mutable reference
+yield step({
+  state: { array, target, left, right },
+  // ...
+});
+```
+
+---
+
+## `CreateGeneratorConfig`
+
+Configuration object passed to `createGenerator()`.
+
+```typescript
+interface CreateGeneratorConfig<TInputs extends Record<string, unknown>> {
+  readonly id: string;
+  readonly generate: GeneratorFunction<TInputs>;
+}
+```
+
+| Field      | Type                          | Description                                                                      |
+| ---------- | ----------------------------- | -------------------------------------------------------------------------------- |
+| `id`       | `string`                      | URL-safe algorithm identifier. Must match `^[a-z0-9][a-z0-9-]*$`. Must match the `id` in the algorithm's `meta.json`. |
+| `generate` | `GeneratorFunction<TInputs>`  | The generator function (must use `function*` syntax).                            |
+
+---
+
+## `GeneratorError`
+
+Error class thrown when a generator produces invalid output or encounters a runtime failure. Includes structured context for debugging.
+
+```typescript
+class GeneratorError extends Error {
+  readonly algorithmId: string;
+  readonly stepIndex: number;
+  readonly cause?: Error;
+
+  constructor(
+    algorithmId: string,
+    stepIndex: number,
+    message: string,
+    cause?: Error,
+  );
+}
+```
+
+| Property      | Type     | Description                                                                     |
+| ------------- | -------- | ------------------------------------------------------------------------------- |
+| `algorithmId` | `string` | The algorithm that caused the error.                                            |
+| `stepIndex`   | `number` | The step index at which the error occurred. `-1` if before any step was created.|
+| `cause`       | `Error`  | The original error, if this wraps an unexpected exception.                      |
+| `name`        | `string` | Always `"GeneratorError"`.                                                      |
+| `message`     | `string` | Formatted as `[algorithmId] Step stepIndex: description`.                       |
+
+### Error Message Format
+
+```
+[binary-search] Step 3: Invalid step ID "COMPARE". Must match pattern: ^[a-z0-9][a-z0-9_-]*$
+```
+
+### Example
+
+```typescript
+import { runGenerator, GeneratorError } from "@/engine/generator";
+
+try {
+  const result = runGenerator(myGenerator, inputs);
+} catch (error) {
+  if (error instanceof GeneratorError) {
+    console.error(`Algorithm: ${error.algorithmId}`);
+    console.error(`Failed at step: ${error.stepIndex}`);
+    console.error(`Reason: ${error.message}`);
+    if (error.cause) {
+      console.error(`Original error:`, error.cause);
+    }
+  }
+}
+```
+
+---
+
+## Re-exported Types
+
+The generator module re-exports these types from `@/shared/types/step` for convenience, so generators can import everything from a single location:
+
+| Type            | Description                                       |
+| --------------- | ------------------------------------------------- |
+| `Step`          | A single step in an algorithm's execution trace.  |
+| `VisualAction`  | A rendering instruction within a step.            |
+| `CodeHighlight` | Source code line mapping for a step.               |
+| `StepSequence`  | A complete, validated sequence of steps.           |
+
+See the [Step Format Specification](/docs/api-reference/step-format) for full documentation of these types.

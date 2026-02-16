@@ -1,0 +1,33 @@
+{
+  "description": "Target 5 not found in [2,4,6,8,10,12,14].",
+  "inputs": {
+    "array": [2, 4, 6, 8, 10, 12, 14],
+    "target": 5
+  },
+  "expected": {
+    "stepCount": 8,
+    "terminalStepId": "not_found",
+    "result": -1,
+    "stepIds": [
+      "initialize",
+      "calculate_mid",
+      "search_left",
+      "calculate_mid",
+      "search_right",
+      "calculate_mid",
+      "search_left",
+      "not_found"
+    ],
+    "keyStates": [
+      { "stepIndex": 0, "field": "left", "value": 0 },
+      { "stepIndex": 0, "field": "right", "value": 6 },
+      { "stepIndex": 1, "field": "mid", "value": 3 },
+      { "stepIndex": 2, "field": "right", "value": 2 },
+      { "stepIndex": 3, "field": "mid", "value": 1 },
+      { "stepIndex": 4, "field": "left", "value": 2 },
+      { "stepIndex": 5, "field": "mid", "value": 2 },
+      { "stepIndex": 6, "field": "right", "value": 1 },
+      { "stepIndex": 7, "field": "result", "value": -1 }
+    ]
+  }
+}

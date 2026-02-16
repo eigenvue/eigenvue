@@ -1,0 +1,49 @@
+---
+/**
+ * AlgorithmCard — Displays a compact algorithm summary card.
+ *
+ * Used on the Algorithm Reference index page to present each algorithm
+ * with its name, category, difficulty, and complexity notation.
+ *
+ * Props:
+ *   name       — Display name of the algorithm (e.g., "Binary Search")
+ *   id         — URL-safe slug (e.g., "binary-search")
+ *   category   — Category slug (e.g., "classical", "deep-learning")
+ *   difficulty — Difficulty level (e.g., "Beginner", "Intermediate")
+ *   time       — Time complexity notation (e.g., "O(log n)")
+ *   space      — Space complexity notation (e.g., "O(1)")
+ */
+
+interface Props {
+  name: string;
+  id: string;
+  category: string;
+  difficulty: string;
+  time: string;
+  space: string;
+}
+
+const { name, id, category, difficulty, time, space } = Astro.props;
+
+const categoryClass = `category-${category}`;
+const categoryLabels: Record<string, string> = {
+  classical: "Classical",
+  "deep-learning": "Deep Learning",
+  "generative-ai": "Generative AI",
+  quantum: "Quantum",
+};
+const categoryLabel = categoryLabels[category] ?? category;
+---
+
+<a href={`/algorithms/${id}/`} class={`algorithm-card ${categoryClass}`}>
+  <h3>{name}</h3>
+  <div>
+    <span class="category-badge">{categoryLabel}</span>
+    <span style="margin-left: 0.5rem; font-size: var(--sl-text-sm); color: var(--sl-color-gray-3);">
+      {difficulty}
+    </span>
+  </div>
+  <div class="complexity-notation" style="margin-top: 0.5rem;">
+    Time: {time} · Space: {space}
+  </div>
+</a>

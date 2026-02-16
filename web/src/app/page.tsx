@@ -1,24 +1,37 @@
-export default function Home() {
+/**
+ * Landing Page — composes all sections in order.
+ *
+ * This file contains no logic — it's purely compositional.
+ * Each section is a self-contained component imported from /components/landing/.
+ *
+ * Section order:
+ * 1. Hero (full viewport)
+ * 2. Stats Strip (key metrics)
+ * 3. Category Cards (four domains)
+ * 4. Features (platform capabilities)
+ * 5. Code Teaser (Python package)
+ * 6. CTA (final call to action)
+ *
+ * The Navbar and Footer are rendered by the root layout (layout.tsx),
+ * not by this page. The Starfield is also in the root layout.
+ */
+
+import { HeroSection } from "@/components/landing/HeroSection";
+import { StatsStrip } from "@/components/landing/StatsStrip";
+import { CategoryCardsSection } from "@/components/landing/CategoryCardsSection";
+import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { CodeTeaser } from "@/components/landing/CodeTeaser";
+import { CTASection } from "@/components/landing/CTASection";
+
+export default function LandingPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0a0a1a]">
-      <main className="flex flex-col items-center gap-6 text-center">
-        <h1 className="text-5xl font-bold tracking-tight text-white">Eigenvue</h1>
-        <p className="max-w-lg text-lg text-zinc-400">
-          The visual learning platform for understanding algorithms, AI architectures, and quantum
-          computing.
-        </p>
-        <div className="flex gap-3 text-sm font-mono">
-          <span className="rounded-full bg-[#38bdf8]/10 px-3 py-1 text-[#38bdf8]">Classical</span>
-          <span className="rounded-full bg-[#8b5cf6]/10 px-3 py-1 text-[#8b5cf6]">
-            Deep Learning
-          </span>
-          <span className="rounded-full bg-[#f472b6]/10 px-3 py-1 text-[#f472b6]">
-            Generative AI
-          </span>
-          <span className="rounded-full bg-[#00ffc8]/10 px-3 py-1 text-[#00ffc8]">Quantum</span>
-        </div>
-        <p className="mt-4 text-sm text-zinc-600">Under construction</p>
-      </main>
-    </div>
+    <>
+      <HeroSection />
+      <StatsStrip />
+      <CategoryCardsSection />
+      <FeaturesSection />
+      <CodeTeaser />
+      <CTASection />
+    </>
   );
 }
