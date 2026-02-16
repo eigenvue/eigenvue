@@ -76,18 +76,26 @@ class TestAlgorithmInfo:
         import pytest
 
         info = AlgorithmInfo(
-            id="test", name="Test", category="classical",
-            description="Test algorithm", difficulty="beginner",
-            time_complexity="O(n)", space_complexity="O(1)",
+            id="test",
+            name="Test",
+            category="classical",
+            description="Test algorithm",
+            difficulty="beginner",
+            time_complexity="O(n)",
+            space_complexity="O(1)",
         )
         with pytest.raises(AttributeError):
             info.id = "changed"  # type: ignore[misc]
 
     def test_repr(self) -> None:
         info = AlgorithmInfo(
-            id="test", name="Test", category="classical",
-            description="Test algorithm", difficulty="beginner",
-            time_complexity="O(n)", space_complexity="O(1)",
+            id="test",
+            name="Test",
+            category="classical",
+            description="Test algorithm",
+            difficulty="beginner",
+            time_complexity="O(n)",
+            space_complexity="O(1)",
         )
         r = repr(info)
         assert "test" in r

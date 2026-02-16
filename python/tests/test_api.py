@@ -76,8 +76,16 @@ class TestSteps:
 
     def test_steps_have_required_keys(self) -> None:
         result = eigenvue.steps("binary-search")
-        required_keys = {"index", "id", "title", "explanation", "state",
-                         "visualActions", "codeHighlight", "isTerminal"}
+        required_keys = {
+            "index",
+            "id",
+            "title",
+            "explanation",
+            "state",
+            "visualActions",
+            "codeHighlight",
+            "isTerminal",
+        }
         for step in result:
             assert required_keys.issubset(step.keys()), (
                 f"Missing keys: {required_keys - step.keys()}"

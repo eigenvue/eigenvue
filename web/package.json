@@ -37,6 +37,7 @@
     "eslint-config-next": "15.5.12",
     "eslint-config-prettier": "^10.1.8",
     "jsdom": "^28.0.0",
+    "picomatch": "^4.0.3",
     "prettier": "^3.8.1",
     "satori": "^0.19.2",
     "tailwindcss": "^4",

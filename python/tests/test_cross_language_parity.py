@@ -202,9 +202,7 @@ def assert_values_close(
         )
 
     elif expected is None:
-        assert actual is None, (
-            f"Null mismatch at {path}: expected None, got {actual!r}"
-        )
+        assert actual is None, f"Null mismatch at {path}: expected None, got {actual!r}"
 
     else:
         assert actual == expected, (
@@ -259,9 +257,7 @@ def _check_attention_weights_sum_to_one(
                     )
 
 
-def _check_layer_norm_postconditions(
-    steps: list[dict[str, Any]], path: str
-) -> None:
+def _check_layer_norm_postconditions(steps: list[dict[str, Any]], path: str) -> None:
     """Assert layer norm outputs have mean ~0 and variance ~1."""
     for i, step in enumerate(steps):
         state = step.get("state", {})
@@ -278,18 +274,14 @@ def _check_layer_norm_postconditions(
                 mean = sum(row) / d
                 variance = sum((v - mean) ** 2 for v in row) / d
                 assert abs(mean) < 1e-4, (
-                    f"{path}/steps[{i}].state.{key}[{row_idx}]: "
-                    f"mean={mean}, expected ~0"
+                    f"{path}/steps[{i}].state.{key}[{row_idx}]: mean={mean}, expected ~0"
                 )
                 assert abs(variance - 1.0) < 0.1, (
-                    f"{path}/steps[{i}].state.{key}[{row_idx}]: "
-                    f"variance={variance}, expected ~1"
+                    f"{path}/steps[{i}].state.{key}[{row_idx}]: variance={variance}, expected ~1"
                 )
 
 
-def _check_residual_connections(
-    steps: list[dict[str, Any]], path: str, tol: float = 1e-9
-) -> None:
+def _check_residual_connections(steps: list[dict[str, Any]], path: str, tol: float = 1e-9) -> None:
     """Assert residual connections are correct: output = input + sublayer."""
     for i, step in enumerate(steps):
         state = step.get("state", {})
@@ -317,9 +309,7 @@ def _check_residual_connections(
 # ── Test class ───────────────────────────────────────────────────────────────
 
 
-def _find_step_by_id(
-    steps: list[dict[str, Any]], step_id: str
-) -> dict[str, Any] | None:
+def _find_step_by_id(steps: list[dict[str, Any]], step_id: str) -> dict[str, Any] | None:
     """Find the first step with the given ID, or None."""
     for step in steps:
         if step.get("id") == step_id:
@@ -436,9 +426,7 @@ class TestCrossLanguageParity:
 
                 if "result" in expected:
                     last_state = py_steps[-1]["state"]
-                    assert "result" in last_state, (
-                        f"{label}: last step state missing 'result'"
-                    )
+                    assert "result" in last_state, f"{label}: last step state missing 'result'"
                     assert_values_close(
                         last_state["result"],
                         expected["result"],
@@ -448,9 +436,7 @@ class TestCrossLanguageParity:
 
                 if "sortedArray" in expected:
                     last_state = py_steps[-1]["state"]
-                    assert "array" in last_state, (
-                        f"{label}: last step state missing 'array'"
-                    )
+                    assert "array" in last_state, f"{label}: last step state missing 'array'"
                     assert last_state["array"] == expected["sortedArray"], (
                         f"{label}: sorted array mismatch\n"
                         f"  actual:   {last_state['array']}\n"
@@ -544,15 +530,15 @@ class TestCrossLanguageParity:
                     if "attentionWeightsRowSum" in checks:
                         weights = state.get("attentionWeights")
                         if weights and isinstance(weights, list) and isinstance(weights[0], list):
-                                for row_idx, row in enumerate(weights):
-                                    row_sum = sum(row)
-                                    assert abs(row_sum - checks["attentionWeightsRowSum"]) <= tol, (
-                                        f"{label}/step[id={step_id}].state"
-                                        f".attentionWeights[{row_idx}] "
-                                        f"sums to {row_sum}, expected "
-                                        f"{checks['attentionWeightsRowSum']} "
-                                        f"(+/-{tol})"
-                                    )
+                            for row_idx, row in enumerate(weights):
+                                row_sum = sum(row)
+                                assert abs(row_sum - checks["attentionWeightsRowSum"]) <= tol, (
+                                    f"{label}/step[id={step_id}].state"
+                                    f".attentionWeights[{row_idx}] "
+                                    f"sums to {row_sum}, expected "
+                                    f"{checks['attentionWeightsRowSum']} "
+                                    f"(+/-{tol})"
+                                )
 
 
 # ── Structural parity tests ──────────────────────────────────────────────────
@@ -569,8 +555,7 @@ class TestStructuralParity:
             py_steps = run_generator(algo_id, fixture["inputs"])
 
             assert py_steps[-1]["isTerminal"] is True, (
-                f"{algo_id}/{fixture['_fixture_name']}: "
-                "last step is not terminal"
+                f"{algo_id}/{fixture['_fixture_name']}: last step is not terminal"
             )
             for i, step in enumerate(py_steps[:-1]):
                 assert step.get("isTerminal") is not True, (
@@ -586,8 +571,7 @@ class TestStructuralParity:
 
             for i, step in enumerate(py_steps):
                 assert step["index"] == i, (
-                    f"{algo_id}/{fixture['_fixture_name']}: "
-                    f"step {i} has index={step['index']}"
+                    f"{algo_id}/{fixture['_fixture_name']}: step {i} has index={step['index']}"
                 )
 
     def test_determinism(self, category: str, algo_id: str) -> None:
@@ -602,8 +586,7 @@ class TestStructuralParity:
         steps2 = run_generator(algo_id, fixture["inputs"])
 
         assert len(steps1) == len(steps2), (
-            f"{algo_id}: non-deterministic step count "
-            f"({len(steps1)} vs {len(steps2)})"
+            f"{algo_id}: non-deterministic step count ({len(steps1)} vs {len(steps2)})"
         )
         for i, (s1, s2) in enumerate(zip(steps1, steps2, strict=True)):
             assert s1["id"] == s2["id"], (

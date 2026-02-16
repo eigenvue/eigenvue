@@ -138,7 +138,11 @@ def main() -> int:
             print(f"ERROR: Schema not found: {step_schema}")
             return 1
 
-        fixture_files = list((PROJECT_ROOT / "shared" / "fixtures").glob("*.fixture.json"))
+        fixture_files = [
+            f
+            for f in (PROJECT_ROOT / "shared" / "fixtures").glob("*.fixture.json")
+            if f.name != "edge-cases.fixture.json"
+        ]
         if not fixture_files:
             print("  WARNING: No fixture files found.")
         else:

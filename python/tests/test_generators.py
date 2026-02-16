@@ -40,8 +40,16 @@ def _validate_step_sequence(steps: list[dict]) -> None:
         assert STEP_ID_PATTERN.match(s["id"]), f"Invalid step ID: {s['id']!r}"
 
     # All steps have required keys
-    required_keys = {"index", "id", "title", "explanation", "state",
-                     "visualActions", "codeHighlight", "isTerminal"}
+    required_keys = {
+        "index",
+        "id",
+        "title",
+        "explanation",
+        "state",
+        "visualActions",
+        "codeHighlight",
+        "isTerminal",
+    }
     for i, s in enumerate(steps):
         missing = required_keys - s.keys()
         assert not missing, f"Step {i} missing keys: {missing}"
@@ -62,6 +70,7 @@ def _validate_step_sequence(steps: list[dict]) -> None:
 
 # ── Parametrized test: all generators run with defaults ──────────────────
 
+
 class TestAllGenerators:
     def test_generator_runs_with_defaults(self, algorithm_id: str) -> None:
         """Every registered generator must run without error on default inputs."""
@@ -75,6 +84,7 @@ class TestAllGenerators:
 
 
 # ── Category-specific tests ──────────────────────────────────────────────
+
 
 class TestClassicalGenerators:
     def test_binary_search_finds_target(self) -> None:
@@ -180,10 +190,16 @@ class TestDLGenerators:
         assert len(output[0]) == 2
 
     def test_gradient_descent_sgd(self) -> None:
-        steps = eigenvue.steps("gradient-descent", inputs={
-            "startX": 4.0, "startY": 2.0,
-            "learningRate": 0.1, "optimizer": "sgd", "numSteps": 5,
-        })
+        steps = eigenvue.steps(
+            "gradient-descent",
+            inputs={
+                "startX": 4.0,
+                "startY": 2.0,
+                "learningRate": 0.1,
+                "optimizer": "sgd",
+                "numSteps": 5,
+            },
+        )
         _validate_step_sequence(steps)
         # Loss should decrease for convex surface with SGD
         first_loss = steps[0]["state"]["loss"]
@@ -191,21 +207,34 @@ class TestDLGenerators:
         assert last_loss < first_loss
 
     def test_gradient_descent_adam(self) -> None:
-        steps = eigenvue.steps("gradient-descent", inputs={
-            "startX": 4.0, "startY": 2.0,
-            "learningRate": 0.1, "optimizer": "adam", "numSteps": 5,
-        })
+        steps = eigenvue.steps(
+            "gradient-descent",
+            inputs={
+                "startX": 4.0,
+                "startY": 2.0,
+                "learningRate": 0.1,
+                "optimizer": "adam",
+                "numSteps": 5,
+            },
+        )
         _validate_step_sequence(steps)
 
     def test_gradient_descent_momentum(self) -> None:
-        steps = eigenvue.steps("gradient-descent", inputs={
-            "startX": 4.0, "startY": 2.0,
-            "learningRate": 0.1, "optimizer": "momentum", "numSteps": 5,
-        })
+        steps = eigenvue.steps(
+            "gradient-descent",
+            inputs={
+                "startX": 4.0,
+                "startY": 2.0,
+                "learningRate": 0.1,
+                "optimizer": "momentum",
+                "numSteps": 5,
+            },
+        )
         _validate_step_sequence(steps)
 
 
 # ── Determinism test ─────────────────────────────────────────────────────
+
 
 class TestDeterminism:
     def test_same_inputs_produce_same_steps(self, algorithm_id: str) -> None:

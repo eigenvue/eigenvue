@@ -39,6 +39,7 @@ from eigenvue.math_utils.genai_math import (
 
 # ── PRNG Tests ───────────────────────────────────────────────────────────
 
+
 class TestSeedRandom:
     def test_deterministic(self) -> None:
         rng1 = seed_random("test")
@@ -68,6 +69,7 @@ class TestSeedRandom:
 
 # ── Matrix Operations ────────────────────────────────────────────────────
 
+
 class TestMatMul:
     def test_identity(self) -> None:
         a = [[1, 0], [0, 1]]
@@ -83,6 +85,7 @@ class TestMatMul:
 
     def test_dimension_mismatch_raises(self) -> None:
         import pytest
+
         with pytest.raises(ValueError, match="inner dimensions"):
             mat_mul([[1, 2]], [[1, 2]])  # 1x2 * 1x2 fails
 
@@ -105,6 +108,7 @@ class TestScaleMatrix:
 
 # ── Softmax ──────────────────────────────────────────────────────────────
 
+
 class TestSoftmax:
     def test_sums_to_one(self) -> None:
         result = softmax([1.0, 2.0, 3.0])
@@ -125,6 +129,7 @@ class TestSoftmax:
 
     def test_empty_raises(self) -> None:
         import pytest
+
         with pytest.raises(ValueError):
             softmax([])
 
@@ -138,6 +143,7 @@ class TestSoftmaxRows:
 
 # ── Vector Operations ────────────────────────────────────────────────────
 
+
 class TestDotProduct:
     def test_basic(self) -> None:
         assert dot_product([1, 2, 3], [4, 5, 6]) == 32
@@ -147,6 +153,7 @@ class TestDotProduct:
 
     def test_length_mismatch_raises(self) -> None:
         import pytest
+
         with pytest.raises(ValueError):
             dot_product([1, 2], [1, 2, 3])
 
@@ -177,6 +184,7 @@ class TestVectorAdd:
 
 # ── Layer Normalization ──────────────────────────────────────────────────
 
+
 class TestLayerNorm:
     def test_output_mean_near_zero(self) -> None:
         result = layer_norm([1.0, 2.0, 3.0, 4.0])
@@ -192,6 +200,7 @@ class TestLayerNorm:
 
 # ── ReLU ─────────────────────────────────────────────────────────────────
 
+
 class TestReLU:
     def test_positive(self) -> None:
         assert relu_vec([1.0, 2.0, 3.0]) == [1.0, 2.0, 3.0]
@@ -204,6 +213,7 @@ class TestReLU:
 
 
 # ── Embedding Generation ────────────────────────────────────────────────
+
 
 class TestGenerateEmbeddings:
     def test_shape(self) -> None:
@@ -249,6 +259,7 @@ class TestGenerateBiasVector:
 # ══════════════════════════════════════════════════════════════════════════
 # DL Math Tests
 # ══════════════════════════════════════════════════════════════════════════
+
 
 class TestSigmoid:
     def test_zero(self) -> None:
@@ -324,6 +335,7 @@ class TestStepFunction:
 
 # ── Loss Functions ───────────────────────────────────────────────────────
 
+
 class TestMSELoss:
     def test_perfect_prediction(self) -> None:
         assert mse_loss([1.0, 2.0], [1.0, 2.0]) == 0.0
@@ -360,6 +372,7 @@ class TestBCELoss:
 
 # ── Linear Algebra (DL) ─────────────────────────────────────────────────
 
+
 class TestMatVecMul:
     def test_identity(self) -> None:
         result = mat_vec_mul([[1, 0], [0, 1]], [3.0, 4.0])
@@ -376,6 +389,7 @@ class TestVecAddDL:
 
 
 # ── Optimizers ───────────────────────────────────────────────────────────
+
 
 class TestSGDStep:
     def test_basic_update(self) -> None:
@@ -400,6 +414,7 @@ class TestMomentumStep:
 class TestAdamStep:
     def test_t_must_be_positive(self) -> None:
         import pytest
+
         with pytest.raises(ValueError, match="t must be >= 1"):
             adam_step([1.0], [0.5], [0.0], [0.0], lr=0.001, t=0)
 
