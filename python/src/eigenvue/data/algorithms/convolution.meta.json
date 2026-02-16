@@ -198,7 +198,8 @@
   },
   "code": {
     "implementations": {
-      "pseudocode": "function convolve2D(input, kernel):\n  H, W = dimensions(input)\n  kH, kW = dimensions(kernel)\n  outH = H - kH + 1\n  outW = W - kW + 1\n  output = zeros(outH, outW)\n\n  for row in range(outH):\n    for col in range(outW):\n      sum = 0\n      for kr in range(kH):\n        for kc in range(kW):\n          sum += input[row+kr][col+kc] * kernel[kr][kc]\n      output[row][col] = sum\n  return output"
+      "pseudocode": "function convolve2D(input, kernel):\n  H, W = dimensions(input)\n  kH, kW = dimensions(kernel)\n  outH = H - kH + 1\n  outW = W - kW + 1\n  output = zeros(outH, outW)\n\n  for row in range(outH):\n    for col in range(outW):\n      sum = 0\n      for kr in range(kH):\n        for kc in range(kW):\n          sum += input[row+kr][col+kc] * kernel[kr][kc]\n      output[row][col] = sum\n  return output",
+      "python": "import numpy as np\n\ndef convolve2d(image, kernel):\n    kh, kw = kernel.shape\n    oh, ow = image.shape[0] - kh + 1, image.shape[1] - kw + 1\n    output = np.zeros((oh, ow))\n    for r in range(oh):\n        for c in range(ow):\n            output[r, c] = np.sum(image[r:r+kh, c:c+kw] * kernel)\n    return output"
     },
     "defaultLanguage": "pseudocode"
   },

@@ -89,7 +89,7 @@ export default createGenerator<QuickSortInputs>({
           low,
           high,
           pivot,
-          sorted: [...sortedIndices],
+          sorted: Array.from(sortedIndices).sort((a, b) => a - b),
         },
         visualActions: [
           { type: "highlightRange", from: low, to: high },
@@ -98,7 +98,7 @@ export default createGenerator<QuickSortInputs>({
           { type: "movePointer", id: "low", to: low },
           { type: "movePointer", id: "high", to: high },
           ...(sortedIndices.size > 0
-            ? [{ type: "markSorted", indices: [...sortedIndices] } as VisualAction]
+            ? [{ type: "markSorted", indices: Array.from(sortedIndices).sort((a, b) => a - b) } as VisualAction]
             : []),
         ],
         codeHighlight: { language: "pseudocode", lines: [3, 4] },
@@ -126,7 +126,7 @@ export default createGenerator<QuickSortInputs>({
             pivot,
             i,
             j,
-            sorted: [...sortedIndices],
+            sorted: Array.from(sortedIndices).sort((a, b) => a - b),
           },
           visualActions: [
             { type: "highlightRange", from: low, to: high },
@@ -136,7 +136,7 @@ export default createGenerator<QuickSortInputs>({
             { type: "movePointer", id: "j", to: j },
             ...(i >= low ? [{ type: "setPartition", index: i } as VisualAction] : []),
             ...(sortedIndices.size > 0
-              ? [{ type: "markSorted", indices: [...sortedIndices] } as VisualAction]
+              ? [{ type: "markSorted", indices: Array.from(sortedIndices).sort((a, b) => a - b) } as VisualAction]
               : []),
           ],
           codeHighlight: { language: "pseudocode", lines: [6, 7] },
@@ -163,7 +163,7 @@ export default createGenerator<QuickSortInputs>({
                 pivot,
                 i,
                 j,
-                sorted: [...sortedIndices],
+                sorted: Array.from(sortedIndices).sort((a, b) => a - b),
               },
               visualActions: [
                 { type: "highlightRange", from: low, to: high },
@@ -172,7 +172,7 @@ export default createGenerator<QuickSortInputs>({
                 { type: "movePointer", id: "i", to: i },
                 { type: "movePointer", id: "j", to: j },
                 ...(sortedIndices.size > 0
-                  ? [{ type: "markSorted", indices: [...sortedIndices] } as VisualAction]
+                  ? [{ type: "markSorted", indices: Array.from(sortedIndices).sort((a, b) => a - b) } as VisualAction]
                   : []),
               ],
               codeHighlight: { language: "pseudocode", lines: [8, 9] },
@@ -205,13 +205,13 @@ export default createGenerator<QuickSortInputs>({
           low,
           high,
           pivotIdx,
-          sorted: [...sortedIndices],
+          sorted: Array.from(sortedIndices).sort((a, b) => a - b),
         },
         visualActions: [
           { type: "highlightRange", from: low, to: high },
           { type: "highlightElement", index: pivotIdx, color: "sorted" },
           { type: "setPartition", index: pivotIdx - 1 },
-          { type: "markSorted", indices: [...sortedIndices] },
+          { type: "markSorted", indices: Array.from(sortedIndices).sort((a, b) => a - b) },
         ],
         codeHighlight: { language: "pseudocode", lines: [10, 11] },
       });
@@ -237,7 +237,7 @@ export default createGenerator<QuickSortInputs>({
       explanation: `QuickSort complete. All ${N} elements are in sorted order.`,
       state: {
         array: [...array],
-        sorted: [...sortedIndices],
+        sorted: Array.from(sortedIndices).sort((a, b) => a - b),
       },
       visualActions: [
         { type: "markSorted", indices: Array.from({ length: N }, (_, k) => k) },

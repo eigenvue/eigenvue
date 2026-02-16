@@ -127,7 +127,7 @@ export default createGenerator<FeedforwardInputs>({
     function snapshotState() {
       return {
         layerSizes: [...layerSizes],
-        activations: activations.map((a) => [...a]),
+        activations: activations.filter((a) => a !== undefined).map((a) => [...a]),
         weights: allWeights.map((W) => W.map((row) => [...row])),
         biases: allBiases.map((b) => [...b]),
         activationFunction,

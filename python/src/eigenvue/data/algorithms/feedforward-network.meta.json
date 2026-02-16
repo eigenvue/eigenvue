@@ -3,184 +3,64 @@
   "name": "Feedforward Neural Network",
   "category": "deep-learning",
   "description": {
-    "short": "Multi-layer neural network: signals propagate forward through layers.",
-    "long": "A feedforward neural network (also called a multi-layer perceptron, MLP) consists of multiple layers of neurons where signals flow in one direction — from input layer through hidden layers to the output layer. Each neuron in a layer receives weighted inputs from all neurons in the previous layer, computes a weighted sum plus bias, and applies an activation function. Forward propagation is the process of computing the network's output given an input. Understanding forward propagation is essential before learning backpropagation, as it defines the computation graph through which gradients flow backward during training."
+    "short": "Watch data flow forward through a multi-layer neural network.",
+    "long": "A feedforward neural network passes data through multiple layers of neurons. Each layer applies a linear transformation (weights × inputs + bias) followed by a non-linear activation function. This visualization shows the forward propagation process layer by layer, revealing how raw inputs are transformed into predictions through successive non-linear transformations."
   },
-  "complexity": {
-    "time": "O(Σ n_l × n_{l+1})",
-    "space": "O(Σ n_l × n_{l+1})",
-    "level": "intermediate"
-  },
-  "visual": {
-    "layout": "layer-network",
-    "theme": {
-      "primary": "#8b5cf6",
-      "secondary": "#6d28d9"
-    },
-    "components": {
-      "showWeights": true,
-      "showActivations": true,
-      "showBiases": true,
-      "nodeRadius": 20,
-      "layerSpacing": 150,
-      "inputColor": "#38bdf8",
-      "hiddenColor": "#8b5cf6",
-      "outputColor": "#22c55e",
-      "connectionColor": "#64748b"
-    }
-  },
+  "complexity": { "time": "O(Σ n_l × n_{l-1})", "space": "O(Σ n_l)", "level": "intermediate" },
+  "visual": { "layout": "layer-network", "theme": { "primary": "#8b5cf6", "secondary": "#c084fc" }, "components": {} },
   "inputs": {
     "schema": {
-      "layerSizes": {
-        "type": "array",
-        "items": {
-          "type": "number",
-          "minimum": 1,
-          "maximum": 6
-        },
-        "minItems": 2,
-        "maxItems": 5,
-        "description": "Number of neurons in each layer (including input and output)."
-      },
-      "inputValues": {
-        "type": "array",
-        "items": {
-          "type": "number",
-          "minimum": -10,
-          "maximum": 10
-        },
-        "description": "Input values fed to the first layer."
-      },
-      "activationFunction": {
-        "type": "string",
-        "enum": [
-          "sigmoid",
-          "relu",
-          "tanh"
-        ],
-        "description": "Activation function used in hidden layers."
-      }
+      "inputValues": { "type": "array", "items": { "type": "number" }, "description": "Input values" },
+      "layerSizes": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "description": "Neurons per layer", "minItems": 2 },
+      "activationFunction": { "type": "string", "enum": ["sigmoid", "relu", "tanh"], "description": "Activation function" },
+      "seed": { "type": "string", "description": "Random seed for weight initialization" }
     },
     "defaults": {
-      "layerSizes": [
-        2,
-        3,
-        1
-      ],
-      "inputValues": [
-        0.5,
-        0.8
-      ],
-      "activationFunction": "sigmoid"
+      "inputValues": [0.5, 0.8],
+      "layerSizes": [2, 3, 1],
+      "activationFunction": "sigmoid",
+      "seed": "eigenvue-ff"
     },
     "examples": [
-      {
-        "name": "Default (2-3-1 network)",
-        "values": {
-          "layerSizes": [
-            2,
-            3,
-            1
-          ],
-          "inputValues": [
-            0.5,
-            0.8
-          ],
-          "activationFunction": "sigmoid"
-        }
-      },
-      {
-        "name": "Deeper network (2-3-2-1)",
-        "values": {
-          "layerSizes": [
-            2,
-            3,
-            2,
-            1
-          ],
-          "inputValues": [
-            1,
-            -0.5
-          ],
-          "activationFunction": "relu"
-        }
-      }
+      { "name": "2-3-1 network (sigmoid)", "values": { "inputValues": [0.5, 0.8], "layerSizes": [2, 3, 1], "activationFunction": "sigmoid", "seed": "eigenvue-ff" } },
+      { "name": "3-4-4-2 deep network", "values": { "inputValues": [0.3, 0.7, 0.5], "layerSizes": [3, 4, 4, 2], "activationFunction": "relu", "seed": "deep-net" } },
+      { "name": "2-2-1 minimal", "values": { "inputValues": [1.0, 0.0], "layerSizes": [2, 2, 1], "activationFunction": "sigmoid", "seed": "minimal" } }
     ]
   },
   "code": {
     "implementations": {
-      "pseudocode": "function forwardPass(input, weights, biases, activation):\n  a = input                        // layer activations\n  for layer in range(num_layers - 1):\n    z = weights[layer] × a + biases[layer]  // weighted sum\n    a = activation(z)               // apply activation\n  return a                           // network output"
+      "pseudocode": "function forward(x, weights, biases, activation_fn):\n  a = x                              // input layer activations\n  for L = 1 to num_layers - 1:\n    z = weights[L] @ a + biases[L]   // linear transform\n    a = activation_fn(z)              // non-linear activation\n  return a                            // network output",
+      "python": "import numpy as np\n\ndef forward(x, weights, biases, activation='sigmoid'):\n    a = np.array(x)\n    for W, b in zip(weights, biases):\n        z = W @ a + b\n        a = 1/(1+np.exp(-z)) if activation == 'sigmoid' else np.maximum(0, z)\n    return a"
     },
     "defaultLanguage": "pseudocode"
   },
   "education": {
     "keyConcepts": [
-      {
-        "title": "Layer-by-Layer Computation",
-        "description": "In forward propagation, each layer transforms its input by applying weights, adding biases, and passing through an activation function. The output of one layer becomes the input to the next."
-      },
-      {
-        "title": "Universal Approximation",
-        "description": "A feedforward network with at least one hidden layer and a non-linear activation function can approximate any continuous function to arbitrary precision, given enough neurons. This is the universal approximation theorem."
-      },
-      {
-        "title": "Matrix Multiplication as Core Operation",
-        "description": "Forward propagation is fundamentally a series of matrix multiplications followed by element-wise non-linearities. This is why GPUs, which excel at matrix operations, are so effective for neural networks."
-      }
+      { "title": "Layer-by-Layer Transformation", "description": "Each layer takes the previous layer's output, applies W×a+b then activation." },
+      { "title": "Hidden Representations", "description": "Hidden layers learn internal representations of the input data." },
+      { "title": "Universal Approximation", "description": "A network with at least one hidden layer can approximate any continuous function." }
     ],
     "pitfalls": [
-      {
-        "title": "Vanishing gradients with sigmoid",
-        "description": "Deep networks with sigmoid activations suffer from vanishing gradients — gradients become exponentially small in early layers, making training extremely slow. ReLU mitigates this."
-      },
-      {
-        "title": "Dead neurons with ReLU",
-        "description": "ReLU neurons that receive negative inputs output zero and have zero gradient. If a neuron's weights update such that it always receives negative input, it becomes permanently inactive (a 'dead' neuron)."
-      }
+      { "title": "Depth vs Width", "description": "More layers allow hierarchical features; more neurons increase per-layer capacity." }
     ],
     "quiz": [
       {
-        "question": "What does each layer of a feedforward network compute?",
-        "options": [
-          "activation(weights × input + bias)",
-          "weights × activation(input) + bias",
-          "softmax(weights + bias × input)",
-          "input × (weights - bias)"
-        ],
-        "correctIndex": 0,
-        "explanation": "Each layer computes a weighted sum of inputs plus bias, then applies the activation function: a = activation(W × x + b)."
+        "question": "A network has layer sizes [3, 4, 2]. How many weight parameters does it have (excluding biases)?",
+        "options": ["8", "12", "20", "24"],
+        "correctIndex": 2,
+        "explanation": "Layer 0→1: 3×4 = 12 weights. Layer 1→2: 4×2 = 8 weights. Total: 20."
       }
     ],
     "resources": [
-      {
-        "title": "Neural Networks — 3Blue1Brown",
-        "url": "https://www.3blue1brown.com/topics/neural-networks",
-        "type": "video"
-      },
-      {
-        "title": "Feedforward Neural Network — Wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Feedforward_neural_network",
-        "type": "article"
-      }
+      { "title": "3Blue1Brown — Neural Networks series", "url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi", "type": "video" }
     ]
   },
-  "seo": {
-    "keywords": [
-      "feedforward network visualization",
-      "neural network forward propagation",
-      "MLP visualization",
-      "multi-layer perceptron step by step",
-      "forward pass animation"
-    ],
-    "ogDescription": "Interactive visualization of forward propagation in a feedforward neural network. Watch signals flow through layers with weights, biases, and activations."
-  },
-  "prerequisites": [
-    "perceptron"
-  ],
-  "related": [
-    "perceptron",
-    "backpropagation"
-  ],
+  "prerequisites": ["perceptron"],
+  "related": ["backpropagation", "perceptron"],
   "author": "eigenvue",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "seo": {
+    "keywords": ["feedforward neural network", "forward propagation", "multi-layer perceptron", "neural network visualization"],
+    "ogDescription": "Interactive visualization of forward propagation through a multi-layer neural network. Watch data transform layer by layer."
+  }
 }

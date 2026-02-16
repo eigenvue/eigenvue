@@ -1,222 +1,93 @@
 {
   "id": "perceptron",
-  "name": "Perceptron",
+  "name": "Single Neuron / Perceptron",
   "category": "deep-learning",
   "description": {
-    "short": "The simplest neural network: a single neuron that learns to classify.",
-    "long": "The perceptron is the fundamental building block of neural networks — a single artificial neuron that takes multiple weighted inputs, sums them with a bias term, and passes the result through an activation function to produce an output. Introduced by Frank Rosenblatt in 1958, the perceptron can learn to classify linearly separable data by adjusting its weights using a simple update rule. While limited to linear decision boundaries, understanding the perceptron is essential for grasping how deeper networks with multiple layers can learn complex, non-linear patterns."
+    "short": "Watch a single neuron compute: inputs × weights + bias → activation → output.",
+    "long": "The perceptron is the fundamental building block of neural networks. A single neuron takes multiple inputs, multiplies each by a learned weight, sums the results, adds a bias term, and passes the total through an activation function. This visualization walks through each computation step, showing how inputs are transformed into an output, and how changing weights and bias affects the decision."
   },
   "complexity": {
-    "time": "O(n × d)",
-    "space": "O(d)",
+    "time": "O(n)",
+    "space": "O(1)",
     "level": "beginner"
   },
   "visual": {
     "layout": "neuron-diagram",
-    "theme": {
-      "primary": "#8b5cf6",
-      "secondary": "#6d28d9"
-    },
-    "components": {
-      "showWeights": true,
-      "showBias": true,
-      "showActivation": true,
-      "inputColor": "#38bdf8",
-      "weightColor": "#f59e0b",
-      "outputColor": "#22c55e",
-      "activationColor": "#ef4444"
-    }
+    "theme": { "primary": "#8b5cf6", "secondary": "#c084fc" },
+    "components": {}
   },
   "inputs": {
     "schema": {
-      "inputs": {
-        "type": "array",
-        "items": {
-          "type": "number",
-          "minimum": -10,
-          "maximum": 10
-        },
-        "minItems": 1,
-        "maxItems": 6,
-        "description": "Input feature values for the perceptron."
-      },
-      "weights": {
-        "type": "array",
-        "items": {
-          "type": "number",
-          "minimum": -5,
-          "maximum": 5
-        },
-        "minItems": 1,
-        "maxItems": 6,
-        "description": "Weight values corresponding to each input."
-      },
-      "bias": {
-        "type": "number",
-        "minimum": -5,
-        "maximum": 5,
-        "description": "Bias term added to the weighted sum."
-      },
-      "activationFunction": {
-        "type": "string",
-        "enum": [
-          "step",
-          "sigmoid",
-          "relu"
-        ],
-        "description": "Activation function to apply to the weighted sum."
-      }
+      "inputs": { "type": "array", "items": { "type": "number" }, "description": "Input values (x₀, x₁, ...)", "minItems": 1, "maxItems": 5 },
+      "weights": { "type": "array", "items": { "type": "number" }, "description": "Weight values (w₀, w₁, ...)" },
+      "bias": { "type": "number", "description": "Bias term" },
+      "activationFunction": { "type": "string", "enum": ["sigmoid", "relu", "tanh", "step"], "description": "Activation function" }
     },
     "defaults": {
-      "inputs": [
-        0.5,
-        -0.3,
-        0.8
-      ],
-      "weights": [
-        0.4,
-        0.7,
-        -0.2
-      ],
+      "inputs": [0.5, 0.8],
+      "weights": [0.6, -0.3],
       "bias": 0.1,
-      "activationFunction": "step"
+      "activationFunction": "sigmoid"
     },
     "examples": [
       {
-        "name": "Default (step activation)",
-        "values": {
-          "inputs": [
-            0.5,
-            -0.3,
-            0.8
-          ],
-          "weights": [
-            0.4,
-            0.7,
-            -0.2
-          ],
-          "bias": 0.1,
-          "activationFunction": "step"
-        }
+        "name": "AND gate (step function)",
+        "values": { "inputs": [1, 1], "weights": [0.5, 0.5], "bias": -0.7, "activationFunction": "step" }
       },
       {
-        "name": "Sigmoid activation",
-        "values": {
-          "inputs": [
-            1,
-            0.5
-          ],
-          "weights": [
-            0.6,
-            -0.4
-          ],
-          "bias": -0.1,
-          "activationFunction": "sigmoid"
-        }
+        "name": "OR gate (step function)",
+        "values": { "inputs": [1, 0], "weights": [0.5, 0.5], "bias": -0.2, "activationFunction": "step" }
       },
       {
-        "name": "ReLU activation",
-        "values": {
-          "inputs": [
-            2,
-            -1,
-            0.5
-          ],
-          "weights": [
-            0.3,
-            0.8,
-            -0.5
-          ],
-          "bias": 0.2,
-          "activationFunction": "relu"
-        }
+        "name": "Three inputs (sigmoid)",
+        "values": { "inputs": [0.3, 0.7, 0.5], "weights": [0.4, -0.2, 0.8], "bias": -0.1, "activationFunction": "sigmoid" }
       }
     ]
   },
   "code": {
     "implementations": {
-      "pseudocode": "function perceptron(inputs, weights, bias, activation):\n  z = 0\n  for i in range(len(inputs)):\n    z += inputs[i] * weights[i]    // weighted sum\n  z += bias                         // add bias\n  output = activation(z)            // apply activation\n  return output"
+      "pseudocode": "function perceptron(inputs, weights, bias, activation_fn):\n  z = 0\n  for i in range(len(inputs)):\n    z += inputs[i] * weights[i]    // weighted sum\n  z += bias                         // add bias\n  output = activation_fn(z)          // apply activation\n  return output",
+      "python": "import numpy as np\n\ndef perceptron(x, w, b, activation='sigmoid'):\n    z = np.dot(x, w) + b\n    if activation == 'sigmoid':\n        return 1 / (1 + np.exp(-z))\n    elif activation == 'relu':\n        return max(0, z)\n    elif activation == 'step':\n        return 1 if z >= 0 else 0",
+      "javascript": "function perceptron(inputs, weights, bias, activation) {\n  const z = inputs.reduce((sum, x, i) => sum + x * weights[i], 0) + bias;\n  if (activation === 'sigmoid') return 1 / (1 + Math.exp(-z));\n  if (activation === 'relu') return Math.max(0, z);\n  if (activation === 'step') return z >= 0 ? 1 : 0;\n}"
     },
     "defaultLanguage": "pseudocode"
   },
   "education": {
     "keyConcepts": [
-      {
-        "title": "Weighted Sum",
-        "description": "The perceptron computes a weighted sum of its inputs: z = Σ(w_i × x_i) + b. Each weight w_i determines how much influence input x_i has on the output. The bias b shifts the decision boundary."
-      },
-      {
-        "title": "Activation Function",
-        "description": "The activation function introduces non-linearity. The step function produces binary output (0 or 1), sigmoid maps to (0, 1) continuously, and ReLU outputs max(0, z). Without an activation function, the perceptron can only model linear relationships."
-      },
-      {
-        "title": "Linear Decision Boundary",
-        "description": "A single perceptron can only learn linearly separable patterns — it cannot solve XOR. This limitation motivated the development of multi-layer networks (feedforward networks) that combine multiple perceptrons."
-      }
+      { "title": "Weighted Sum", "description": "Each input is multiplied by its weight. The weight controls how much influence that input has." },
+      { "title": "Bias Term", "description": "The bias shifts the activation threshold. It allows the neuron to fire even when all inputs are zero." },
+      { "title": "Activation Function", "description": "Without activation, a neuron is just a linear function. Activation functions introduce non-linearity for learning complex patterns." },
+      { "title": "The Perceptron's Limitation", "description": "A single perceptron can only learn linearly separable patterns. It can learn AND and OR but NOT XOR." }
     ],
     "pitfalls": [
-      {
-        "title": "Cannot solve XOR",
-        "description": "A single perceptron can only classify linearly separable data. The XOR function requires at least one hidden layer to solve."
-      },
-      {
-        "title": "Weight initialization matters",
-        "description": "Starting with all-zero weights means every neuron computes the same thing. Random initialization breaks this symmetry and allows learning."
-      }
+      { "title": "Weight Initialization Matters", "description": "If all weights start at zero, all neurons compute the same thing." },
+      { "title": "Sigmoid Saturation", "description": "When |z| is large, sigmoid derivative is nearly 0 — the vanishing gradient problem." }
     ],
     "quiz": [
       {
-        "question": "What does the activation function do in a perceptron?",
-        "options": [
-          "Normalizes the input values",
-          "Introduces non-linearity to the output",
-          "Reduces the number of weights",
-          "Computes the loss function"
-        ],
-        "correctIndex": 1,
-        "explanation": "The activation function introduces non-linearity, allowing the perceptron to model more complex relationships than a simple linear function."
+        "question": "A neuron has inputs [1, 0], weights [0.5, 0.5], and bias -0.7. Using a step activation function, what is the output?",
+        "options": ["0", "1", "0.5", "-0.2"],
+        "correctIndex": 0,
+        "explanation": "z = 1×0.5 + 0×0.5 + (-0.7) = -0.2. Since z < 0, step(-0.2) = 0."
       },
       {
-        "question": "Why can't a single perceptron solve XOR?",
-        "options": [
-          "XOR requires too many inputs",
-          "XOR is not a real function",
-          "XOR is not linearly separable",
-          "The perceptron is too slow"
-        ],
-        "correctIndex": 2,
-        "explanation": "XOR cannot be separated by a single straight line (hyperplane) in the input space. A single perceptron can only produce linear decision boundaries."
+        "question": "Why can't a single perceptron learn XOR?",
+        "options": ["XOR requires more than 2 inputs", "XOR is not a linear function — no single line can separate the outputs", "The step function can't handle XOR", "XOR requires negative weights"],
+        "correctIndex": 1,
+        "explanation": "XOR outputs 1 for (0,1) and (1,0) but 0 for (0,0) and (1,1). No single straight line can separate these two classes."
       }
     ],
     "resources": [
-      {
-        "title": "Perceptron — Wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Perceptron",
-        "type": "article"
-      },
-      {
-        "title": "Neural Networks and Deep Learning — Michael Nielsen",
-        "url": "http://neuralnetworksanddeeplearning.com/chap1.html",
-        "type": "article"
-      }
+      { "title": "Rosenblatt 1958 — The Perceptron", "url": "https://psycnet.apa.org/doi/10.1037/h0042519", "type": "paper" },
+      { "title": "3Blue1Brown — But what is a neural network?", "url": "https://www.youtube.com/watch?v=aircAruvnKk", "type": "video" }
     ]
   },
   "seo": {
-    "keywords": [
-      "perceptron visualization",
-      "single neuron neural network",
-      "perceptron step by step",
-      "activation function visualization",
-      "how perceptron works",
-      "weighted sum neural network"
-    ],
-    "ogDescription": "Interactive step-by-step visualization of the perceptron. Watch weighted inputs, bias addition, and activation function computation unfold."
+    "keywords": ["perceptron", "single neuron", "neural network basics", "activation function", "weighted sum"],
+    "ogDescription": "Interactive visualization of a single neuron (perceptron). Watch inputs get multiplied by weights, summed with bias, and transformed by an activation function."
   },
   "prerequisites": [],
-  "related": [
-    "feedforward-network",
-    "backpropagation"
-  ],
+  "related": ["feedforward-network", "backpropagation"],
   "author": "eigenvue",
   "version": "1.0.0"
 }

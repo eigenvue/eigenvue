@@ -20,6 +20,13 @@ from typing import Any
 from eigenvue._step_types import CodeHighlight, Step, VisualAction
 
 
+def _fmt(x: Any) -> str:
+    """Format a value for display, matching JavaScript's number-to-string."""
+    if isinstance(x, float):
+        return f"{x:g}"
+    return str(x)
+
+
 def generate(inputs: dict[str, Any]) -> list[Step]:
     """Generate Dijkstra's algorithm visualization steps."""
     adjacency_list: dict[str, list[dict[str, Any]]] = inputs["adjacencyList"]
@@ -87,7 +94,7 @@ def generate(inputs: dict[str, Any]) -> list[Step]:
                 "dataStructure": {
                     "type": "priority-queue",
                     "label": "PQ",
-                    "items": [f"{e['id']}:{e['dist']}" for e in pq],
+                    "items": [f"{e['id']}:{e['dist']:g}" for e in pq],
                 },
             },
             visual_actions=tuple(
@@ -137,7 +144,7 @@ def generate(inputs: dict[str, Any]) -> list[Step]:
                 type="updateNodeValue",
                 params={
                     "nodeId": nid,
-                    "value": str(dist_display[nid]),
+                    "value": _fmt(dist_display[nid]),
                 },
             )
             for nid in node_ids
@@ -161,7 +168,7 @@ def generate(inputs: dict[str, Any]) -> list[Step]:
                     "dataStructure": {
                         "type": "priority-queue",
                         "label": "PQ",
-                        "items": [f"{e['id']}:{e['dist']}" for e in pq],
+                        "items": [f"{e['id']}:{e['dist']:g}" for e in pq],
                     },
                 },
                 visual_actions=tuple(
@@ -190,7 +197,7 @@ def generate(inputs: dict[str, Any]) -> list[Step]:
                     type="updateNodeValue",
                     params={
                         "nodeId": nid,
-                        "value": str(dist_display[nid]),
+                        "value": _fmt(dist_display[nid]),
                     },
                 )
                 for nid in node_ids
@@ -261,7 +268,7 @@ def generate(inputs: dict[str, Any]) -> list[Step]:
                     type="updateNodeValue",
                     params={
                         "nodeId": nid,
-                        "value": str(dist_display[nid]),
+                        "value": _fmt(dist_display[nid]),
                     },
                 )
                 for nid in node_ids
@@ -339,7 +346,7 @@ def generate(inputs: dict[str, Any]) -> list[Step]:
                         type="updateNodeValue",
                         params={
                             "nodeId": nid,
-                            "value": str(dist_display[nid]),
+                            "value": _fmt(dist_display[nid]),
                         },
                     )
                     for nid in node_ids
@@ -362,7 +369,7 @@ def generate(inputs: dict[str, Any]) -> list[Step]:
                             "dataStructure": {
                                 "type": "priority-queue",
                                 "label": "PQ",
-                                "items": [f"{e['id']}:{e['dist']}" for e in pq_sorted],
+                                "items": [f"{e['id']}:{e['dist']:g}" for e in pq_sorted],
                             },
                         },
                         visual_actions=tuple(
@@ -399,7 +406,7 @@ def generate(inputs: dict[str, Any]) -> list[Step]:
                 type="updateNodeValue",
                 params={
                     "nodeId": nid,
-                    "value": str(dist_display[nid]),
+                    "value": _fmt(dist_display[nid]),
                 },
             )
             for nid in node_ids
@@ -450,7 +457,7 @@ def generate(inputs: dict[str, Any]) -> list[Step]:
                 type="updateNodeValue",
                 params={
                     "nodeId": nid,
-                    "value": str(dist_display[nid]),
+                    "value": _fmt(dist_display[nid]),
                 },
             )
             for nid in node_ids
