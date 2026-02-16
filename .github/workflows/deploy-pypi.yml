@@ -48,6 +48,9 @@ jobs:
       - name: Install build tools
         run: pip install build
 
+      - name: Bundle algorithm metadata
+        run: python scripts/bundle-python-data.py
+
       - name: Install package with dev dependencies
         run: cd python && pip install -e ".[dev]"
 

@@ -50,6 +50,11 @@ jobs:
           cache: "npm"
           cache-dependency-path: node/package-lock.json
 
+      - name: Setup Python (for bundling scripts)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Install dependencies
         run: cd node && npm ci
 
@@ -70,6 +75,14 @@ jobs:
           echo "Version match confirmed."
 
       # -----------------------------------------------------------------------
+      # BUNDLE DATA
+      # node/data/ is gitignored — generated from algorithms/*/meta.json.
+      # Must be populated before tests (catalog tests) and packaging.
+      # -----------------------------------------------------------------------
+      - name: Bundle algorithm metadata
+        run: python scripts/bundle-node-data.py
+
+      # -----------------------------------------------------------------------
       # QUALITY CHECKS
       # -----------------------------------------------------------------------
       - name: Lint
@@ -78,11 +91,8 @@ jobs:
       - name: Type check
         run: cd node && npm run typecheck
 
-      - name: Run tests
-        run: cd node && npm test
-
       # -----------------------------------------------------------------------
-      # BUILD
+      # BUILD (before tests — cli.test.ts needs dist/cli.js)
       # -----------------------------------------------------------------------
       - name: Build package
         run: cd node && npm run build
@@ -92,7 +102,11 @@ jobs:
           test -f node/dist/index.js || (echo "::error::Missing dist/index.js" && exit 1)
           test -f node/dist/index.cjs || (echo "::error::Missing dist/index.cjs" && exit 1)
           test -f node/dist/index.d.ts || (echo "::error::Missing dist/index.d.ts" && exit 1)
+          test -f node/dist/cli.js || (echo "::error::Missing dist/cli.js" && exit 1)
           echo "Build artifacts verified."
+
+      - name: Run tests
+        run: cd node && npm test
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

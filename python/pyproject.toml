@@ -81,10 +81,6 @@ Repository = "https://github.com/ashutoshm1771/eigenvue"
 [tool.hatch.build.targets.wheel]
 packages = ["src/eigenvue"]
 
-# Include the bundled data directory in the wheel
-[tool.hatch.build.targets.wheel.force-include]
-"src/eigenvue/data" = "eigenvue/data"
-
 # ── Tool Configuration ───────────────────────────────────────────────────────
 
 [tool.mypy]
