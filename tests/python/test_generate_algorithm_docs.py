@@ -34,14 +34,14 @@ class TestLoadAllMeta:
     """Tests for the load_all_meta() function."""
 
     def test_loads_existing_algorithms(self) -> None:
-        """Verify that load_all_meta finds all 17 algorithms."""
+        """Verify that load_all_meta finds all 22 algorithms."""
         from generate_algorithm_docs import load_all_meta
 
         all_meta = load_all_meta()
 
-        # We expect exactly 17 algorithms from Phases 5, 6, 8, and 9.
-        assert len(all_meta) == 17, (
-            f"Expected 17 algorithms, got {len(all_meta)}. "
+        # We expect exactly 22 algorithms from Phases 5, 6, 8, 9, and 14.
+        assert len(all_meta) == 22, (
+            f"Expected 22 algorithms, got {len(all_meta)}. "
             f"Found: {sorted(all_meta.keys())}"
         )
 
@@ -58,6 +58,8 @@ class TestLoadAllMeta:
             "convolution", "gradient-descent",
             "tokenization-bpe", "token-embeddings", "self-attention",
             "multi-head-attention", "transformer-block",
+            "qubit-bloch-sphere", "quantum-gates", "superposition-measurement",
+            "grovers-search", "quantum-teleportation",
         }
 
         actual_ids = set(all_meta.keys())

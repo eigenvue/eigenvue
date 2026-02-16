@@ -1,0 +1,29 @@
+{
+  "description": "3-qubit GHZ state measurement — all qubits correlated",
+  "inputs": {
+    "numQubits": 3,
+    "preparationGates": [
+      { "gate": "H", "qubits": [0] },
+      { "gate": "CNOT", "qubits": [0, 1] },
+      { "gate": "CNOT", "qubits": [0, 2] }
+    ],
+    "measurements": [
+      { "qubit": 0, "outcome": 0 },
+      { "qubit": 1, "outcome": 0 },
+      { "qubit": 2, "outcome": 0 }
+    ]
+  },
+  "expected": {
+    "terminalStepId": "measurement_result",
+    "keyStates": [
+      {
+        "stepId": "after_preparation",
+        "amplitudes": [
+          [0.7071067811865476, 0], [0, 0], [0, 0], [0, 0],
+          [0, 0], [0, 0], [0, 0], [0.7071067811865476, 0]
+        ],
+        "comment": "GHZ state (|000⟩ + |111⟩)/√2"
+      }
+    ]
+  }
+}

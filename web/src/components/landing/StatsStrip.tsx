@@ -15,7 +15,7 @@ interface Stat {
 }
 
 const STATS: Stat[] = [
-  { value: "17+", label: "Interactive Visualizations" },
+  { value: "22+", label: "Interactive Visualizations" },
   { value: "4", label: "Algorithm Domains" },
   { value: "MIT", label: "Open Source Forever" },
   { value: "pip", label: "Python Package" },

@@ -1,0 +1,31 @@
+{
+  "description": "Create Bell state |Φ+⟩ and measure — shows entanglement correlation",
+  "inputs": {
+    "numQubits": 2,
+    "preparationGates": [
+      { "gate": "H", "qubits": [0] },
+      { "gate": "CNOT", "qubits": [0, 1] }
+    ],
+    "measurements": [
+      { "qubit": 0, "outcome": 0 },
+      { "qubit": 1, "outcome": 0 }
+    ]
+  },
+  "expected": {
+    "terminalStepId": "measurement_result",
+    "keyStates": [
+      {
+        "stepId": "after_preparation",
+        "amplitudes": [[0.7071067811865476, 0], [0, 0], [0, 0], [0.7071067811865476, 0]],
+        "isEntangled": true,
+        "comment": "Bell state |Φ+⟩ = (|00⟩ + |11⟩)/√2"
+      },
+      {
+        "stepId": "after_measurement_0",
+        "amplitudes": [[1, 0], [0, 0], [0, 0], [0, 0]],
+        "measuredBits": [0],
+        "comment": "Measuring qubit 0 as 0 collapses to |00⟩ — qubit 1 is now deterministic"
+      }
+    ]
+  }
+}

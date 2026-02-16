@@ -3,7 +3,7 @@
 **The visual learning platform for understanding algorithms, AI architectures, and quantum computing.**
 
 [![npm version](https://img.shields.io/npm/v/eigenvue.svg)](https://www.npmjs.com/package/eigenvue)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/ashutoshm1771/eigenvue/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/eigenvue/eigenvue/blob/main/LICENSE)
 
 Eigenvue provides step-by-step algorithm visualizations for classical CS, deep learning, and generative AI algorithms. Use it as a library in your Node.js projects, or as a CLI tool.
 
@@ -22,7 +22,7 @@ Requires Node.js >= 18.
 ```typescript
 import { list } from "eigenvue";
 
-// List all 17 algorithms
+// List all 22 algorithms
 const algorithms = list();
 console.log(algorithms);
 
@@ -126,8 +126,8 @@ Launch an interactive visualization in the browser.
 ## Links
 
 - [Web App](https://eigenvue.web.app/)
-- [GitHub](https://github.com/ashutoshm1771/eigenvue)
-- [Contributing](https://github.com/ashutoshm1771/eigenvue/blob/main/CONTRIBUTING.md)
+- [GitHub](https://github.com/eigenvue/eigenvue)
+- [Contributing](https://github.com/eigenvue/eigenvue/blob/main/CONTRIBUTING.md)
 
 ## License
 

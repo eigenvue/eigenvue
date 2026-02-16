@@ -1,0 +1,23 @@
+{
+  "description": "Teleport |+⟩ = (|0⟩+|1⟩)/√2 — superposition state on the equator",
+  "inputs": {
+    "teleportState": { "theta": 1.5707963267948966, "phi": 0, "label": "|+⟩" },
+    "aliceMeasurements": { "qubit0": 0, "qubit1": 1 }
+  },
+  "expected": {
+    "terminalStepId": "verification",
+    "keyStates": [
+      {
+        "stepId": "initial_state",
+        "aliceState": { "theta": 1.5707963267948966, "phi": 0 },
+        "comment": "|+⟩ on the equator (x-axis of Bloch sphere)"
+      },
+      {
+        "stepId": "verification",
+        "bobBlochAngles": { "theta": 1.5707963267948966, "phi": 0, "tolerance": 1e-6 },
+        "correction": "X",
+        "comment": "m0=0, m1=1 → apply X to Bob's qubit. Bob has |+⟩."
+      }
+    ]
+  }
+}

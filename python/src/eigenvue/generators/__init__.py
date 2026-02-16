@@ -18,7 +18,7 @@ from typing import Any
 
 # ── Lazy import approach ─────────────────────────────────────────────────────
 # We define a registry that lazily imports generators on first access.
-# This avoids loading all 17 generators (and their math dependencies)
+# This avoids loading all 22 generators (and their math dependencies)
 # at package import time.
 
 _REGISTRY_MAP: dict[str, tuple[str, str]] = {
@@ -46,6 +46,15 @@ _REGISTRY_MAP: dict[str, tuple[str, str]] = {
     "backpropagation": ("eigenvue.generators.deep_learning.backpropagation", "generate"),
     "convolution": ("eigenvue.generators.deep_learning.convolution", "generate"),
     "gradient-descent": ("eigenvue.generators.deep_learning.gradient_descent", "generate"),
+    # Quantum
+    "qubit-bloch-sphere": ("eigenvue.generators.quantum.qubit_bloch_sphere", "generate"),
+    "quantum-gates": ("eigenvue.generators.quantum.quantum_gates", "generate"),
+    "superposition-measurement": (
+        "eigenvue.generators.quantum.superposition_measurement",
+        "generate",
+    ),
+    "grovers-search": ("eigenvue.generators.quantum.grovers_search", "generate"),
+    "quantum-teleportation": ("eigenvue.generators.quantum.quantum_teleportation", "generate"),
 }
 
 _loaded_generators: dict[str, Callable[..., Any]] = {}
@@ -55,7 +64,7 @@ class _GeneratorRegistry:
     """Lazy-loading generator registry that behaves like a dict.
 
     Generators are imported only when first accessed, avoiding the cost
-    of loading all 17 modules at import time.
+    of loading all 22 modules at import time.
     """
 
     def __contains__(self, key: str) -> bool:

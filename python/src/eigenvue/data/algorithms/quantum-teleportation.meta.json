@@ -1,0 +1,249 @@
+{
+  "id": "quantum-teleportation",
+  "name": "Quantum Teleportation",
+  "category": "quantum",
+
+  "description": {
+    "short": "Teleport a qubit state using entanglement and classical communication.",
+    "long": "Quantum teleportation is a protocol that transfers an unknown quantum state from one party (Alice) to another (Bob) using a pre-shared entangled Bell pair and two classical bits of communication. It does not transmit matter or energy faster than light \u2014 the classical bits must travel through a normal channel. The protocol exploits three key ideas: (1) Bell pairs provide maximally entangled resources shared between Alice and Bob; (2) the no-cloning theorem forbids copying an unknown quantum state, so teleportation necessarily destroys Alice\u2019s original; (3) LOCC (local operations and classical communication) suffices to reconstruct the state on Bob\u2019s side. Alice entangles her unknown qubit with her half of the Bell pair via a CNOT and Hadamard, then measures both qubits, obtaining two classical bits. She sends these bits to Bob, who applies a conditional correction (X and/or Z gates) to his half of the Bell pair. After correction, Bob\u2019s qubit is in the exact state Alice started with \u2014 verified on the Bloch sphere. Teleportation is the foundation of quantum repeaters, quantum networks, and measurement-based quantum computation."
+  },
+
+  "complexity": {
+    "time": "O(1) gates",
+    "space": "O(1) \u2014 3 qubits",
+    "level": "advanced"
+  },
+
+  "visual": {
+    "layout": "circuit-wires",
+    "theme": {
+      "primary": "#00ffc8",
+      "secondary": "#0e7c6b"
+    },
+    "components": {
+      "wires": [
+        { "id": "q0", "label": "q\u2080 (Alice\u2019s \u03c8)", "color": "#00ffc8" },
+        { "id": "q1", "label": "q\u2081 (Alice\u2019s Bell)", "color": "#0e7c6b" },
+        { "id": "q2", "label": "q\u2082 (Bob\u2019s Bell)", "color": "#c084fc" }
+      ],
+      "showAmplitudes": true,
+      "showProbabilities": true,
+      "collapseColor": "#ff6b6b",
+      "entanglementColor": "#c084fc",
+      "classicalBitColor": "#fbbf24",
+      "gateColor": "#00ffc8",
+      "correctionColor": "#f472b6",
+      "blochSphereColor": "#38bdf8"
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "teleportState": {
+        "type": "object",
+        "properties": {
+          "theta": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 3.141592653589793,
+            "description": "Polar angle \u03b8 on the Bloch sphere, in radians. Range: [0, \u03c0]."
+          },
+          "phi": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMaximum": 6.283185307179586,
+            "description": "Azimuthal angle \u03c6 on the Bloch sphere, in radians. Range: [0, 2\u03c0)."
+          },
+          "label": {
+            "type": "string",
+            "description": "Display label for the state, e.g. \"|\u03c8\u27e9\"."
+          }
+        },
+        "required": ["theta", "phi", "label"],
+        "description": "The quantum state to teleport, specified as Bloch sphere angles. |\u03c8\u27e9 = cos(\u03b8/2)|0\u27e9 + e^{i\u03c6}sin(\u03b8/2)|1\u27e9."
+      },
+      "aliceMeasurements": {
+        "type": "object",
+        "properties": {
+          "qubit0": {
+            "type": "number",
+            "enum": [0, 1],
+            "description": "Predetermined measurement outcome for qubit 0 (Alice\u2019s original qubit)."
+          },
+          "qubit1": {
+            "type": "number",
+            "enum": [0, 1],
+            "description": "Predetermined measurement outcome for qubit 1 (Alice\u2019s half of Bell pair)."
+          }
+        },
+        "required": ["qubit0", "qubit1"],
+        "description": "Predetermined measurement outcomes for Alice\u2019s two qubits (for pedagogical demonstration)."
+      }
+    },
+    "defaults": {
+      "teleportState": { "theta": 0.7854, "phi": 1.0472, "label": "|\u03c8\u27e9" },
+      "aliceMeasurements": { "qubit0": 0, "qubit1": 1 }
+    },
+    "examples": [
+      {
+        "name": "Teleport |+\u27e9",
+        "values": {
+          "teleportState": { "theta": 1.5708, "phi": 0, "label": "|+\u27e9" },
+          "aliceMeasurements": { "qubit0": 0, "qubit1": 0 }
+        }
+      },
+      {
+        "name": "Teleport arbitrary state",
+        "values": {
+          "teleportState": { "theta": 0.7854, "phi": 1.0472, "label": "|\u03c8\u27e9" },
+          "aliceMeasurements": { "qubit0": 0, "qubit1": 1 }
+        }
+      },
+      {
+        "name": "All measurement outcomes (0,0)",
+        "values": {
+          "teleportState": { "theta": 1.0472, "phi": 2.0944, "label": "|\u03c8\u27e9" },
+          "aliceMeasurements": { "qubit0": 0, "qubit1": 0 }
+        }
+      },
+      {
+        "name": "All measurement outcomes (0,1)",
+        "values": {
+          "teleportState": { "theta": 1.0472, "phi": 2.0944, "label": "|\u03c8\u27e9" },
+          "aliceMeasurements": { "qubit0": 0, "qubit1": 1 }
+        }
+      },
+      {
+        "name": "All measurement outcomes (1,0)",
+        "values": {
+          "teleportState": { "theta": 1.0472, "phi": 2.0944, "label": "|\u03c8\u27e9" },
+          "aliceMeasurements": { "qubit0": 1, "qubit1": 0 }
+        }
+      },
+      {
+        "name": "All measurement outcomes (1,1)",
+        "values": {
+          "teleportState": { "theta": 1.0472, "phi": 2.0944, "label": "|\u03c8\u27e9" },
+          "aliceMeasurements": { "qubit0": 1, "qubit1": 1 }
+        }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function quantumTeleportation(theta, phi, m0, m1):\n  // 1. Alice prepares |psi> = cos(theta/2)|0> + e^{i*phi}*sin(theta/2)|1>\n  state = |psi> tensor |0> tensor |0>\n\n  // 2. Create Bell pair between qubits 1 and 2\n  apply H to qubit 1\n  apply CNOT(1, 2)          // qubits 1,2 now in Bell state |Phi+>\n\n  // 3. Alice entangles her qubit with Bell pair\n  apply CNOT(0, 1)\n  apply H to qubit 0\n\n  // 4. Alice measures both qubits\n  m0 = measure qubit 0      // classical bit\n  m1 = measure qubit 1      // classical bit\n\n  // 5. Bob applies correction: X^{m1} Z^{m0}\n  if m1 == 1: apply X to qubit 2\n  if m0 == 1: apply Z to qubit 2\n\n  // 6. Bob's qubit 2 is now in state |psi>\n  return qubit 2",
+      "python": "import numpy as np\n\ndef quantum_teleportation(theta: float, phi: float, m0: int, m1: int):\n    \"\"\"Teleport |psi> = cos(theta/2)|0> + e^{i*phi}*sin(theta/2)|1>.\"\"\"\n    # 1. Prepare initial 3-qubit state: |psi> x |0> x |0>\n    alpha = np.cos(theta / 2)\n    beta = np.exp(1j * phi) * np.sin(theta / 2)\n    state = np.zeros(8, dtype=complex)\n    state[0] = alpha   # |000>\n    state[4] = beta    # |100>\n\n    # 2. Create Bell pair (H on qubit 1, then CNOT 1->2)\n    state = apply_hadamard(state, qubit=1, n=3)\n    state = apply_cnot(state, control=1, target=2, n=3)\n\n    # 3. Alice's operations\n    state = apply_cnot(state, control=0, target=1, n=3)\n    state = apply_hadamard(state, qubit=0, n=3)\n\n    # 4. Alice measures qubits 0 and 1\n    state = project_and_normalize(state, qubit=0, outcome=m0, n=3)\n    state = project_and_normalize(state, qubit=1, outcome=m1, n=3)\n\n    # 5. Bob's correction: X^{m1} Z^{m0}\n    if m1 == 1:\n        state = apply_x(state, qubit=2, n=3)\n    if m0 == 1:\n        state = apply_z(state, qubit=2, n=3)\n\n    # Qubit 2 is now in state |psi>\n    return state",
+      "javascript": "function quantumTeleportation(theta, phi, m0, m1) {\n  // 1. Prepare |psi> x |0> x |0>\n  const alpha = [Math.cos(theta / 2), 0];\n  const beta = [Math.sin(theta / 2) * Math.cos(phi),\n                Math.sin(theta / 2) * Math.sin(phi)];\n  const state = Array.from({ length: 8 }, () => [0, 0]);\n  state[0] = alpha;  // |000>\n  state[4] = beta;   // |100>\n\n  // 2. Create Bell pair (H on qubit 1, CNOT 1->2)\n  applySingleQubitGate(state, GATE_H, 1, 3);\n  applyTwoQubitGate(state, GATE_CNOT, 1, 2, 3);\n\n  // 3. Alice CNOT(0,1) then H(0)\n  applyTwoQubitGate(state, GATE_CNOT, 0, 1, 3);\n  applySingleQubitGate(state, GATE_H, 0, 3);\n\n  // 4. Alice measures qubits 0 and 1\n  projectAndNormalize(state, 0, m0, 3);\n  projectAndNormalize(state, 1, m1, 3);\n\n  // 5. Bob correction: X^{m1} Z^{m0}\n  if (m1 === 1) applySingleQubitGate(state, GATE_X, 2, 3);\n  if (m0 === 1) applySingleQubitGate(state, GATE_Z, 2, 3);\n\n  // Qubit 2 is now in state |psi>\n  return state;\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Bell Pairs",
+        "description": "A Bell pair is a maximally entangled two-qubit state, typically |Phi+> = (|00> + |11>)/sqrt(2). It is created by applying a Hadamard gate followed by a CNOT. In teleportation, Alice and Bob each hold one qubit of the Bell pair. This shared entanglement acts as a quantum channel \u2014 it is the essential resource that enables state transfer without directly sending the qubit."
+      },
+      {
+        "title": "No-Cloning Theorem",
+        "description": "The no-cloning theorem states that it is impossible to create an exact copy of an arbitrary unknown quantum state. This is a fundamental consequence of the linearity of quantum mechanics. Teleportation respects this constraint: Alice's original state is destroyed by measurement, and the state appears on Bob's side. The quantum information is transferred, not duplicated."
+      },
+      {
+        "title": "Classical Communication",
+        "description": "After Alice measures her two qubits, she obtains two classical bits (m0, m1). She must send these bits to Bob through a classical channel (e.g., phone, internet). Without these bits, Bob's qubit is in a random state \u2014 he cannot extract any information. This requirement ensures that teleportation does not violate the no-communication theorem or enable faster-than-light signaling."
+      },
+      {
+        "title": "Quantum Correction",
+        "description": "Bob applies a conditional correction based on Alice's measurement results: X^{m1} Z^{m0}. If m0=0 and m1=0, no correction is needed (identity). If m1=1, Bob applies the X (bit-flip) gate. If m0=1, Bob applies the Z (phase-flip) gate. If both are 1, Bob applies X then Z. After correction, Bob's qubit is in the exact state Alice started with."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Two classical bits are required",
+        "description": "A common misconception is that teleportation transfers information instantly. In reality, Alice must send two classical bits to Bob for him to apply the correct correction. Without these bits, Bob's qubit is in a mixed state with no useful information. The classical channel limits the protocol to at most the speed of light."
+      },
+      {
+        "title": "The original state is destroyed",
+        "description": "Teleportation does not create a copy of the quantum state. Alice's measurement collapses her qubits into a definite classical state (|m0, m1>), irrevocably destroying the original superposition. This is consistent with the no-cloning theorem \u2014 quantum information is conserved, not duplicated."
+      },
+      {
+        "title": "Requires pre-shared entanglement",
+        "description": "The Bell pair must be created and distributed before teleportation can occur. Alice and Bob must each receive one qubit of the entangled pair. If they do not share entanglement, the protocol cannot proceed. Distributing entanglement over long distances is one of the main challenges in building quantum networks."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "How many classical bits must Alice send to Bob for quantum teleportation?",
+        "options": ["0", "1", "2", "3"],
+        "correctIndex": 2,
+        "explanation": "Alice measures two qubits (her original qubit and her half of the Bell pair), producing two classical bits. Both bits are needed for Bob to determine the correct correction gate(s). Without both bits, Bob cannot recover the original state."
+      },
+      {
+        "question": "What happens to Alice's original quantum state after teleportation?",
+        "options": [
+          "It remains unchanged on Alice's side",
+          "It is destroyed by measurement",
+          "It is copied to Bob's qubit",
+          "It becomes entangled with Bob's qubit"
+        ],
+        "correctIndex": 1,
+        "explanation": "Alice's measurement collapses her qubits into definite classical states, destroying the original superposition. This is required by the no-cloning theorem \u2014 quantum information cannot be duplicated, only moved. After teleportation, only Bob's qubit holds the state."
+      },
+      {
+        "question": "If Alice's measurement results are (m0=1, m1=1), what correction does Bob apply?",
+        "options": [
+          "No correction (identity)",
+          "X gate only",
+          "Z gate only",
+          "X gate then Z gate"
+        ],
+        "correctIndex": 3,
+        "explanation": "The correction formula is X^{m1} Z^{m0}. With m0=1 and m1=1, Bob applies X (bit-flip, because m1=1) followed by Z (phase-flip, because m0=1). The order matters: X is applied first, then Z, to correctly recover the original state."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Quantum Teleportation \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Quantum_teleportation",
+        "type": "reference"
+      },
+      {
+        "title": "No-Cloning Theorem \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/No-cloning_theorem",
+        "type": "reference"
+      },
+      {
+        "title": "Qiskit Textbook: Quantum Teleportation",
+        "url": "https://learn.qiskit.org/course/basics/entanglement-in-action",
+        "type": "tutorial"
+      },
+      {
+        "title": "Bennett et al., Teleporting an Unknown Quantum State (1993)",
+        "url": "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.70.1895",
+        "type": "article"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "quantum teleportation visualization",
+      "quantum teleportation algorithm",
+      "quantum teleportation step by step",
+      "quantum teleportation circuit",
+      "Bell pair teleportation",
+      "quantum state transfer",
+      "no-cloning theorem",
+      "quantum entanglement protocol",
+      "LOCC quantum communication",
+      "quantum teleportation animation"
+    ],
+    "ogDescription": "Interactive step-by-step visualization of quantum teleportation. Watch how entanglement and classical bits transfer a quantum state from Alice to Bob \u2014 no cloning needed."
+  },
+
+  "prerequisites": ["quantum-gates", "superposition-measurement"],
+  "related": ["superposition-measurement", "grovers-search"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

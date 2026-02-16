@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eigenvue v1.0.1 — Production Verification Report</title>
+  <meta name="description" content="Comprehensive production verification report for eigenvue v1.0.1 npm package. Tests every API, invariant, and algorithm." />
+  <style>
+    /* ── Reset & Tokens ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0a0e17;
+      --bg-card:      #111827;
+      --bg-card-alt:  #151d2e;
+      --bg-code:      #0d1321;
+      --bg-inline:    rgba(88, 166, 255, .08);
+      --bg-nav:       rgba(10, 14, 23, .92);
+      --border:       #1e293b;
+      --border-hl:    #3b82f6;
+      --text:         #e2e8f0;
+      --text-dim:     #94a3b8;
+      --text-code:    #cbd5e1;
+      --accent:       #3b82f6;
+      --accent-2:     #8b5cf6;
+      --accent-hover: #60a5fa;
+      --green:        #22c55e;
+      --green-dim:    rgba(34, 197, 94, .12);
+      --green-bg:     rgba(34, 197, 94, .06);
+      --orange:       #f59e0b;
+      --orange-dim:   rgba(245, 158, 11, .12);
+      --red:          #ef4444;
+      --red-dim:      rgba(239, 68, 68, .12);
+      --teal:         #14b8a6;
+      --pink:         #ec4899;
+      --purple:       #a78bfa;
+      --radius:       8px;
+      --radius-lg:    12px;
+      --radius-xl:    16px;
+      --shadow:       0 4px 24px rgba(0, 0, 0, .3);
+      --shadow-lg:    0 8px 48px rgba(0, 0, 0, .4);
+      --font:         'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --mono:         'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      --max-w:        1200px;
+      --nav-h:        64px;
+      --glow-blue:    0 0 40px rgba(59, 130, 246, .15);
+      --glow-green:   0 0 40px rgba(34, 197, 94, .1);
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 24px); }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Typography ────────────────────────────────────────────────────── */
+    h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.1; }
+    h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: .8rem; letter-spacing: -0.02em; }
+    h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: .5rem; }
+    p  { margin-bottom: .8rem; color: var(--text-dim); }
+    a  { color: var(--accent); text-decoration: none; transition: color .2s; }
+    a:hover { color: var(--accent-hover); }
+    code { font-family: var(--mono); font-size: .88em; background: var(--bg-inline); padding: 2px 7px; border-radius: 4px; color: var(--accent); }
+    strong { color: var(--text); font-weight: 600; }
+
+    /* ── Layout ────────────────────────────────────────────────────────── */
+    .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+    section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+    section:last-of-type { border-bottom: none; }
+
+    /* ── Navigation ────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h);
+      background: var(--bg-nav);
+      backdrop-filter: blur(16px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+    }
+    nav .container { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .nav-brand {
+      font-size: 1.05rem; font-weight: 700; color: var(--text);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .nav-brand .logo-icon {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 800; color: #fff;
+    }
+    .nav-version {
+      font-size: .72rem; font-weight: 600; padding: 3px 8px;
+      background: var(--green-dim); color: var(--green);
+      border-radius: 20px; letter-spacing: .02em;
+    }
+    .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+    .nav-links a {
+      font-size: .8rem; padding: 6px 12px; border-radius: 6px;
+      color: var(--text-dim); transition: all .15s; white-space: nowrap;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,.05); }
+
+    /* ── Hero ──────────────────────────────────────────────────────────── */
+    .hero {
+      padding: calc(var(--nav-h) + 80px) 0 80px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% -10%, rgba(59, 130, 246, .08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 80% 20%, rgba(139, 92, 246, .05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero h1 { margin-bottom: 16px; position: relative; }
+    .hero h1 .highlight { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero .tagline { font-size: 1.15rem; color: var(--text-dim); max-width: 640px; margin: 0 auto 32px; position: relative; }
+    .hero .version-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 12px 24px;
+      font-family: var(--mono); font-size: .95rem; color: var(--green);
+      box-shadow: var(--glow-green);
+      position: relative;
+    }
+    .hero .version-badge .label { color: var(--text-dim); font-family: var(--font); font-size: .85rem; }
+
+    /* ── Summary Dashboard ─────────────────────────────────────────────── */
+    .dashboard {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+      margin-bottom: 40px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .stat-card:hover { border-color: var(--border-hl); box-shadow: var(--glow-blue); }
+    .stat-card .value { font-size: 2.4rem; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+    .stat-card .label { font-size: .82rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; }
+    .stat-card.green .value { color: var(--green); }
+    .stat-card.red .value { color: var(--red); }
+    .stat-card.blue .value { color: var(--accent); }
+    .stat-card.purple .value { color: var(--purple); }
+    .stat-card.teal .value { color: var(--teal); }
+
+    /* ── Category Sections ─────────────────────────────────────────────── */
+    .test-category {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      margin-bottom: 20px;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .test-category:hover { border-color: rgba(59, 130, 246, .2); }
+    .category-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+    }
+    .category-header:hover { background: rgba(255,255,255,.02); }
+    .category-header h3 { margin: 0; display: flex; align-items: center; gap: 10px; }
+    .category-header .count {
+      font-size: .75rem; font-weight: 600; padding: 3px 10px;
+      border-radius: 20px; letter-spacing: .02em;
+    }
+    .count.all-pass { background: var(--green-dim); color: var(--green); }
+    .count.has-fail { background: var(--red-dim); color: var(--red); }
+    .category-header .chevron {
+      width: 20px; height: 20px; transition: transform .2s;
+      fill: var(--text-dim);
+    }
+    .category-header.open .chevron { transform: rotate(180deg); }
+    .category-desc { padding: 0 24px; font-size: .85rem; color: var(--text-dim); margin-bottom: 8px; }
+    .category-tests { display: none; border-top: 1px solid var(--border); }
+    .category-tests.open { display: block; }
+
+    .test-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 24px;
+      border-bottom: 1px solid rgba(30, 41, 59, .5);
+      font-size: .88rem;
+      transition: background .1s;
+    }
+    .test-row:last-child { border-bottom: none; }
+    .test-row:hover { background: rgba(255,255,255,.015); }
+    .test-icon { flex-shrink: 0; font-size: 1rem; line-height: 1.5; }
+    .test-row.passed .test-icon { color: var(--green); }
+    .test-row.failed .test-icon { color: var(--red); }
+    .test-name { flex: 1; font-weight: 500; }
+    .test-details {
+      max-width: 50%; font-size: .8rem; color: var(--text-dim);
+      font-family: var(--mono); text-align: right;
+      word-break: break-word;
+    }
+    .test-row.failed .test-details { color: var(--red); }
+    .test-duration { font-size: .72rem; color: var(--text-dim); font-family: var(--mono); white-space: nowrap; }
+
+    /* ── Algorithm Catalog ─────────────────────────────────────────────── */
+    .algo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+    .algo-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .algo-card:hover { border-color: var(--border-hl); box-shadow: var(--glow-blue); transform: translateY(-2px); }
+    .algo-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .algo-card-header h3 { margin: 0; font-size: 1.05rem; }
+    .algo-card .category-tag {
+      font-size: .7rem; font-weight: 600; padding: 3px 10px;
+      border-radius: 20px; text-transform: uppercase; letter-spacing: .04em;
+    }
+    .tag-classical { background: rgba(59, 130, 246, .12); color: var(--accent); }
+    .tag-deep-learning { background: rgba(139, 92, 246, .12); color: var(--purple); }
+    .tag-generative-ai { background: rgba(236, 72, 153, .12); color: var(--pink); }
+    .algo-card .desc { font-size: .85rem; color: var(--text-dim); margin-bottom: 14px; line-height: 1.5; }
+    .algo-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .algo-meta .chip {
+      font-size: .72rem; padding: 3px 10px;
+      background: var(--bg-card-alt); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text-dim);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .algo-meta .chip .chip-label { color: var(--text); font-weight: 600; }
+    .algo-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+    .action-badge {
+      font-size: .68rem; padding: 2px 8px;
+      background: rgba(20, 184, 166, .08); border: 1px solid rgba(20, 184, 166, .15);
+      border-radius: 4px; color: var(--teal); font-family: var(--mono);
+    }
+
+    /* ── Step Explorer ─────────────────────────────────────────────────── */
+    .explorer-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+    .explorer-controls select, .explorer-controls button {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 16px;
+      color: var(--text); font-family: var(--font); font-size: .88rem;
+      cursor: pointer; transition: border-color .15s;
+    }
+    .explorer-controls select:hover, .explorer-controls button:hover { border-color: var(--accent); }
+    .explorer-controls select:focus, .explorer-controls button:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59, 130, 246, .2); }
+    .step-viewer {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+    .step-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card-alt);
+    }
+    .step-header h3 { margin: 0; }
+    .step-nav { display: flex; gap: 8px; }
+    .step-nav button {
+      background: var(--bg-code); border: 1px solid var(--border);
+      border-radius: 6px; padding: 6px 14px;
+      color: var(--text); font-size: .82rem; cursor: pointer;
+      transition: all .15s;
+    }
+    .step-nav button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .step-nav button:disabled { opacity: .3; cursor: default; }
+    .step-content { padding: 24px; }
+    .step-field { margin-bottom: 16px; }
+    .step-field-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim); font-weight: 600; margin-bottom: 6px; }
+    .step-field-value { font-size: .9rem; line-height: 1.6; }
+    .step-field-value.explanation { color: var(--text-dim); font-style: italic; }
+    .step-json {
+      background: var(--bg-code); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      font-family: var(--mono); font-size: .78rem;
+      color: var(--text-code); overflow-x: auto;
+      max-height: 320px; overflow-y: auto;
+      white-space: pre;
+      line-height: 1.5;
+    }
+    .step-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+    .step-badge {
+      font-size: .72rem; padding: 3px 10px;
+      border-radius: 4px; font-family: var(--mono);
+    }
+    .badge-phase { background: rgba(139, 92, 246, .1); color: var(--purple); border: 1px solid rgba(139, 92, 246, .15); }
+    .badge-terminal { background: rgba(34, 197, 94, .1); color: var(--green); border: 1px solid rgba(34, 197, 94, .15); }
+    .badge-id { background: rgba(59, 130, 246, .08); color: var(--accent); border: 1px solid rgba(59, 130, 246, .12); }
+
+    /* ── Environment Info ──────────────────────────────────────────────── */
+    .env-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .env-item {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+    }
+    .env-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim); font-weight: 600; margin-bottom: 4px; }
+    .env-value { font-family: var(--mono); font-size: .88rem; }
+
+    /* ── Loading State ─────────────────────────────────────────────────── */
+    .loading {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 120px 24px; text-align: center;
+    }
+    .loading .spinner {
+      width: 48px; height: 48px; border: 3px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin .8s linear infinite; margin-bottom: 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading p { color: var(--text-dim); font-size: 1rem; }
+    .error-box { background: var(--red-dim); border: 1px solid var(--red); border-radius: var(--radius-lg); padding: 24px; color: var(--red); font-family: var(--mono); font-size: .88rem; white-space: pre-wrap; }
+
+    /* ── Footer ────────────────────────────────────────────────────────── */
+    footer {
+      padding: 48px 0;
+      text-align: center;
+      font-size: .82rem;
+      color: var(--text-dim);
+    }
+    footer a { color: var(--accent); }
+
+    /* ── Scroll bar ────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+    /* ── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      .hero { padding: calc(var(--nav-h) + 48px) 0 48px; }
+      .dashboard { grid-template-columns: repeat(2, 1fr); }
+      .algo-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .test-row { flex-wrap: wrap; }
+      .test-details { max-width: 100%; text-align: left; }
+    }
+
+    /* ── Animations ────────────────────────────────────────────────────── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeInUp .4s ease both; }
+    .delay-1 { animation-delay: .05s; }
+    .delay-2 { animation-delay: .1s; }
+    .delay-3 { animation-delay: .15s; }
+    .delay-4 { animation-delay: .2s; }
+    .delay-5 { animation-delay: .25s; }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ──────────────────────────────────────────────────────── -->
+<nav>
+  <div class="container">
+    <div class="nav-brand">
+      <div class="logo-icon">Ev</div>
+      <span>Eigenvue</span>
+      <span class="nav-version">v1.0.1</span>
+    </div>
+    <div class="nav-links">
+      <a href="#summary">Summary</a>
+      <a href="#tests">Tests</a>
+      <a href="#catalog">Catalog</a>
+      <a href="#explorer">Explorer</a>
+      <a href="#environment">Environment</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="container">
+    <h1 class="fade-in">Production Verification<br><span class="highlight">eigenvue v1.0.1</span></h1>
+    <p class="tagline fade-in delay-1">
+      Comprehensive verification of every exported API, structural invariant, and algorithm
+      in the published npm package.
+    </p>
+    <div class="version-badge fade-in delay-2">
+      <span class="label">npm install</span>
+      eigenvue@1.0.1
+    </div>
+  </div>
+</div>
+
+<!-- ── Main Content (populated by JS) ──────────────────────────────────── -->
+<div id="app">
+  <div class="loading">
+    <div class="spinner"></div>
+    <p>Loading verification report...</p>
+    <p style="font-size:.82rem; margin-top:8px; color:var(--text-dim)">
+      Make sure <code>verification-report.json</code> exists.<br>
+      Run <code>node verify.mjs</code> first.
+    </p>
+  </div>
+</div>
+
+<!-- ── Footer ──────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <p>Eigenvue v1.0.1 — Production Verification Report</p>
+    <p>
+      <a href="https://github.com/eigenvue/eigenvue" target="_blank">GitHub</a>
+      &nbsp;&middot;&nbsp;
+      <a href="https://www.npmjs.com/package/eigenvue" target="_blank">npm</a>
+      &nbsp;&middot;&nbsp;
+      <a href="https://eigenvue.web.app/" target="_blank">Documentation</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+// ── Load & Render Report ─────────────────────────────────────────────────────
+
+(async () => {
+  const app = document.getElementById("app");
+
+  let report;
+  try {
+    const resp = await fetch("./verification-report.json");
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    report = await resp.json();
+  } catch (err) {
+    app.innerHTML = `
+      <section>
+        <div class="container">
+          <div class="error-box">
+Failed to load verification-report.json
+
+${err.message}
+
+To generate the report, run:
+  cd verifications/prod_verification_1.0.1
+  npm install
+  node verify.mjs
+
+Then open this file in a browser (or use: npx serve . -p 3333 -s)
+          </div>
+        </div>
+      </section>`;
+    return;
+  }
+
+  // ── Build the page ──────────────────────────────────────────────────────────
+
+  const { summary, categories, algorithmDetails, timestamp, nodeVersion, platform, packageVersion } = report;
+
+  // Calculate totals
+  const totalSteps = algorithmDetails ? algorithmDetails.reduce((s, a) => s + a.stepCount, 0) : 0;
+  const totalActions = algorithmDetails ? algorithmDetails.reduce((s, a) => s + a.totalVisualActions, 0) : 0;
+  const allActionTypes = algorithmDetails
+    ? [...new Set(algorithmDetails.flatMap(a => a.uniqueActionTypes))]
+    : [];
+
+  app.innerHTML = `
+
+  <!-- Summary Dashboard -->
+  <section id="summary">
+    <div class="container">
+      <h2 class="fade-in">Verification Summary</h2>
+      <p class="fade-in delay-1">Results from running the full verification suite against the published <code>eigenvue@${packageVersion}</code> package.</p>
+      <div class="dashboard">
+        <div class="stat-card ${summary.failed === 0 ? 'green' : 'red'} fade-in delay-1">
+          <div class="value">${summary.failed === 0 ? 'PASS' : 'FAIL'}</div>
+          <div class="label">Overall Status</div>
+        </div>
+        <div class="stat-card green fade-in delay-2">
+          <div class="value">${summary.passed}</div>
+          <div class="label">Tests Passed</div>
+        </div>
+        <div class="stat-card ${summary.failed > 0 ? 'red' : 'blue'} fade-in delay-3">
+          <div class="value">${summary.failed}</div>
+          <div class="label">Tests Failed</div>
+        </div>
+        <div class="stat-card blue fade-in delay-3">
+          <div class="value">${summary.total}</div>
+          <div class="label">Total Tests</div>
+        </div>
+        <div class="stat-card purple fade-in delay-4">
+          <div class="value">${algorithmDetails ? algorithmDetails.length : '?'}</div>
+          <div class="label">Algorithms</div>
+        </div>
+        <div class="stat-card teal fade-in delay-5">
+          <div class="value">${totalSteps.toLocaleString()}</div>
+          <div class="label">Total Steps</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Test Results -->
+  <section id="tests">
+    <div class="container">
+      <h2>Test Results by Category</h2>
+      <p>${categories.length} test categories covering package exports, API correctness, invariants, error handling, CLI, determinism, and more.</p>
+      <div id="test-categories"></div>
+    </div>
+  </section>
+
+  <!-- Algorithm Catalog -->
+  <section id="catalog">
+    <div class="container">
+      <h2>Algorithm Catalog</h2>
+      <p>All ${algorithmDetails ? algorithmDetails.length : 17} algorithms verified in this production build, with their step counts, visual action types, and metadata.</p>
+      <div class="algo-grid" id="algo-grid"></div>
+    </div>
+  </section>
+
+  <!-- Step Explorer -->
+  <section id="explorer">
+    <div class="container">
+      <h2>Step Data Explorer</h2>
+      <p>Inspect the raw step data generated by any algorithm. Select an algorithm below to browse its steps.</p>
+      <div class="explorer-controls">
+        <select id="explorer-algo">
+          <option value="">Select an algorithm...</option>
+        </select>
+        <button id="explorer-load" disabled>Load Steps</button>
+      </div>
+      <div id="explorer-view"></div>
+    </div>
+  </section>
+
+  <!-- Environment -->
+  <section id="environment">
+    <div class="container">
+      <h2>Environment</h2>
+      <p>The environment under which this verification was run.</p>
+      <div class="env-grid">
+        <div class="env-item">
+          <div class="env-label">Package Version</div>
+          <div class="env-value">${packageVersion}</div>
+        </div>
+        <div class="env-item">
+          <div class="env-label">Node.js Version</div>
+          <div class="env-value">${nodeVersion}</div>
+        </div>
+        <div class="env-item">
+          <div class="env-label">Platform</div>
+          <div class="env-value">${platform}</div>
+        </div>
+        <div class="env-item">
+          <div class="env-label">Timestamp</div>
+          <div class="env-value">${new Date(timestamp).toLocaleString()}</div>
+        </div>
+        <div class="env-item">
+          <div class="env-label">Total Visual Action Types</div>
+          <div class="env-value">${allActionTypes.length}</div>
+        </div>
+        <div class="env-item">
+          <div class="env-label">Total Visual Actions Generated</div>
+          <div class="env-value">${totalActions.toLocaleString()}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  `;
+
+  // ── Render Test Categories ─────────────────────────────────────────────────
+
+  const catContainer = document.getElementById("test-categories");
+  categories.forEach((cat, catIdx) => {
+    const allPassed = cat.failed === 0;
+    const div = document.createElement("div");
+    div.className = "test-category";
+    div.innerHTML = `
+      <div class="category-header" data-idx="${catIdx}">
+        <h3>
+          <span>${cat.name}</span>
+          <span class="count ${allPassed ? 'all-pass' : 'has-fail'}">${cat.passed}/${cat.tests.length} passed</span>
+        </h3>
+        <svg class="chevron" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fill="currentColor"/></svg>
+      </div>
+      ${cat.description ? `<div class="category-desc">${cat.description}</div>` : ''}
+      <div class="category-tests" data-idx="${catIdx}">
+        ${cat.tests.map(t => `
+          <div class="test-row ${t.status}">
+            <span class="test-icon">${t.status === 'passed' ? '&#10003;' : '&#10007;'}</span>
+            <span class="test-name">${escHtml(t.name)}</span>
+            ${t.details ? `<span class="test-details" title="${escHtml(String(t.details))}">${escHtml(truncate(String(t.details), 100))}</span>` : ''}
+            <span class="test-duration">${t.duration}ms</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    catContainer.appendChild(div);
+
+    // Toggle
+    const header = div.querySelector('.category-header');
+    const tests = div.querySelector('.category-tests');
+    header.addEventListener('click', () => {
+      header.classList.toggle('open');
+      tests.classList.toggle('open');
+    });
+
+    // Auto-expand failed categories
+    if (!allPassed) {
+      header.classList.add('open');
+      tests.classList.add('open');
+    }
+  });
+
+  // ── Render Algorithm Cards ─────────────────────────────────────────────────
+
+  const grid = document.getElementById("algo-grid");
+  if (algorithmDetails) {
+    const catTagClass = { 'classical': 'tag-classical', 'deep-learning': 'tag-deep-learning', 'generative-ai': 'tag-generative-ai' };
+    algorithmDetails.forEach(algo => {
+      const card = document.createElement("div");
+      card.className = "algo-card";
+      card.innerHTML = `
+        <div class="algo-card-header">
+          <h3>${escHtml(algo.name)}</h3>
+          <span class="category-tag ${catTagClass[algo.category] || ''}">${escHtml(algo.category)}</span>
+        </div>
+        <div class="desc">${escHtml(algo.description)}</div>
+        <div class="algo-meta">
+          <div class="chip"><span class="chip-label">ID</span> ${escHtml(algo.id)}</div>
+          <div class="chip"><span class="chip-label">Steps</span> ${algo.stepCount}</div>
+          <div class="chip"><span class="chip-label">Time</span> ${escHtml(algo.timeComplexity)}</div>
+          <div class="chip"><span class="chip-label">Space</span> ${escHtml(algo.spaceComplexity)}</div>
+          <div class="chip"><span class="chip-label">Level</span> ${escHtml(algo.difficulty)}</div>
+        </div>
+        <div class="algo-actions">
+          ${algo.uniqueActionTypes.map(a => `<span class="action-badge">${escHtml(a)}</span>`).join('')}
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  // ── Step Explorer ──────────────────────────────────────────────────────────
+
+  const explorerAlgo = document.getElementById("explorer-algo");
+  const explorerLoad = document.getElementById("explorer-load");
+  const explorerView = document.getElementById("explorer-view");
+
+  if (algorithmDetails) {
+    algorithmDetails.forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a.id;
+      opt.textContent = `${a.name} (${a.id}) — ${a.stepCount} steps`;
+      explorerAlgo.appendChild(opt);
+    });
+  }
+
+  explorerAlgo.addEventListener("change", () => {
+    explorerLoad.disabled = !explorerAlgo.value;
+  });
+
+  explorerLoad.addEventListener("click", async () => {
+    const algoId = explorerAlgo.value;
+    if (!algoId) return;
+
+    explorerView.innerHTML = `<div class="loading" style="padding:48px"><div class="spinner"></div><p>Loading step data for <code>${escHtml(algoId)}</code>...</p></div>`;
+
+    // We fetch from the API if available, or use the embedded data
+    // For now, we ask the user to generate individual step files
+    // or we show the sample data from the report
+    const algo = algorithmDetails.find(a => a.id === algoId);
+    if (!algo) {
+      explorerView.innerHTML = `<div class="error-box">Algorithm not found in report.</div>`;
+      return;
+    }
+
+    // Try to load the full step data
+    let stepsData = null;
+    try {
+      const resp = await fetch(`./steps/${algoId}.json`);
+      if (resp.ok) stepsData = await resp.json();
+    } catch { /* ignore */ }
+
+    if (stepsData) {
+      renderStepExplorer(stepsData, algoId);
+    } else {
+      // Show what we have from the report + instructions
+      explorerView.innerHTML = `
+        <div class="step-viewer">
+          <div class="step-header">
+            <h3>${escHtml(algo.name)} — ${algo.stepCount} steps</h3>
+          </div>
+          <div class="step-content">
+            <div class="step-field">
+              <div class="step-field-label">Algorithm ID</div>
+              <div class="step-field-value"><code>${escHtml(algo.id)}</code></div>
+            </div>
+            <div class="step-field">
+              <div class="step-field-label">Category</div>
+              <div class="step-field-value">${escHtml(algo.category)}</div>
+            </div>
+            <div class="step-field">
+              <div class="step-field-label">Complexity</div>
+              <div class="step-field-value">Time: <code>${escHtml(algo.timeComplexity)}</code> &nbsp;|&nbsp; Space: <code>${escHtml(algo.spaceComplexity)}</code></div>
+            </div>
+            <div class="step-field">
+              <div class="step-field-label">Step Count</div>
+              <div class="step-field-value">${algo.stepCount}</div>
+            </div>
+            <div class="step-field">
+              <div class="step-field-label">Visual Action Types (${algo.uniqueActionTypes.length})</div>
+              <div class="step-badges">
+                ${algo.uniqueActionTypes.map(a => `<span class="step-badge badge-id">${escHtml(a)}</span>`).join('')}
+              </div>
+            </div>
+            <div class="step-field">
+              <div class="step-field-label">Input Parameters</div>
+              <div class="step-field-value">${algo.inputKeys.map(k => `<code>${escHtml(k)}</code>`).join(', ')}</div>
+            </div>
+            ${algo.phases.length > 0 ? `
+            <div class="step-field">
+              <div class="step-field-label">Phases</div>
+              <div class="step-badges">
+                ${algo.phases.map(p => `<span class="step-badge badge-phase">${escHtml(p)}</span>`).join('')}
+              </div>
+            </div>` : ''}
+            <div class="step-field">
+              <div class="step-field-label">First Step Preview</div>
+              <div class="step-json">${escHtml(JSON.stringify(algo.sampleStep, null, 2))}</div>
+            </div>
+            <div class="step-field" style="margin-top:20px">
+              <div class="step-field-label">Generate Full Step Data</div>
+              <div class="step-field-value" style="font-size:.85rem; color:var(--text-dim);">
+                To browse all steps interactively, generate step files:<br>
+                <code style="display:block; margin-top:8px; padding:12px; background:var(--bg-code); border-radius:6px; font-size:.82rem;">node -e "import('eigenvue').then(e => { const fs = await import('fs'); const r = e.steps('${algo.id}'); fs.mkdirSync('steps', {recursive:true}); fs.writeFileSync('steps/${algo.id}.json', JSON.stringify(r, null, 2)); console.log('Done:', r.steps.length, 'steps'); })"</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  });
+
+  function renderStepExplorer(data, algoId) {
+    let currentStep = 0;
+    const stepsArr = data.steps;
+
+    function render() {
+      const step = stepsArr[currentStep];
+      explorerView.innerHTML = `
+        <div class="step-viewer">
+          <div class="step-header">
+            <h3>${escHtml(algoId)} — Step ${step.index + 1} of ${stepsArr.length}</h3>
+            <div class="step-nav">
+              <button id="step-first" ${currentStep === 0 ? 'disabled' : ''}>First</button>
+              <button id="step-prev" ${currentStep === 0 ? 'disabled' : ''}>Prev</button>
+              <button id="step-next" ${currentStep === stepsArr.length - 1 ? 'disabled' : ''}>Next</button>
+              <button id="step-last" ${currentStep === stepsArr.length - 1 ? 'disabled' : ''}>Last</button>
+            </div>
+          </div>
+          <div class="step-content">
+            <div class="step-badges" style="margin-bottom:16px">
+              <span class="step-badge badge-id">id: ${escHtml(step.id)}</span>
+              ${step.phase ? `<span class="step-badge badge-phase">phase: ${escHtml(step.phase)}</span>` : ''}
+              ${step.isTerminal ? `<span class="step-badge badge-terminal">TERMINAL</span>` : ''}
+            </div>
+            <div class="step-field">
+              <div class="step-field-label">Title</div>
+              <div class="step-field-value"><strong>${escHtml(step.title)}</strong></div>
+            </div>
+            <div class="step-field">
+              <div class="step-field-label">Explanation</div>
+              <div class="step-field-value explanation">${escHtml(step.explanation)}</div>
+            </div>
+            <div class="step-field">
+              <div class="step-field-label">State</div>
+              <div class="step-json">${syntaxHighlight(step.state)}</div>
+            </div>
+            <div class="step-field">
+              <div class="step-field-label">Visual Actions (${step.visualActions.length})</div>
+              <div class="step-json">${syntaxHighlight(step.visualActions)}</div>
+            </div>
+            <div class="step-field">
+              <div class="step-field-label">Code Highlight</div>
+              <div class="step-json">${syntaxHighlight(step.codeHighlight)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Wire buttons
+      document.getElementById("step-first")?.addEventListener("click", () => { currentStep = 0; render(); });
+      document.getElementById("step-prev")?.addEventListener("click", () => { if (currentStep > 0) { currentStep--; render(); } });
+      document.getElementById("step-next")?.addEventListener("click", () => { if (currentStep < stepsArr.length - 1) { currentStep++; render(); } });
+      document.getElementById("step-last")?.addEventListener("click", () => { currentStep = stepsArr.length - 1; render(); });
+    }
+
+    render();
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+
+  function escHtml(str) {
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function truncate(str, max) {
+    return str.length > max ? str.slice(0, max) + '...' : str;
+  }
+
+  function syntaxHighlight(obj) {
+    const json = JSON.stringify(obj, null, 2);
+    return escHtml(json)
+      .replace(/("(?:\\.|[^"\\])*")\s*:/g, '<span style="color:#7dd3fc">$1</span>:')
+      .replace(/:\s*("(?:\\.|[^"\\])*")/g, ': <span style="color:#86efac">$1</span>')
+      .replace(/:\s*(\d+\.?\d*)/g, ': <span style="color:#fbbf24">$1</span>')
+      .replace(/:\s*(true|false)/g, ': <span style="color:#c084fc">$1</span>')
+      .replace(/:\s*(null)/g, ': <span style="color:#94a3b8">$1</span>');
+  }
+})();
+</script>
+</body>
+</html>

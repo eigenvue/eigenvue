@@ -1,0 +1,291 @@
+{
+  "id": "superposition-measurement",
+  "name": "Superposition & Measurement",
+  "category": "quantum",
+
+  "description": {
+    "short": "Prepare a Bell state and measure to see wave function collapse.",
+    "long": "Quantum measurement is the bridge between the quantum and classical worlds. A qubit in superposition exists in a combination of |0⟩ and |1⟩ simultaneously, with complex amplitudes α and β satisfying |α|² + |β|² = 1. When measured, the Born rule dictates that the probability of each outcome equals the squared magnitude of its amplitude: P(0) = |α|² and P(1) = |β|². Upon measurement the wave function collapses irreversibly to the observed eigenstate — all other amplitudes become zero and the state is renormalized. For entangled states such as Bell pairs, measuring one qubit instantly determines the other's state: if two qubits share the state (|00⟩ + |11⟩)/√2, measuring the first qubit as |0⟩ collapses the second to |0⟩ as well, demonstrating the non-local correlations that make quantum computing powerful. This visualization walks through state preparation, probability computation, and collapse step by step."
+  },
+
+  "complexity": {
+    "time": "O(2^n)",
+    "space": "O(2^n)",
+    "level": "intermediate"
+  },
+
+  "visual": {
+    "layout": "circuit-wires",
+    "theme": {
+      "primary": "#00ffc8",
+      "secondary": "#0e7c6b"
+    },
+    "components": {
+      "wires": [
+        { "id": "q0", "label": "q₀", "color": "#00ffc8" },
+        { "id": "q1", "label": "q₁", "color": "#0e7c6b" }
+      ],
+      "showAmplitudes": true,
+      "showProbabilities": true,
+      "collapseColor": "#ff6b6b",
+      "entanglementColor": "#c084fc",
+      "classicalBitColor": "#fbbf24",
+      "gateColor": "#00ffc8"
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "numQubits": {
+        "type": "number",
+        "enum": [1, 2],
+        "description": "Number of qubits in the register (1 or 2)."
+      },
+      "preparationGates": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "gate": {
+              "type": "string",
+              "description": "Gate name: H, X, Y, Z, S, T, CNOT, CZ, SWAP, Rx, Ry, Rz."
+            },
+            "qubits": {
+              "type": "array",
+              "items": { "type": "number", "minimum": 0, "maximum": 1 },
+              "minItems": 1,
+              "maxItems": 2,
+              "description": "Qubit indices the gate acts on."
+            },
+            "angle": {
+              "type": "number",
+              "description": "Rotation angle in radians (only for Rx, Ry, Rz gates)."
+            }
+          },
+          "required": ["gate", "qubits"]
+        },
+        "minItems": 1,
+        "maxItems": 10,
+        "description": "Sequence of gates to prepare the quantum state before measurement."
+      },
+      "measurements": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "qubit": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Which qubit to measure."
+            },
+            "outcome": {
+              "type": "number",
+              "enum": [0, 1],
+              "description": "Predetermined measurement result (0 or 1) for pedagogical demonstration."
+            }
+          },
+          "required": ["qubit", "outcome"]
+        },
+        "minItems": 1,
+        "maxItems": 2,
+        "description": "Ordered list of qubit measurements with predetermined outcomes."
+      }
+    },
+    "defaults": {
+      "numQubits": 2,
+      "preparationGates": [
+        { "gate": "H", "qubits": [0] },
+        { "gate": "CNOT", "qubits": [0, 1] }
+      ],
+      "measurements": [
+        { "qubit": 0, "outcome": 0 },
+        { "qubit": 1, "outcome": 0 }
+      ]
+    },
+    "examples": [
+      {
+        "name": "Bell state measurement",
+        "values": {
+          "numQubits": 2,
+          "preparationGates": [
+            { "gate": "H", "qubits": [0] },
+            { "gate": "CNOT", "qubits": [0, 1] }
+          ],
+          "measurements": [
+            { "qubit": 0, "outcome": 0 },
+            { "qubit": 1, "outcome": 0 }
+          ]
+        }
+      },
+      {
+        "name": "Single qubit superposition",
+        "values": {
+          "numQubits": 1,
+          "preparationGates": [
+            { "gate": "H", "qubits": [0] }
+          ],
+          "measurements": [
+            { "qubit": 0, "outcome": 1 }
+          ]
+        }
+      },
+      {
+        "name": "Opposite Bell outcome",
+        "values": {
+          "numQubits": 2,
+          "preparationGates": [
+            { "gate": "H", "qubits": [0] },
+            { "gate": "CNOT", "qubits": [0, 1] }
+          ],
+          "measurements": [
+            { "qubit": 0, "outcome": 1 },
+            { "qubit": 1, "outcome": 1 }
+          ]
+        }
+      },
+      {
+        "name": "X gate then measure",
+        "values": {
+          "numQubits": 1,
+          "preparationGates": [
+            { "gate": "X", "qubits": [0] }
+          ],
+          "measurements": [
+            { "qubit": 0, "outcome": 1 }
+          ]
+        }
+      },
+      {
+        "name": "Bell state — correlated |1,1⟩",
+        "values": {
+          "numQubits": 2,
+          "preparationGates": [
+            { "gate": "H", "qubits": [0] },
+            { "gate": "CNOT", "qubits": [0, 1] }
+          ],
+          "measurements": [
+            { "qubit": 1, "outcome": 1 },
+            { "qubit": 0, "outcome": 1 }
+          ]
+        }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function superpositionMeasurement(numQubits, gates, measurements):\n  // 1. Initialize state to |0...0⟩\n  state = zeroState(numQubits)        // 2^n amplitudes, all zero except first\n\n  // 2. Apply preparation gates\n  for gate in gates:\n    state = applyGate(state, gate)    // e.g., H creates superposition, CNOT entangles\n\n  // 3. Measure qubits one by one\n  for (qubit, outcome) in measurements:\n    prob = |amplitude(state, qubit=outcome)|²   // Born rule\n    state = project(state, qubit, outcome)      // collapse: zero out inconsistent amps\n    state = normalize(state)                     // renormalize remaining amplitudes\n    record classicalBit = outcome\n\n  return classicalBits",
+      "python": "import numpy as np\n\ndef superposition_measurement(n_qubits, gates, measurements):\n    \"\"\"Demonstrate quantum measurement with predetermined outcomes.\"\"\"\n    # 1. Initialize |0...0⟩\n    dim = 2 ** n_qubits\n    state = np.zeros(dim, dtype=complex)\n    state[0] = 1.0\n\n    # 2. Apply preparation gates\n    for gate_name, qubits, angle in gates:\n        if gate_name == \"H\":\n            H = np.array([[1, 1], [1, -1]]) / np.sqrt(2)\n            state = apply_single_gate(state, H, qubits[0], n_qubits)\n        elif gate_name == \"CNOT\":\n            state = apply_cnot(state, qubits[0], qubits[1], n_qubits)\n        # ... other gates ...\n\n    # 3. Measure each qubit\n    classical_bits = []\n    for qubit, outcome in measurements:\n        # Born rule: probability of this outcome\n        prob = compute_probability(state, qubit, outcome, n_qubits)\n        print(f\"P(q{qubit}={outcome}) = {prob:.4f}\")\n\n        # Collapse: project onto outcome subspace\n        state = project_and_normalize(state, qubit, outcome, n_qubits)\n        classical_bits.append(outcome)\n\n    return classical_bits",
+      "javascript": "function superpositionMeasurement(numQubits, gates, measurements) {\n  // 1. Initialize |0...0⟩\n  const dim = 2 ** numQubits;\n  const state = Array.from({ length: dim }, (_, i) =>\n    i === 0 ? [1, 0] : [0, 0]  // [real, imag]\n  );\n\n  // 2. Apply preparation gates\n  for (const { gate, qubits, angle } of gates) {\n    if (qubits.length === 1) {\n      applySingleQubitGate(state, getGateMatrix(gate, angle), qubits[0], numQubits);\n    } else {\n      applyTwoQubitGate(state, getGateMatrix(gate), qubits[0], qubits[1], numQubits);\n    }\n  }\n\n  // 3. Measure each qubit\n  const classicalBits = [];\n  for (const { qubit, outcome } of measurements) {\n    // Born rule: P(outcome) = sum of |amplitude|^2 consistent with outcome\n    const prob = computeProbability(state, qubit, outcome, numQubits);\n    console.log(`P(q${qubit}=${outcome}) = ${(prob * 100).toFixed(1)}%`);\n\n    // Collapse and renormalize\n    projectAndNormalize(state, qubit, outcome, numQubits);\n    classicalBits.push(outcome);\n  }\n\n  return classicalBits;\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Superposition",
+        "description": "A qubit can exist in a linear combination of |0⟩ and |1⟩, written α|0⟩ + β|1⟩ where α and β are complex amplitudes. Unlike a classical bit that must be 0 or 1, a qubit in superposition encodes information in both amplitudes simultaneously. The Hadamard gate (H) creates an equal superposition from the |0⟩ state: H|0⟩ = (|0⟩ + |1⟩)/√2."
+      },
+      {
+        "title": "Measurement (Born Rule)",
+        "description": "When a qubit in state α|0⟩ + β|1⟩ is measured, the Born rule determines the outcome probabilities: P(0) = |α|² and P(1) = |β|². For the equal superposition (|0⟩ + |1⟩)/√2, each outcome has probability 1/2. The measurement result is fundamentally probabilistic — no hidden variable determines it in advance."
+      },
+      {
+        "title": "Wave Function Collapse",
+        "description": "After measurement, the quantum state irreversibly collapses to the observed eigenstate. If a qubit in superposition is measured as |0⟩, its state becomes exactly |0⟩ — the |1⟩ amplitude is destroyed. Subsequent measurements will always yield the same result. This collapse is instantaneous and irreversible, distinguishing quantum measurement from classical observation."
+      },
+      {
+        "title": "Entanglement",
+        "description": "Two qubits are entangled when their joint state cannot be written as a product of individual qubit states. The Bell state (|00⟩ + |11⟩)/√2 is the canonical example: neither qubit has a definite state individually, but measuring one instantly determines the other. This correlation is stronger than any classical correlation and is the basis for quantum teleportation, superdense coding, and quantum error correction."
+      },
+      {
+        "title": "Bell States",
+        "description": "The four Bell states are maximally entangled two-qubit states: |Φ+⟩ = (|00⟩ + |11⟩)/√2, |Φ-⟩ = (|00⟩ - |11⟩)/√2, |Ψ+⟩ = (|01⟩ + |10⟩)/√2, |Ψ-⟩ = (|01⟩ - |10⟩)/√2. They are created by applying a Hadamard gate followed by a CNOT gate. Bell states are fundamental resources in quantum information protocols."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Measurement is irreversible",
+        "description": "Once a qubit is measured, its superposition is permanently destroyed. You cannot 'un-measure' a qubit or recover the original amplitudes. This is why quantum algorithms must carefully choose when and what to measure — premature measurement collapses useful quantum information."
+      },
+      {
+        "title": "Entanglement correlates outcomes",
+        "description": "For entangled qubits like the Bell state (|00⟩ + |11⟩)/√2, measuring one qubit collapses the other's state too. If you measure the first qubit and get |0⟩, the second qubit is guaranteed to also be |0⟩ — there is zero probability of getting |1⟩. Students often forget that measurement on one qubit affects the entire system's state vector."
+      },
+      {
+        "title": "No-cloning theorem",
+        "description": "It is physically impossible to create an exact copy of an unknown quantum state. This means you cannot simply duplicate a qubit's superposition for backup before measuring. The no-cloning theorem is a fundamental consequence of the linearity of quantum mechanics and has deep implications for quantum cryptography and error correction."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "A qubit is in the state (|0⟩ + |1⟩)/√2. What is the probability of measuring |1⟩?",
+        "options": ["0%", "25%", "50%", "100%"],
+        "correctIndex": 2,
+        "explanation": "The amplitude of |1⟩ is 1/√2. By the Born rule, the probability is |1/√2|² = 1/2 = 50%. This equal superposition is created by the Hadamard gate applied to |0⟩."
+      },
+      {
+        "question": "Two qubits are in the Bell state (|00⟩ + |11⟩)/√2. You measure the first qubit and get |0⟩. What state is the second qubit in?",
+        "options": ["|0⟩ with certainty", "|1⟩ with certainty", "(|0⟩ + |1⟩)/√2", "Cannot be determined"],
+        "correctIndex": 0,
+        "explanation": "In the Bell state (|00⟩ + |11⟩)/√2, the qubits are perfectly correlated. Measuring the first qubit as |0⟩ collapses the state to |00⟩, so the second qubit is |0⟩ with 100% certainty. This is the signature of entanglement — measuring one qubit instantly determines the other."
+      },
+      {
+        "question": "After measuring a qubit in superposition and getting |0⟩, what happens if you measure it again?",
+        "options": [
+          "You get |0⟩ or |1⟩ with equal probability",
+          "You always get |0⟩",
+          "You always get |1⟩",
+          "The qubit returns to superposition"
+        ],
+        "correctIndex": 1,
+        "explanation": "After collapse, the qubit is in the definite state |0⟩. The superposition has been irreversibly destroyed. Subsequent measurements of a collapsed state always yield the same result — this is a direct consequence of wave function collapse."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Quantum Measurement — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Measurement_in_quantum_mechanics",
+        "type": "reference"
+      },
+      {
+        "title": "Born Rule — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Born_rule",
+        "type": "reference"
+      },
+      {
+        "title": "Bell State — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Bell_state",
+        "type": "reference"
+      },
+      {
+        "title": "Qiskit Textbook: Single Qubit Gates",
+        "url": "https://learn.qiskit.org/course/basics/single-systems",
+        "type": "tutorial"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "quantum measurement visualization",
+      "superposition collapse",
+      "Born rule demonstration",
+      "wave function collapse",
+      "Bell state measurement",
+      "quantum entanglement visualization",
+      "qubit measurement step by step",
+      "quantum computing basics",
+      "quantum state collapse animation",
+      "entangled qubit measurement"
+    ],
+    "ogDescription": "Interactive step-by-step visualization of quantum measurement. Watch superposition collapse under the Born rule and see how entangled Bell states produce correlated outcomes."
+  },
+
+  "prerequisites": ["qubit-bloch-sphere", "quantum-gates"],
+  "related": ["quantum-gates", "quantum-teleportation"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

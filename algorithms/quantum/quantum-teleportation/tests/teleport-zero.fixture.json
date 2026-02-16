@@ -1,0 +1,23 @@
+{
+  "description": "Teleport |0⟩ state — simplest case, Bob's qubit ends at north pole",
+  "inputs": {
+    "teleportState": { "theta": 0, "phi": 0, "label": "|0⟩" },
+    "aliceMeasurements": { "qubit0": 0, "qubit1": 0 }
+  },
+  "expected": {
+    "terminalStepId": "verification",
+    "keyStates": [
+      {
+        "stepId": "initial_state",
+        "aliceState": { "theta": 0, "phi": 0 },
+        "comment": "|0⟩ at north pole of Bloch sphere"
+      },
+      {
+        "stepId": "verification",
+        "bobBlochAngles": { "theta": 0, "phi": 0, "tolerance": 1e-6 },
+        "correction": "I",
+        "comment": "m0=0, m1=0 → no correction needed. Bob has |0⟩."
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "description": "Arbitrary state with complex phase — S|+⟩ = |+i⟩ on the Bloch sphere",
+  "inputs": {
+    "stateSequence": [
+      { "label": "|0⟩", "amplitudes": [1, 0, 0, 0] },
+      { "label": "H|0⟩ = |+⟩", "amplitudes": [0.7071067811865476, 0, 0.7071067811865476, 0], "gate": "H" },
+      { "label": "S|+⟩ = |+i⟩", "amplitudes": [0.7071067811865476, 0, 0, 0.7071067811865476], "gate": "S" }
+    ]
+  },
+  "expected": {
+    "stepCount": 4,
+    "terminalStepId": "show_state_2",
+    "keyStates": [
+      {
+        "stepId": "show_state_2",
+        "theta": 1.5707963267948966,
+        "phi": 1.5707963267948966,
+        "blochX": 0,
+        "blochY": 1,
+        "blochZ": 0,
+        "probZero": 0.5,
+        "probOne": 0.5
+      }
+    ]
+  }
+}

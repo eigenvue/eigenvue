@@ -42,7 +42,7 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/ashutoshm1771/eigenvue",
+          href: "https://github.com/eigenvue/eigenvue",
         },
       ],
 

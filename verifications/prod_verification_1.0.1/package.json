@@ -1,0 +1,14 @@
+{
+  "name": "eigenvue-prod-verification",
+  "version": "1.0.1",
+  "private": true,
+  "description": "Production verification suite for eigenvue v1.0.1 — tests every exported API against the published npm package.",
+  "type": "module",
+  "scripts": {
+    "verify": "node verify.mjs",
+    "serve": "npx serve . -p 3333 -s"
+  },
+  "dependencies": {
+    "eigenvue": "1.0.1"
+  }
+}

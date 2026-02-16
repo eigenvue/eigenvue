@@ -40,11 +40,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ashutoshm1771/eigenvue",
+    "url": "https://github.com/eigenvue/eigenvue",
     "directory": "node"
   },
   "homepage": "https://eigenvue.web.app/",
-  "bugs": "https://github.com/ashutoshm1771/eigenvue/issues",
+  "bugs": "https://github.com/eigenvue/eigenvue/issues",
   "engines": {
     "node": ">=18.0.0"
   },

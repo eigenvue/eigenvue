@@ -17,7 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 ALGORITHMS_DIR = REPO_ROOT / "algorithms"
 DATA_DIR = REPO_ROOT / "node" / "data"
 
-CATEGORIES = ["classical", "deep-learning", "generative-ai"]
+CATEGORIES = ["classical", "deep-learning", "generative-ai", "quantum"]
 
 
 def bundle_metadata() -> None:

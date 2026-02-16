@@ -1,0 +1,2688 @@
+{
+  "packageVersion": "1.0.1",
+  "nodeVersion": "v22.13.1",
+  "platform": "win32 x64",
+  "timestamp": "2026-02-16T09:20:05.378Z",
+  "categories": [
+    {
+      "name": "Package Exports & Version",
+      "description": "Verifies that the package exports the correct API surface and version.",
+      "tests": [
+        {
+          "name": "version is exported as a string",
+          "status": "passed",
+          "details": "version = \"1.0.1\"",
+          "duration": 0
+        },
+        {
+          "name": "version matches 1.0.1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "list is exported as a function",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "steps is exported as a function",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "show is exported as a function",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "No unexpected default export",
+          "status": "passed",
+          "details": "exports: [list, show, steps, version]",
+          "duration": 0
+        }
+      ],
+      "passed": 6,
+      "failed": 0
+    },
+    {
+      "name": "list() API",
+      "description": "Tests algorithm listing, filtering by category, and error handling.",
+      "tests": [
+        {
+          "name": "list() returns an array",
+          "status": "passed",
+          "details": "returned 17 algorithms",
+          "duration": 23
+        },
+        {
+          "name": "list() returns 17 algorithms",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "Each algorithm has all required fields",
+          "status": "passed",
+          "details": "All 17 algorithms have fields: [id, name, category, description, difficulty, timeComplexity, spaceComplexity]",
+          "duration": 0
+        },
+        {
+          "name": "All algorithm IDs are URL-safe strings",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "list({ category: 'classical' }) returns 7 algorithms",
+          "status": "passed",
+          "details": "binary-search, bfs, bubble-sort, dfs, dijkstra, merge-sort, quicksort",
+          "duration": 0
+        },
+        {
+          "name": "list({ category: 'deep-learning' }) returns 5 algorithms",
+          "status": "passed",
+          "details": "backpropagation, convolution, feedforward-network, gradient-descent, perceptron",
+          "duration": 0
+        },
+        {
+          "name": "list({ category: 'generative-ai' }) returns 5 algorithms",
+          "status": "passed",
+          "details": "tokenization-bpe, multi-head-attention, self-attention, token-embeddings, transformer-block",
+          "duration": 0
+        },
+        {
+          "name": "list({ category: 'quantum' }) returns 0 algorithms (reserved)",
+          "status": "passed",
+          "details": "Category exists but has 0 algorithms (reserved for future)",
+          "duration": 0
+        },
+        {
+          "name": "list() with invalid category throws Error",
+          "status": "passed",
+          "details": "Correctly throws on invalid category",
+          "duration": 0
+        },
+        {
+          "name": "list() returns a new array each time (no shared reference)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "Category counts sum to total",
+          "status": "passed",
+          "details": "7 + 5 + 5 + 0 = 17",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm IDs are unique",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "Difficulty levels are valid",
+          "status": "passed",
+          "details": "beginner: 4, intermediate: 10, advanced: 3",
+          "duration": 0
+        },
+        {
+          "name": "Time complexity strings follow Big-O notation",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        }
+      ],
+      "passed": 14,
+      "failed": 0
+    },
+    {
+      "name": "Expected Algorithm IDs",
+      "description": "Verifies that every expected algorithm is present in the catalog.",
+      "tests": [
+        {
+          "name": "Algorithm \"binary-search\" exists in catalog",
+          "status": "passed",
+          "details": "Binary Search | classical | beginner | O(log n)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"bubble-sort\" exists in catalog",
+          "status": "passed",
+          "details": "Bubble Sort | classical | beginner | O(n²)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"quicksort\" exists in catalog",
+          "status": "passed",
+          "details": "QuickSort | classical | intermediate | O(n log n)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"merge-sort\" exists in catalog",
+          "status": "passed",
+          "details": "Merge Sort | classical | intermediate | O(n log n)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"bfs\" exists in catalog",
+          "status": "passed",
+          "details": "Breadth-First Search | classical | intermediate | O(V + E)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"dfs\" exists in catalog",
+          "status": "passed",
+          "details": "Depth-First Search | classical | intermediate | O(V + E)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"dijkstra\" exists in catalog",
+          "status": "passed",
+          "details": "Dijkstra's Shortest Path | classical | advanced | O((V + E) log V)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"perceptron\" exists in catalog",
+          "status": "passed",
+          "details": "Single Neuron / Perceptron | deep-learning | beginner | O(n)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"feedforward-network\" exists in catalog",
+          "status": "passed",
+          "details": "Feedforward Neural Network | deep-learning | intermediate | O(Σ n_l × n_{l-1})",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"backpropagation\" exists in catalog",
+          "status": "passed",
+          "details": "Backpropagation | deep-learning | intermediate | O(Σ n_l × n_{l+1})",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"convolution\" exists in catalog",
+          "status": "passed",
+          "details": "Convolution (2D) | deep-learning | intermediate | O(H × W × K² × C)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"gradient-descent\" exists in catalog",
+          "status": "passed",
+          "details": "Gradient Descent | deep-learning | intermediate | O(T × d)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"tokenization-bpe\" exists in catalog",
+          "status": "passed",
+          "details": "BPE Tokenization | generative-ai | beginner | O(n × m)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"token-embeddings\" exists in catalog",
+          "status": "passed",
+          "details": "Token Embeddings | generative-ai | intermediate | O(n × d)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"self-attention\" exists in catalog",
+          "status": "passed",
+          "details": "Self-Attention (Scaled Dot-Product) | generative-ai | intermediate | O(n² × d)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"multi-head-attention\" exists in catalog",
+          "status": "passed",
+          "details": "Multi-Head Attention | generative-ai | advanced | O(h × n² × d_k)",
+          "duration": 0
+        },
+        {
+          "name": "Algorithm \"transformer-block\" exists in catalog",
+          "status": "passed",
+          "details": "Transformer Block | generative-ai | advanced | O(n² × d + n × d × d_ff)",
+          "duration": 0
+        }
+      ],
+      "passed": 17,
+      "failed": 0
+    },
+    {
+      "name": "steps() — Default Inputs",
+      "description": "Runs steps() for every algorithm using default inputs and validates the output structure.",
+      "tests": [
+        {
+          "name": "steps(\"binary-search\") succeeds with defaults",
+          "status": "passed",
+          "details": "9 steps | format v1 | generatedBy: typescript",
+          "duration": 2
+        },
+        {
+          "name": "steps(\"bubble-sort\") succeeds with defaults",
+          "status": "passed",
+          "details": "43 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"quicksort\") succeeds with defaults",
+          "status": "passed",
+          "details": "23 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"merge-sort\") succeeds with defaults",
+          "status": "passed",
+          "details": "31 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"bfs\") succeeds with defaults",
+          "status": "passed",
+          "details": "10 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"dfs\") succeeds with defaults",
+          "status": "passed",
+          "details": "10 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"dijkstra\") succeeds with defaults",
+          "status": "passed",
+          "details": "21 steps | format v1 | generatedBy: typescript",
+          "duration": 2
+        },
+        {
+          "name": "steps(\"perceptron\") succeeds with defaults",
+          "status": "passed",
+          "details": "6 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"feedforward-network\") succeeds with defaults",
+          "status": "passed",
+          "details": "4 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"backpropagation\") succeeds with defaults",
+          "status": "passed",
+          "details": "9 steps | format v1 | generatedBy: typescript",
+          "duration": 2
+        },
+        {
+          "name": "steps(\"convolution\") succeeds with defaults",
+          "status": "passed",
+          "details": "11 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"gradient-descent\") succeeds with defaults",
+          "status": "passed",
+          "details": "21 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"tokenization-bpe\") succeeds with defaults",
+          "status": "passed",
+          "details": "12 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"token-embeddings\") succeeds with defaults",
+          "status": "passed",
+          "details": "8 steps | format v1 | generatedBy: typescript",
+          "duration": 1
+        },
+        {
+          "name": "steps(\"self-attention\") succeeds with defaults",
+          "status": "passed",
+          "details": "11 steps | format v1 | generatedBy: typescript",
+          "duration": 2
+        },
+        {
+          "name": "steps(\"multi-head-attention\") succeeds with defaults",
+          "status": "passed",
+          "details": "13 steps | format v1 | generatedBy: typescript",
+          "duration": 2
+        },
+        {
+          "name": "steps(\"transformer-block\") succeeds with defaults",
+          "status": "passed",
+          "details": "11 steps | format v1 | generatedBy: typescript",
+          "duration": 2
+        }
+      ],
+      "passed": 17,
+      "failed": 0
+    },
+    {
+      "name": "StepSequence Invariants",
+      "description": "Validates the mathematical and structural invariants of the step format for every algorithm.",
+      "tests": [
+        {
+          "name": "\"binary-search\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "9 steps, indices 0..8",
+          "duration": 0
+        },
+        {
+          "name": "\"binary-search\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"binary-search\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"binary-search\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "5 unique step IDs across 9 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"binary-search\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"binary-search\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "41 actions total, 6 unique types: [highlightRange, movePointer, highlightElement, dimRange, markFound, showMessage]",
+          "duration": 0
+        },
+        {
+          "name": "\"binary-search\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"binary-search\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"binary-search\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.408Z",
+          "duration": 0
+        },
+        {
+          "name": "\"binary-search\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { array, target }",
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "43 steps, indices 0..42",
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "5 unique step IDs across 43 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "202 actions total, 7 unique types: [highlightRange, compareElements, highlightElement, movePointer, swapElements, markSorted, showMessage]",
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.409Z",
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { array }",
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "23 steps, indices 0..22",
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "6 unique step IDs across 23 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "116 actions total, 8 unique types: [highlightRange, highlightElement, markPivot, movePointer, swapElements, setPartition, markSorted, showMessage]",
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.410Z",
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { array }",
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "31 steps, indices 0..30",
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "7 unique step IDs across 31 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "126 actions total, 7 unique types: [highlightRange, movePointer, highlightElement, setAuxiliary, highlightAuxiliary, markSorted, showMessage]",
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.412Z",
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { array }",
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "10 steps, indices 0..9",
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "4 unique step IDs across 10 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "46 actions total, 5 unique types: [visitNode, setCurrentNode, highlightEdge, markPath, showMessage]",
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.412Z",
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { adjacencyList, positions, startNode, targetNode }",
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "10 steps, indices 0..9",
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "4 unique step IDs across 10 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "38 actions total, 5 unique types: [visitNode, setCurrentNode, highlightEdge, markPath, showMessage]",
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.413Z",
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { adjacencyList, positions, startNode, targetNode }",
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "21 steps, indices 0..20",
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "5 unique step IDs across 21 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "193 actions total, 7 unique types: [visitNode, updateNodeValue, setCurrentNode, highlightEdge, updateDistance, markPath, showMessage]",
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.416Z",
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { adjacencyList, positions, startNode, targetNode }",
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "6 steps, indices 0..5",
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "6 unique step IDs across 6 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "7 actions total, 4 unique types: [activateNeuron, showWeights, showPreActivation, showActivationFunction]",
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.416Z",
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { inputs, weights, bias, activationFunction }",
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "4 steps, indices 0..3",
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "4 unique step IDs across 4 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "9 actions total, 2 unique types: [activateNeuron, propagateSignal]",
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.417Z",
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { inputValues, layerSizes, activationFunction, seed }",
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "9 steps, indices 0..8",
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "9 unique step IDs across 9 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "12 actions total, 5 unique types: [activateNeuron, propagateSignal, showLoss, showGradient, updateWeights]",
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.420Z",
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { layerSizes, inputValues, targets, activationFunction, lossFunction, learningRate, seed }",
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "11 steps, indices 0..10",
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "11 unique step IDs across 11 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "27 actions total, 3 unique types: [highlightKernelPosition, showConvolutionProducts, writeOutputCell]",
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.421Z",
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { input, kernel }",
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "21 steps, indices 0..20",
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "21 unique step IDs across 21 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "62 actions total, 3 unique types: [showLandscapePosition, showTrajectory, showDescentStep]",
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.422Z",
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { startX, startY, learningRate, optimizer, numSteps }",
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "12 steps, indices 0..11",
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "4 unique step IDs across 12 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "22 actions total, 2 unique types: [highlightToken, mergeTokens]",
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.423Z",
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { text, mergeRules }",
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "8 steps, indices 0..7",
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "4 unique step IDs across 8 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "27 actions total, 3 unique types: [highlightToken, showEmbedding, showSimilarity]",
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.424Z",
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { tokens, embeddingDim }",
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "11 steps, indices 0..10",
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "9 unique step IDs across 11 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "24 actions total, 7 unique types: [showEmbedding, showProjectionMatrix, showMessage, showAttentionScores, showFullAttentionMatrix, showAttentionWeights, showWeightedValues]",
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.426Z",
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { tokens, embeddingDim }",
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "13 steps, indices 0..12",
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "13 unique step IDs across 13 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 1
+        },
+        {
+          "name": "\"multi-head-attention\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "25 actions total, 6 unique types: [showEmbedding, showMessage, activateHead, showAttentionScores, showFullAttentionMatrix, showConcatenatedHeads]",
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.428Z",
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { tokens, embeddingDim, numHeads }",
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — step indices are 0-based and contiguous",
+          "status": "passed",
+          "details": "11 steps, indices 0..10",
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — exactly one terminal step (the last)",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — every step has required fields",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — step IDs match pattern ^[a-z0-9][a-z0-9_-]*$",
+          "status": "passed",
+          "details": "11 unique step IDs across 11 steps",
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — state is JSON-serializable",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — visualActions is an array of objects with type",
+          "status": "passed",
+          "details": "18 actions total, 5 unique types: [activateSublayer, showFullAttentionMatrix, showResidualConnection, showLayerNorm, showMessage]",
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — codeHighlight has language and lines",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — formatVersion is 1",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — generatedAt is a valid ISO 8601 timestamp",
+          "status": "passed",
+          "details": "2026-02-16T09:20:05.430Z",
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — inputs are recorded in the sequence",
+          "status": "passed",
+          "details": "inputs: { tokens, embeddingDim, ffnDim, numHeads }",
+          "duration": 0
+        }
+      ],
+      "passed": 170,
+      "failed": 0
+    },
+    {
+      "name": "steps() — Custom Inputs",
+      "description": "Tests steps() with non-default inputs to verify input handling works correctly.",
+      "tests": [
+        {
+          "name": "binary-search with target found",
+          "status": "passed",
+          "details": "3 steps",
+          "duration": 0
+        },
+        {
+          "name": "binary-search with target not found",
+          "status": "passed",
+          "details": "8 steps",
+          "duration": 0
+        },
+        {
+          "name": "binary-search with single element (found)",
+          "status": "passed",
+          "details": "3 steps",
+          "duration": 0
+        },
+        {
+          "name": "binary-search with single element (not found)",
+          "status": "passed",
+          "details": "4 steps",
+          "duration": 0
+        },
+        {
+          "name": "binary-search with large array",
+          "status": "passed",
+          "details": "7 steps for 16-element array",
+          "duration": 0
+        },
+        {
+          "name": "bubble-sort with reverse-sorted array",
+          "status": "passed",
+          "details": "26 steps",
+          "duration": 0
+        },
+        {
+          "name": "bubble-sort with already-sorted array",
+          "status": "passed",
+          "details": "7 steps",
+          "duration": 0
+        },
+        {
+          "name": "quicksort with custom array",
+          "status": "passed",
+          "details": "22 steps",
+          "duration": 0
+        },
+        {
+          "name": "merge-sort with custom array",
+          "status": "passed",
+          "details": "31 steps",
+          "duration": 0
+        },
+        {
+          "name": "self-attention with custom tokens",
+          "status": "passed",
+          "details": "11 steps",
+          "duration": 0
+        },
+        {
+          "name": "tokenization-bpe with custom text and merge rules",
+          "status": "passed",
+          "details": "6 steps",
+          "duration": 0
+        },
+        {
+          "name": "gradient-descent with momentum optimizer",
+          "status": "passed",
+          "details": "16 steps",
+          "duration": 0
+        },
+        {
+          "name": "gradient-descent with adam optimizer",
+          "status": "passed",
+          "details": "16 steps",
+          "duration": 0
+        },
+        {
+          "name": "perceptron with custom inputs and weights",
+          "status": "passed",
+          "details": "6 steps",
+          "duration": 0
+        },
+        {
+          "name": "convolution with custom input and kernel",
+          "status": "passed",
+          "details": "6 steps",
+          "duration": 0
+        }
+      ],
+      "passed": 15,
+      "failed": 0
+    },
+    {
+      "name": "Domain-Specific Invariants",
+      "description": "Validates mathematical invariants specific to each algorithm domain.",
+      "tests": [
+        {
+          "name": "Attention weights sum to 1.0 (self-attention)",
+          "status": "passed",
+          "details": "Validated 8 attention weight distributions",
+          "duration": 0
+        },
+        {
+          "name": "Attention weights sum to 1.0 (multi-head-attention)",
+          "status": "passed",
+          "details": "Validated 0 attention weight distributions",
+          "duration": 0
+        },
+        {
+          "name": "Sorting algorithms produce sorted output (bubble-sort)",
+          "status": "passed",
+          "details": "Final sorted array: [11, 12, 22, 25, 34, 64, 90]",
+          "duration": 0
+        },
+        {
+          "name": "Sorting algorithms produce sorted output (quicksort)",
+          "status": "passed",
+          "details": "Final sorted array: [3, 9, 10, 27, 38, 43, 82]",
+          "duration": 0
+        },
+        {
+          "name": "Sorting algorithms produce sorted output (merge-sort)",
+          "status": "passed",
+          "details": "Final sorted array: [3, 9, 10, 27, 38, 43, 82]",
+          "duration": 0
+        },
+        {
+          "name": "Convolution output dimensions are correct",
+          "status": "passed",
+          "details": "9 output cells written",
+          "duration": 0
+        },
+        {
+          "name": "Gradient descent loss decreases over time",
+          "status": "passed",
+          "details": "Loss: 36.0000 → 0.0012",
+          "duration": 0
+        },
+        {
+          "name": "Embedding vectors have correct dimension",
+          "status": "passed",
+          "details": "12 embeddings verified, dim=4",
+          "duration": 0
+        },
+        {
+          "name": "Similarity scores are in [-1, 1]",
+          "status": "passed",
+          "details": "3 similarity scores in valid range [-1, 1]",
+          "duration": 0
+        }
+      ],
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "name": "Error Handling",
+      "description": "Tests that the package throws clear, helpful errors for invalid usage.",
+      "tests": [
+        {
+          "name": "steps() with unknown algorithm throws",
+          "status": "passed",
+          "details": "Correctly throws on unknown algorithm",
+          "duration": 0
+        },
+        {
+          "name": "steps() error message is helpful",
+          "status": "passed",
+          "details": "Error: \"Unknown algorithm \"nonexistent-algorithm\". Use list() to see available algorithms.\"",
+          "duration": 0
+        },
+        {
+          "name": "list() with empty options object works",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        },
+        {
+          "name": "list() with undefined category works",
+          "status": "passed",
+          "details": null,
+          "duration": 0
+        }
+      ],
+      "passed": 4,
+      "failed": 0
+    },
+    {
+      "name": "Step Data Quality",
+      "description": "Validates that step content is meaningful and educational.",
+      "tests": [
+        {
+          "name": "\"binary-search\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 13–30 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"binary-search\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 67–117 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 6–28 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 68–166 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 14–22 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"quicksort\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 55–147 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 16–35 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"merge-sort\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 55–172 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 9–17 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"bfs\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 46–89 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 9–21 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"dfs\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 71–92 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 16–31 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"dijkstra\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 52–130 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 12–36 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"perceptron\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 104–210 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 14–36 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 131–196 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 12–32 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"backpropagation\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 57–163 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 19–25 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"convolution\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 118–163 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 16–22 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 87–161 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 13–31 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"tokenization-bpe\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 57–142 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 18–25 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 103–147 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 16–33 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"self-attention\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 136–283 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 16–29 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"multi-head-attention\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 43–201 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — titles are non-trivial (min 5 chars)",
+          "status": "passed",
+          "details": "Title lengths: 14–31 chars",
+          "duration": 0
+        },
+        {
+          "name": "\"transformer-block\" — explanations are non-trivial (min 10 chars)",
+          "status": "passed",
+          "details": "Explanation lengths: 73–221 chars",
+          "duration": 0
+        }
+      ],
+      "passed": 34,
+      "failed": 0
+    },
+    {
+      "name": "CLI Verification",
+      "description": "Tests the eigenvue CLI commands via npx.",
+      "tests": [
+        {
+          "name": "npx eigenvue --version prints 1.0.1",
+          "status": "passed",
+          "details": "1.0.1",
+          "duration": 1160
+        },
+        {
+          "name": "npx eigenvue --help prints usage",
+          "status": "passed",
+          "details": "Help output: 17 lines",
+          "duration": 1128
+        },
+        {
+          "name": "npx eigenvue list outputs algorithms",
+          "status": "passed",
+          "details": "Listed algorithms successfully",
+          "duration": 1278
+        },
+        {
+          "name": "npx eigenvue list --category classical filters correctly",
+          "status": "passed",
+          "details": "Correctly filtered to classical only",
+          "duration": 1265
+        },
+        {
+          "name": "npx eigenvue steps binary-search outputs valid JSON",
+          "status": "passed",
+          "details": "9 steps as valid JSON",
+          "duration": 1169
+        }
+      ],
+      "passed": 5,
+      "failed": 0
+    },
+    {
+      "name": "Cross-Algorithm Consistency",
+      "description": "Verifies structural consistency across all algorithms.",
+      "tests": [
+        {
+          "name": "All algorithms use the same formatVersion",
+          "status": "passed",
+          "details": "All use formatVersion 1",
+          "duration": 0
+        },
+        {
+          "name": "All algorithms use the same generatedBy value",
+          "status": "passed",
+          "details": "All generated by \"typescript\"",
+          "duration": 0
+        },
+        {
+          "name": "Step count summary across all algorithms",
+          "status": "passed",
+          "details": "Total: 253 steps | Range: 4–43 per algorithm",
+          "duration": 0
+        },
+        {
+          "name": "Visual action type coverage",
+          "status": "passed",
+          "details": "47 unique visual action types used: [activateHead, activateNeuron, activateSublayer, compareElements, dimRange, highlightAuxiliary, highlightEdge, highlightElement, highlightKernelPosition, highlightRange, highlightToken, markFound, markPath, markPivot, markSorted, mergeTokens, movePointer, propagateSignal, setAuxiliary, setCurrentNode, setPartition, showActivationFunction, showAttentionScores, showAttentionWeights, showConcatenatedHeads, showConvolutionProducts, showDescentStep, showEmbedding, showFullAttentionMatrix, showGradient, showLandscapePosition, showLayerNorm, showLoss, showMessage, showPreActivation, showProjectionMatrix, showResidualConnection, showSimilarity, showTrajectory, showWeightedValues, showWeights, swapElements, updateDistance, updateNodeValue, updateWeights, visitNode, writeOutputCell]",
+          "duration": 1
+        },
+        {
+          "name": "Code highlight language coverage",
+          "status": "passed",
+          "details": "Languages: [pseudocode]",
+          "duration": 0
+        },
+        {
+          "name": "Phase usage across algorithms",
+          "status": "passed",
+          "details": "11 algorithms use phases:\nbinary-search: [initialization, search, result]\nperceptron: [input, weights, computation, activation, output]\nfeedforward-network: [initialization, forward-propagation, result]\nbackpropagation: [forward, loss, backward, update, complete]\nconvolution: [initialization, convolution, complete]\ngradient-descent: [initialization, optimization]\ntokenization-bpe: [initialization, merging, result]\ntoken-embeddings: [initialization, lookup, similarity, result]\nself-attention: [input, projection, scores, scaling, softmax, output, result]\nmulti-head-attention: [initialization, head-0, head-1, concatenation, projection, result]\ntransformer-block: [input, self-attention, add-norm-1, ffn, add-norm-2, result]",
+          "duration": 0
+        }
+      ],
+      "passed": 6,
+      "failed": 0
+    },
+    {
+      "name": "Determinism",
+      "description": "Verifies that running steps() twice with the same inputs produces identical results.",
+      "tests": [
+        {
+          "name": "\"binary-search\" — deterministic output",
+          "status": "passed",
+          "details": "9 steps verified identical",
+          "duration": 0
+        },
+        {
+          "name": "\"bubble-sort\" — deterministic output",
+          "status": "passed",
+          "details": "43 steps verified identical",
+          "duration": 1
+        },
+        {
+          "name": "\"quicksort\" — deterministic output",
+          "status": "passed",
+          "details": "23 steps verified identical",
+          "duration": 1
+        },
+        {
+          "name": "\"merge-sort\" — deterministic output",
+          "status": "passed",
+          "details": "31 steps verified identical",
+          "duration": 1
+        },
+        {
+          "name": "\"bfs\" — deterministic output",
+          "status": "passed",
+          "details": "10 steps verified identical",
+          "duration": 1
+        },
+        {
+          "name": "\"dfs\" — deterministic output",
+          "status": "passed",
+          "details": "10 steps verified identical",
+          "duration": 1
+        },
+        {
+          "name": "\"dijkstra\" — deterministic output",
+          "status": "passed",
+          "details": "21 steps verified identical",
+          "duration": 1
+        },
+        {
+          "name": "\"perceptron\" — deterministic output",
+          "status": "passed",
+          "details": "6 steps verified identical",
+          "duration": 0
+        },
+        {
+          "name": "\"feedforward-network\" — deterministic output",
+          "status": "passed",
+          "details": "4 steps verified identical",
+          "duration": 1
+        },
+        {
+          "name": "\"backpropagation\" — deterministic output",
+          "status": "passed",
+          "details": "9 steps verified identical",
+          "duration": 1
+        },
+        {
+          "name": "\"convolution\" — deterministic output",
+          "status": "passed",
+          "details": "11 steps verified identical",
+          "duration": 0
+        },
+        {
+          "name": "\"gradient-descent\" — deterministic output",
+          "status": "passed",
+          "details": "21 steps verified identical",
+          "duration": 2
+        },
+        {
+          "name": "\"tokenization-bpe\" — deterministic output",
+          "status": "passed",
+          "details": "12 steps verified identical",
+          "duration": 0
+        },
+        {
+          "name": "\"token-embeddings\" — deterministic output",
+          "status": "passed",
+          "details": "8 steps verified identical",
+          "duration": 1
+        },
+        {
+          "name": "\"self-attention\" — deterministic output",
+          "status": "passed",
+          "details": "11 steps verified identical",
+          "duration": 1
+        },
+        {
+          "name": "\"multi-head-attention\" — deterministic output",
+          "status": "passed",
+          "details": "13 steps verified identical",
+          "duration": 2
+        },
+        {
+          "name": "\"transformer-block\" — deterministic output",
+          "status": "passed",
+          "details": "11 steps verified identical",
+          "duration": 1
+        }
+      ],
+      "passed": 17,
+      "failed": 0
+    }
+  ],
+  "summary": {
+    "total": 314,
+    "passed": 314,
+    "failed": 0,
+    "skipped": 0
+  },
+  "algorithmDetails": [
+    {
+      "id": "binary-search",
+      "name": "Binary Search",
+      "category": "classical",
+      "description": "Efficiently find a target in a sorted array by halving the search space.",
+      "difficulty": "beginner",
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "stepCount": 9,
+      "totalVisualActions": 41,
+      "uniqueActionTypes": [
+        "dimRange",
+        "highlightElement",
+        "highlightRange",
+        "markFound",
+        "movePointer",
+        "showMessage"
+      ],
+      "inputKeys": [
+        "array",
+        "target"
+      ],
+      "phases": [
+        "initialization",
+        "search",
+        "result"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "initialize",
+        "title": "Initialize Search",
+        "explanation": "Searching for 13 in a sorted array of 10 elements. Setting left = 0, right = 9. The entire array is the search space.",
+        "actionCount": 3,
+        "stateKeys": [
+          "array",
+          "target",
+          "left",
+          "right",
+          "result"
+        ]
+      }
+    },
+    {
+      "id": "bubble-sort",
+      "name": "Bubble Sort",
+      "category": "classical",
+      "description": "Repeatedly swap adjacent out-of-order elements until the array is sorted.",
+      "difficulty": "beginner",
+      "timeComplexity": "O(n²)",
+      "spaceComplexity": "O(1)",
+      "stepCount": 43,
+      "totalVisualActions": 202,
+      "uniqueActionTypes": [
+        "compareElements",
+        "highlightElement",
+        "highlightRange",
+        "markSorted",
+        "movePointer",
+        "showMessage",
+        "swapElements"
+      ],
+      "inputKeys": [
+        "array"
+      ],
+      "phases": [],
+      "sampleStep": {
+        "index": 0,
+        "id": "initialize",
+        "title": "Initialize Bubble Sort",
+        "explanation": "Starting Bubble Sort on an array of 7 elements. We will make up to 6 passes through the array, comparing adjacent elements and swapping them if they are out of order.",
+        "actionCount": 1,
+        "stateKeys": [
+          "array",
+          "pass",
+          "sorted"
+        ]
+      }
+    },
+    {
+      "id": "quicksort",
+      "name": "QuickSort",
+      "category": "classical",
+      "description": "Divide-and-conquer sort using pivot partitioning.",
+      "difficulty": "intermediate",
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(log n)",
+      "stepCount": 23,
+      "totalVisualActions": 116,
+      "uniqueActionTypes": [
+        "highlightElement",
+        "highlightRange",
+        "markPivot",
+        "markSorted",
+        "movePointer",
+        "setPartition",
+        "showMessage",
+        "swapElements"
+      ],
+      "inputKeys": [
+        "array"
+      ],
+      "phases": [],
+      "sampleStep": {
+        "index": 0,
+        "id": "initialize",
+        "title": "Initialize QuickSort",
+        "explanation": "Starting QuickSort on 7 elements. We will pick a pivot, partition the array around it, and recursively sort the two halves.",
+        "actionCount": 1,
+        "stateKeys": [
+          "array",
+          "sorted"
+        ]
+      }
+    },
+    {
+      "id": "merge-sort",
+      "name": "Merge Sort",
+      "category": "classical",
+      "description": "Stable divide-and-conquer sort that merges sorted sub-arrays.",
+      "difficulty": "intermediate",
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "stepCount": 31,
+      "totalVisualActions": 126,
+      "uniqueActionTypes": [
+        "highlightAuxiliary",
+        "highlightElement",
+        "highlightRange",
+        "markSorted",
+        "movePointer",
+        "setAuxiliary",
+        "showMessage"
+      ],
+      "inputKeys": [
+        "array"
+      ],
+      "phases": [],
+      "sampleStep": {
+        "index": 0,
+        "id": "initialize",
+        "title": "Initialize Merge Sort",
+        "explanation": "Starting bottom-up Merge Sort on 7 elements. We will merge sub-arrays of increasing size: 1, 2, 4, ... until the entire array is sorted. This requires ⌈log₂(7)⌉ = 3 rounds.",
+        "actionCount": 1,
+        "stateKeys": [
+          "array",
+          "auxiliary"
+        ]
+      }
+    },
+    {
+      "id": "bfs",
+      "name": "Breadth-First Search",
+      "category": "classical",
+      "description": "Explore a graph level by level using a queue.",
+      "difficulty": "intermediate",
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V)",
+      "stepCount": 10,
+      "totalVisualActions": 46,
+      "uniqueActionTypes": [
+        "highlightEdge",
+        "markPath",
+        "setCurrentNode",
+        "showMessage",
+        "visitNode"
+      ],
+      "inputKeys": [
+        "adjacencyList",
+        "positions",
+        "startNode",
+        "targetNode"
+      ],
+      "phases": [],
+      "sampleStep": {
+        "index": 0,
+        "id": "initialize",
+        "title": "Initialize BFS",
+        "explanation": "Starting BFS from node \"A\". Searching for node \"F\". Enqueue \"A\" and mark it as visited.",
+        "actionCount": 2,
+        "stateKeys": [
+          "nodes",
+          "edges",
+          "visited",
+          "queue",
+          "dataStructure"
+        ]
+      }
+    },
+    {
+      "id": "dfs",
+      "name": "Depth-First Search",
+      "category": "classical",
+      "description": "Explore a graph by going as deep as possible before backtracking.",
+      "difficulty": "intermediate",
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V)",
+      "stepCount": 10,
+      "totalVisualActions": 38,
+      "uniqueActionTypes": [
+        "highlightEdge",
+        "markPath",
+        "setCurrentNode",
+        "showMessage",
+        "visitNode"
+      ],
+      "inputKeys": [
+        "adjacencyList",
+        "positions",
+        "startNode",
+        "targetNode"
+      ],
+      "phases": [],
+      "sampleStep": {
+        "index": 0,
+        "id": "initialize",
+        "title": "Initialize DFS",
+        "explanation": "Starting DFS from node \"A\". Searching for \"F\". Push \"A\" onto the stack.",
+        "actionCount": 1,
+        "stateKeys": [
+          "nodes",
+          "edges",
+          "visited",
+          "stack",
+          "dataStructure"
+        ]
+      }
+    },
+    {
+      "id": "dijkstra",
+      "name": "Dijkstra's Shortest Path",
+      "category": "classical",
+      "description": "Find shortest paths between nodes in a weighted graph using a greedy approach.",
+      "difficulty": "advanced",
+      "timeComplexity": "O((V + E) log V)",
+      "spaceComplexity": "O(V)",
+      "stepCount": 21,
+      "totalVisualActions": 193,
+      "uniqueActionTypes": [
+        "highlightEdge",
+        "markPath",
+        "setCurrentNode",
+        "showMessage",
+        "updateDistance",
+        "updateNodeValue",
+        "visitNode"
+      ],
+      "inputKeys": [
+        "adjacencyList",
+        "positions",
+        "startNode",
+        "targetNode"
+      ],
+      "phases": [],
+      "sampleStep": {
+        "index": 0,
+        "id": "initialize",
+        "title": "Initialize Dijkstra's Algorithm",
+        "explanation": "Starting Dijkstra's algorithm from node \"A\". Set distance to \"A\" = 0 and all others = ∞. Add \"A\" to the priority queue.",
+        "actionCount": 6,
+        "stateKeys": [
+          "nodes",
+          "edges",
+          "visited",
+          "distances",
+          "dataStructure"
+        ]
+      }
+    },
+    {
+      "id": "perceptron",
+      "name": "Single Neuron / Perceptron",
+      "category": "deep-learning",
+      "description": "Watch a single neuron compute: inputs × weights + bias → activation → output.",
+      "difficulty": "beginner",
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "stepCount": 6,
+      "totalVisualActions": 7,
+      "uniqueActionTypes": [
+        "activateNeuron",
+        "showActivationFunction",
+        "showPreActivation",
+        "showWeights"
+      ],
+      "inputKeys": [
+        "inputs",
+        "weights",
+        "bias",
+        "activationFunction"
+      ],
+      "phases": [
+        "input",
+        "weights",
+        "computation",
+        "activation",
+        "output"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "show-inputs",
+        "title": "Input Values",
+        "explanation": "The neuron receives 2 inputs: [0.5, 0.8]. Each input represents a feature or signal fed into the neuron.",
+        "actionCount": 2,
+        "stateKeys": [
+          "inputs",
+          "weights",
+          "bias",
+          "activationFunction",
+          "n"
+        ]
+      }
+    },
+    {
+      "id": "feedforward-network",
+      "name": "Feedforward Neural Network",
+      "category": "deep-learning",
+      "description": "Watch data flow forward through a multi-layer neural network.",
+      "difficulty": "intermediate",
+      "timeComplexity": "O(Σ n_l × n_{l-1})",
+      "spaceComplexity": "O(Σ n_l)",
+      "stepCount": 4,
+      "totalVisualActions": 9,
+      "uniqueActionTypes": [
+        "activateNeuron",
+        "propagateSignal"
+      ],
+      "inputKeys": [
+        "inputValues",
+        "layerSizes",
+        "activationFunction",
+        "seed"
+      ],
+      "phases": [
+        "initialization",
+        "forward-propagation",
+        "result"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "architecture",
+        "title": "Network Architecture",
+        "explanation": "Feedforward network with 3 layers: [2, 3, 1]. Input layer has 2 neurons receiving values [0.5, 0.8]. Using sigmoid activation. Weights initialized with Xavier initialization (seed: \"eigenvue-ff\").",
+        "actionCount": 2,
+        "stateKeys": [
+          "layerSizes",
+          "activations",
+          "weights",
+          "biases",
+          "activationFunction"
+        ]
+      }
+    },
+    {
+      "id": "backpropagation",
+      "name": "Backpropagation",
+      "category": "deep-learning",
+      "description": "How neural networks learn: computing gradients through the chain rule.",
+      "difficulty": "intermediate",
+      "timeComplexity": "O(Σ n_l × n_{l+1})",
+      "spaceComplexity": "O(Σ n_l × n_{l+1})",
+      "stepCount": 9,
+      "totalVisualActions": 12,
+      "uniqueActionTypes": [
+        "activateNeuron",
+        "propagateSignal",
+        "showGradient",
+        "showLoss",
+        "updateWeights"
+      ],
+      "inputKeys": [
+        "layerSizes",
+        "inputValues",
+        "targets",
+        "activationFunction",
+        "lossFunction",
+        "learningRate",
+        "seed"
+      ],
+      "phases": [
+        "forward",
+        "loss",
+        "backward",
+        "update",
+        "complete"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "forward-start",
+        "title": "Forward Pass Begins",
+        "explanation": "Starting forward propagation with input [0.5, 0.8]. Target output: [1].",
+        "actionCount": 2,
+        "stateKeys": [
+          "layerSizes",
+          "activations",
+          "weights",
+          "targets"
+        ]
+      }
+    },
+    {
+      "id": "convolution",
+      "name": "Convolution (2D)",
+      "category": "deep-learning",
+      "description": "How CNNs detect features: sliding a kernel across an input grid.",
+      "difficulty": "intermediate",
+      "timeComplexity": "O(H × W × K² × C)",
+      "spaceComplexity": "O(H × W + K²)",
+      "stepCount": 11,
+      "totalVisualActions": 27,
+      "uniqueActionTypes": [
+        "highlightKernelPosition",
+        "showConvolutionProducts",
+        "writeOutputCell"
+      ],
+      "inputKeys": [
+        "input",
+        "kernel"
+      ],
+      "phases": [
+        "initialization",
+        "convolution",
+        "complete"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "show-input",
+        "title": "Input Grid & Kernel",
+        "explanation": "Input is a 4×4 grid. Kernel is 2×2. Output will be 3×3 (valid convolution, no padding). The kernel slides across the input computing dot products at each position.",
+        "actionCount": 0,
+        "stateKeys": [
+          "inputGrid",
+          "kernel",
+          "outputGrid",
+          "outputHeight",
+          "outputWidth"
+        ]
+      }
+    },
+    {
+      "id": "gradient-descent",
+      "name": "Gradient Descent",
+      "category": "deep-learning",
+      "description": "Optimization by following the steepest downhill direction on the loss landscape.",
+      "difficulty": "intermediate",
+      "timeComplexity": "O(T × d)",
+      "spaceComplexity": "O(d)",
+      "stepCount": 21,
+      "totalVisualActions": 62,
+      "uniqueActionTypes": [
+        "showDescentStep",
+        "showLandscapePosition",
+        "showTrajectory"
+      ],
+      "inputKeys": [
+        "startX",
+        "startY",
+        "learningRate",
+        "optimizer",
+        "numSteps"
+      ],
+      "phases": [
+        "initialization",
+        "optimization"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "initial",
+        "title": "Initial Position",
+        "explanation": "Starting at (3.0000, 3.0000) with loss = 36.0000. Using sgd optimizer with learning rate eta = 0.1. Loss surface: f(x, y) = x^2 + 3y^2. Minimum at origin (0, 0).",
+        "actionCount": 2,
+        "stateKeys": [
+          "parameters",
+          "loss",
+          "gradient",
+          "optimizer",
+          "learningRate",
+          "stepNumber",
+          "trajectory"
+        ]
+      }
+    },
+    {
+      "id": "tokenization-bpe",
+      "name": "BPE Tokenization",
+      "category": "generative-ai",
+      "description": "Break text into subword tokens using Byte-Pair Encoding merge rules.",
+      "difficulty": "beginner",
+      "timeComplexity": "O(n × m)",
+      "spaceComplexity": "O(n)",
+      "stepCount": 12,
+      "totalVisualActions": 22,
+      "uniqueActionTypes": [
+        "highlightToken",
+        "mergeTokens"
+      ],
+      "inputKeys": [
+        "text",
+        "mergeRules"
+      ],
+      "phases": [
+        "initialization",
+        "merging",
+        "result"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "character-split",
+        "title": "Split Into Characters",
+        "explanation": "Starting with the text \"lowest\". Split into 6 individual characters: [\"l\", \"o\", \"w\", \"e\", \"s\", \"t\"].",
+        "actionCount": 6,
+        "stateKeys": [
+          "tokens",
+          "sourceText",
+          "mergeRulesRemaining",
+          "currentMergeIndex"
+        ]
+      }
+    },
+    {
+      "id": "token-embeddings",
+      "name": "Token Embeddings",
+      "category": "generative-ai",
+      "description": "Map tokens to dense numerical vectors using an embedding lookup table.",
+      "difficulty": "intermediate",
+      "timeComplexity": "O(n × d)",
+      "spaceComplexity": "O(V × d)",
+      "stepCount": 8,
+      "totalVisualActions": 27,
+      "uniqueActionTypes": [
+        "highlightToken",
+        "showEmbedding",
+        "showSimilarity"
+      ],
+      "inputKeys": [
+        "tokens",
+        "embeddingDim"
+      ],
+      "phases": [
+        "initialization",
+        "lookup",
+        "similarity",
+        "result"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "show-tokens",
+        "title": "Input Token Sequence",
+        "explanation": "We have 3 tokens: [\"The\", \"cat\", \"sat\"]. Each token will be mapped to a 4-dimensional embedding vector.",
+        "actionCount": 3,
+        "stateKeys": [
+          "tokens",
+          "embeddingDim",
+          "embeddings"
+        ]
+      }
+    },
+    {
+      "id": "self-attention",
+      "name": "Self-Attention (Scaled Dot-Product)",
+      "category": "generative-ai",
+      "description": "Watch how each token decides which other tokens to pay attention to.",
+      "difficulty": "intermediate",
+      "timeComplexity": "O(n² × d)",
+      "spaceComplexity": "O(n² + n × d)",
+      "stepCount": 11,
+      "totalVisualActions": 24,
+      "uniqueActionTypes": [
+        "showAttentionScores",
+        "showAttentionWeights",
+        "showEmbedding",
+        "showFullAttentionMatrix",
+        "showMessage",
+        "showProjectionMatrix",
+        "showWeightedValues"
+      ],
+      "inputKeys": [
+        "tokens",
+        "embeddingDim"
+      ],
+      "phases": [
+        "input",
+        "projection",
+        "scores",
+        "scaling",
+        "softmax",
+        "output",
+        "result"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "show-input",
+        "title": "Input Embeddings",
+        "explanation": "Starting with 3 tokens, each represented as a 4-dimensional embedding vector. These embeddings are the input matrix X with shape [3, 4].",
+        "actionCount": 3,
+        "stateKeys": [
+          "tokens",
+          "embeddingDim",
+          "X",
+          "phase"
+        ]
+      }
+    },
+    {
+      "id": "multi-head-attention",
+      "name": "Multi-Head Attention",
+      "category": "generative-ai",
+      "description": "See how multiple attention heads capture different relationships simultaneously.",
+      "difficulty": "advanced",
+      "timeComplexity": "O(h × n² × d_k)",
+      "spaceComplexity": "O(h × n² + n × d)",
+      "stepCount": 13,
+      "totalVisualActions": 25,
+      "uniqueActionTypes": [
+        "activateHead",
+        "showAttentionScores",
+        "showConcatenatedHeads",
+        "showEmbedding",
+        "showFullAttentionMatrix",
+        "showMessage"
+      ],
+      "inputKeys": [
+        "tokens",
+        "embeddingDim",
+        "numHeads"
+      ],
+      "phases": [
+        "initialization",
+        "head-0",
+        "head-1",
+        "concatenation",
+        "projection",
+        "result"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "show-input",
+        "title": "Input Embeddings",
+        "explanation": "Starting with 4 tokens, each as a 8-dimensional embedding. These will be processed by 2 attention heads, each with d_k = 4.",
+        "actionCount": 4,
+        "stateKeys": [
+          "tokens",
+          "embeddingDim",
+          "numHeads",
+          "d_k",
+          "X"
+        ]
+      }
+    },
+    {
+      "id": "transformer-block",
+      "name": "Transformer Block",
+      "category": "generative-ai",
+      "description": "Follow data through a complete transformer encoder block step by step.",
+      "difficulty": "advanced",
+      "timeComplexity": "O(n² × d + n × d × d_ff)",
+      "spaceComplexity": "O(n² + n × d_ff)",
+      "stepCount": 11,
+      "totalVisualActions": 18,
+      "uniqueActionTypes": [
+        "activateSublayer",
+        "showFullAttentionMatrix",
+        "showLayerNorm",
+        "showMessage",
+        "showResidualConnection"
+      ],
+      "inputKeys": [
+        "tokens",
+        "embeddingDim",
+        "ffnDim",
+        "numHeads"
+      ],
+      "phases": [
+        "input",
+        "self-attention",
+        "add-norm-1",
+        "ffn",
+        "add-norm-2",
+        "result"
+      ],
+      "sampleStep": {
+        "index": 0,
+        "id": "show-input",
+        "title": "Input Embeddings",
+        "explanation": "Transformer block receives 3 tokens as 4-dimensional embeddings. The block will process them through self-attention, add & norm, FFN, and add & norm.",
+        "actionCount": 1,
+        "stateKeys": [
+          "tokens",
+          "embeddingDim",
+          "X"
+        ]
+      }
+    }
+  ]
+}

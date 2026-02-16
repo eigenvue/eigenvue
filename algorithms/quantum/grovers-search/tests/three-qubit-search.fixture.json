@@ -1,0 +1,28 @@
+{
+  "description": "3-qubit Grover's search for target |101⟩ (index 5) — 2 iterations gives ~94.5% success",
+  "inputs": {
+    "numQubits": 3,
+    "targets": [5]
+  },
+  "expected": {
+    "optimalIterations": 2,
+    "terminalStepId": "result",
+    "keyStates": [
+      {
+        "stepId": "superposition",
+        "amplitudes": [
+          [0.3535533905932738, 0], [0.3535533905932738, 0],
+          [0.3535533905932738, 0], [0.3535533905932738, 0],
+          [0.3535533905932738, 0], [0.3535533905932738, 0],
+          [0.3535533905932738, 0], [0.3535533905932738, 0]
+        ],
+        "comment": "Uniform superposition: all amplitudes = 1/√8 ≈ 0.3536"
+      }
+    ],
+    "finalSuccessProbability": {
+      "targetIndex": 5,
+      "minProbability": 0.94,
+      "comment": "P(|101⟩) ≈ 94.5% after 2 iterations"
+    }
+  }
+}

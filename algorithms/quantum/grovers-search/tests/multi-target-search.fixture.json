@@ -1,0 +1,28 @@
+{
+  "description": "3-qubit Grover's search with 2 targets |010⟩ and |110⟩ — 1 iteration",
+  "inputs": {
+    "numQubits": 3,
+    "targets": [2, 6]
+  },
+  "expected": {
+    "optimalIterations": 1,
+    "terminalStepId": "result",
+    "keyStates": [
+      {
+        "stepId": "superposition",
+        "amplitudes": [
+          [0.3535533905932738, 0], [0.3535533905932738, 0],
+          [0.3535533905932738, 0], [0.3535533905932738, 0],
+          [0.3535533905932738, 0], [0.3535533905932738, 0],
+          [0.3535533905932738, 0], [0.3535533905932738, 0]
+        ],
+        "comment": "Uniform superposition"
+      }
+    ],
+    "finalSuccessProbability": {
+      "targetIndices": [2, 6],
+      "minProbability": 0.9,
+      "comment": "Combined P(|010⟩) + P(|110⟩) ≈ 100% after 1 iteration (2 targets in 8 states)"
+    }
+  }
+}

@@ -69,9 +69,9 @@ export const CATEGORIES: CategoryDefinition[] = [
       "Bloch spheres, quantum gates, and algorithms like Grover's search — visualized in ways that build real intuition.",
     accentColor: "#00ffc8",
     topics: ["Bloch Sphere", "Quantum Gates", "Grover's Search", "Teleportation"],
-    algorithmCount: 0,
+    algorithmCount: 5,
     icon: "atom",
-    available: false,
+    available: true,
   },
 ];
 

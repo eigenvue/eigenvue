@@ -57,7 +57,7 @@ describe("CLI", () => {
   it("lists all algorithms", () => {
     const output = runCli("list");
     expect(output).toContain("binary-search");
-    expect(output).toContain("17 algorithm(s) found.");
+    expect(output).toContain("22 algorithm(s) found.");
   });
 
   it("filters by category", () => {

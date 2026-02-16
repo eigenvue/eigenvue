@@ -1,0 +1,23 @@
+{
+  "description": "Teleport |1⟩ state — Bob applies corrections to recover south pole",
+  "inputs": {
+    "teleportState": { "theta": 3.141592653589793, "phi": 0, "label": "|1⟩" },
+    "aliceMeasurements": { "qubit0": 1, "qubit1": 1 }
+  },
+  "expected": {
+    "terminalStepId": "verification",
+    "keyStates": [
+      {
+        "stepId": "initial_state",
+        "aliceState": { "theta": 3.141592653589793, "phi": 0 },
+        "comment": "|1⟩ at south pole of Bloch sphere"
+      },
+      {
+        "stepId": "verification",
+        "bobBlochAngles": { "theta": 3.141592653589793, "phi": 0, "tolerance": 1e-6 },
+        "correction": "ZX",
+        "comment": "m0=1, m1=1 → apply X then Z. Bob has |1⟩."
+      }
+    ]
+  }
+}

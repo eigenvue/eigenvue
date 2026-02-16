@@ -110,7 +110,7 @@ export const CATEGORIES: readonly CategoryDisplayInfo[] = [
     colorToken: "quantum",
     badgeCategory: "quantum",
     icon: "Atom",
-    isAvailable: false,
+    isAvailable: true,
   },
 ] as const;
 

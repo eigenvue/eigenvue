@@ -10,9 +10,9 @@ describe("catalog", () => {
       expect(result.length).toBeGreaterThan(0);
     });
 
-    it("returns exactly 17 algorithms", () => {
+    it("returns exactly 22 algorithms", () => {
       const result = list();
-      expect(result).toHaveLength(17);
+      expect(result).toHaveLength(22);
     });
 
     it("returns 7 classical algorithms", () => {
@@ -92,6 +92,14 @@ describe("catalog", () => {
       expect(result1).toEqual(result2);
     });
 
+    it("returns 5 quantum algorithms", () => {
+      const result = list({ category: "quantum" });
+      expect(result).toHaveLength(5);
+      for (const algo of result) {
+        expect(algo.category).toBe("quantum");
+      }
+    });
+
     it("includes known algorithms", () => {
       const result = list();
       const ids = result.map((a: AlgorithmInfo) => a.id);
@@ -99,6 +107,8 @@ describe("catalog", () => {
       expect(ids).toContain("bubble-sort");
       expect(ids).toContain("self-attention");
       expect(ids).toContain("backpropagation");
+      expect(ids).toContain("qubit-bloch-sphere");
+      expect(ids).toContain("grovers-search");
     });
   });
 });
