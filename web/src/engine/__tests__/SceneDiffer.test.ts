@@ -62,8 +62,8 @@ describe("diffScenes", () => {
 
       expect(plan.transitions.length).toBe(2);
 
-      const trans0 = plan.transitions.find(t => t.id === "cell-0");
-      const trans1 = plan.transitions.find(t => t.id === "cell-1");
+      const trans0 = plan.transitions.find((t) => t.id === "cell-0");
+      const trans1 = plan.transitions.find((t) => t.id === "cell-1");
 
       expect(trans0?.state).toBe("entering");
       expect(trans0?.from).toBeNull();
@@ -114,8 +114,8 @@ describe("diffScenes", () => {
 
       expect(plan.transitions.length).toBe(2);
 
-      const trans0 = plan.transitions.find(t => t.id === "cell-0");
-      const trans1 = plan.transitions.find(t => t.id === "cell-1");
+      const trans0 = plan.transitions.find((t) => t.id === "cell-0");
+      const trans1 = plan.transitions.find((t) => t.id === "cell-1");
 
       expect(trans0?.state).toBe("exiting");
       expect(trans0?.from).toBe(elem1);
@@ -178,8 +178,8 @@ describe("diffScenes", () => {
 
       expect(plan.transitions.length).toBe(2);
 
-      const trans0 = plan.transitions.find(t => t.id === "cell-0");
-      const trans1 = plan.transitions.find(t => t.id === "cell-1");
+      const trans0 = plan.transitions.find((t) => t.id === "cell-0");
+      const trans1 = plan.transitions.find((t) => t.id === "cell-1");
 
       expect(trans0?.state).toBe("stable");
       expect(trans0?.from).toBe(elem1Source);
@@ -245,9 +245,9 @@ describe("diffScenes", () => {
 
       expect(plan.transitions.length).toBe(3);
 
-      const transA = plan.transitions.find(t => t.id === "A");
-      const transB = plan.transitions.find(t => t.id === "B");
-      const transC = plan.transitions.find(t => t.id === "C");
+      const transA = plan.transitions.find((t) => t.id === "A");
+      const transB = plan.transitions.find((t) => t.id === "B");
+      const transC = plan.transitions.find((t) => t.id === "C");
 
       // A is only in source → exiting
       expect(transA?.state).toBe("exiting");

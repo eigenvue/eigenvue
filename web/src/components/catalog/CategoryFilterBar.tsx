@@ -23,11 +23,11 @@
  * See Phase7_Implementation.md §9 — Component: CategoryFilterBar.
  */
 
-'use client';
+"use client";
 
-import { useRef, useCallback, type KeyboardEvent } from 'react';
-import { type CategoryFilter } from '@/lib/catalog-types';
-import { CATEGORIES } from '@/lib/catalog-constants';
+import { useRef, useCallback, type KeyboardEvent } from "react";
+import { type CategoryFilter } from "@/lib/catalog-types";
+import { CATEGORIES } from "@/lib/catalog-constants";
 
 interface CategoryFilterBarProps {
   readonly activeCategory: CategoryFilter;
@@ -55,51 +55,41 @@ export function CategoryFilterBar({
    *
    * ROVING TABINDEX SPEC: https://www.w3.org/WAI/ARIA/apg/patterns/tabs/
    */
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLDivElement>) => {
-      const tabList = tabListRef.current;
-      if (!tabList) return;
+  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
+    const tabList = tabListRef.current;
+    if (!tabList) return;
 
-      const tabs = Array.from(
-        tabList.querySelectorAll<HTMLButtonElement>('[role="tab"]')
-      );
-      const currentIndex = tabs.findIndex(
-        (tab) => tab === document.activeElement
-      );
-      if (currentIndex === -1) return;
+    const tabs = Array.from(tabList.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const currentIndex = tabs.findIndex((tab) => tab === document.activeElement);
+    if (currentIndex === -1) return;
 
-      let nextIndex: number | null = null;
+    let nextIndex: number | null = null;
 
-      switch (e.key) {
-        case 'ArrowRight':
-          nextIndex = (currentIndex + 1) % tabs.length;
-          break;
-        case 'ArrowLeft':
-          nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-          break;
-        case 'Home':
-          nextIndex = 0;
-          break;
-        case 'End':
-          nextIndex = tabs.length - 1;
-          break;
-        default:
-          return; // Don't prevent default for unhandled keys
-      }
+    switch (e.key) {
+      case "ArrowRight":
+        nextIndex = (currentIndex + 1) % tabs.length;
+        break;
+      case "ArrowLeft":
+        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+        break;
+      case "Home":
+        nextIndex = 0;
+        break;
+      case "End":
+        nextIndex = tabs.length - 1;
+        break;
+      default:
+        return; // Don't prevent default for unhandled keys
+    }
 
-      e.preventDefault();
-      tabs[nextIndex].focus();
-    },
-    []
-  );
+    e.preventDefault();
+    tabs[nextIndex].focus();
+  }, []);
 
   /**
    * Build the complete tab list: "All" tab + one tab per category.
    */
-  const allCount = Array.from(categoryCounts.values()).reduce(
-    (sum, count) => sum + count,
-    0
-  );
+  const allCount = Array.from(categoryCounts.values()).reduce((sum, count) => sum + count, 0);
 
   return (
     <div
@@ -108,19 +98,19 @@ export function CategoryFilterBar({
       aria-label="Filter algorithms by category"
       onKeyDown={handleKeyDown}
       className={[
-        'flex items-center gap-1',
+        "flex items-center gap-1",
         /* Horizontal scroll on small screens */
-        'overflow-x-auto scrollbar-none',
+        "overflow-x-auto scrollbar-none",
         /* Bottom border for tab-strip feel */
-        'border-b border-border pb-0',
-      ].join(' ')}
+        "border-b border-border pb-0",
+      ].join(" ")}
     >
       {/* "All" tab */}
       <CategoryTab
         label="All"
         count={allCount}
-        isActive={activeCategory === 'all'}
-        onClick={() => onCategoryChange('all')}
+        isActive={activeCategory === "all"}
+        onClick={() => onCategoryChange("all")}
         colorToken={null}
         comingSoon={false}
         isFirstTab
@@ -130,7 +120,7 @@ export function CategoryFilterBar({
       {CATEGORIES.map((cat) => (
         <CategoryTab
           key={cat.id}
-          label={cat.label.replace(' Algorithms', '').replace(' Computing', '')}
+          label={cat.label.replace(" Algorithms", "").replace(" Computing", "")}
           count={categoryCounts.get(cat.id) ?? 0}
           isActive={activeCategory === cat.id}
           onClick={() => onCategoryChange(cat.id)}
@@ -180,33 +170,27 @@ function CategoryTab({
       disabled={comingSoon}
       className={[
         /* Base styling */
-        'relative flex items-center gap-1.5 whitespace-nowrap',
-        'px-3 py-2.5 text-sm font-medium',
-        'border-b-2 -mb-px transition-all duration-normal',
+        "relative flex items-center gap-1.5 whitespace-nowrap",
+        "px-3 py-2.5 text-sm font-medium",
+        "border-b-2 -mb-px transition-all duration-normal",
         /* Active state: solid bottom border + brighter text */
         isActive
-          ? `border-current text-text-primary ${
-              colorToken ? `text-${colorToken}` : ''
-            }`
-          : 'border-transparent text-text-tertiary hover:text-text-secondary',
+          ? `border-current text-text-primary ${colorToken ? `text-${colorToken}` : ""}`
+          : "border-transparent text-text-tertiary hover:text-text-secondary",
         /* Coming soon: dimmed and not clickable */
-        comingSoon
-          ? 'opacity-40 cursor-not-allowed'
-          : 'cursor-pointer',
-      ].join(' ')}
+        comingSoon ? "opacity-40 cursor-not-allowed" : "cursor-pointer",
+      ].join(" ")}
       aria-label={
         comingSoon
           ? `${label} — Coming Soon`
-          : `${label}: ${count} algorithm${count !== 1 ? 's' : ''}`
+          : `${label}: ${count} algorithm${count !== 1 ? "s" : ""}`
       }
     >
       {label}
       {!comingSoon && (
         <span
           className={`inline-flex items-center justify-center rounded-full px-1.5 py-0 font-mono text-xs ${
-            isActive
-              ? 'bg-white/10 text-current'
-              : 'bg-background-elevated text-text-tertiary'
+            isActive ? "bg-white/10 text-current" : "bg-background-elevated text-text-tertiary"
           }`}
         >
           {count}

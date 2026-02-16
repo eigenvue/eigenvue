@@ -204,10 +204,7 @@ describe("mseLossGradient", () => {
     const targets = [0.7, 0.2, 0.9];
     const analytical = mseLossGradient(predictions, targets);
 
-    const numerical = numericalGradient(
-      (p) => mseLoss(p, targets),
-      [...predictions],
-    );
+    const numerical = numericalGradient((p) => mseLoss(p, targets), [...predictions]);
 
     for (let i = 0; i < predictions.length; i++) {
       expect(relativeError(analytical[i]!, numerical[i]!)).toBeLessThan(1e-4);
@@ -257,12 +254,24 @@ describe("dotProduct", () => {
 describe("matVecMul", () => {
   it("computes correct matrix-vector product", () => {
     // [[1, 2], [3, 4]] @ [5, 6] = [1*5+2*6, 3*5+4*6] = [17, 39]
-    const result = matVecMul([[1, 2], [3, 4]], [5, 6]);
+    const result = matVecMul(
+      [
+        [1, 2],
+        [3, 4],
+      ],
+      [5, 6],
+    );
     expect(result).toEqual([17, 39]);
   });
 
   it("identity matrix returns input vector", () => {
-    const result = matVecMul([[1, 0], [0, 1]], [3, 7]);
+    const result = matVecMul(
+      [
+        [1, 0],
+        [0, 1],
+      ],
+      [3, 7],
+    );
     expect(result).toEqual([3, 7]);
   });
 

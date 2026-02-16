@@ -30,8 +30,8 @@ const DIAGRAM_HEIGHT_RATIO = 0.6;
 
 /** Horizontal layout zones (as fractions of usable width). */
 const ZONE_INPUTS = 0.15;
-const ZONE_SUMMATION = 0.50;
-const ZONE_ACTIVATION = 0.70;
+const ZONE_SUMMATION = 0.5;
+const ZONE_ACTIVATION = 0.7;
 const ZONE_OUTPUT = 0.88;
 
 const INPUT_CIRCLE_RADIUS = 22;
@@ -44,26 +44,26 @@ const FONT_SIZE_LABEL = 11;
 const FONT_SIZE_WEIGHT = 10;
 
 const THEME = {
-  inputNode:          "#1e40af",
-  inputNodeStroke:    "#3b82f6",
-  inputNodeActive:    "#60a5fa",
-  summationNode:      "#7c3aed",
-  summationStroke:    "#a78bfa",
-  activationBox:      "#6d28d9",
-  activationStroke:   "#c084fc",
-  outputNode:         "#9333ea",
-  outputStroke:       "#c084fc",
-  outputActive:       "#e879f9",
-  connection:         "#6b7280",
-  connectionActive:   "#a78bfa",
-  weightPositive:     "#22c55e",
-  weightNegative:     "#ef4444",
-  biasColor:          "#f59e0b",
-  labelText:          "#e2e8f0",
-  valueText:          "#f5f3ff",
-  dimmedText:         "#6b7394",
-  gradientPositive:   "#fb923c",
-  gradientNegative:   "#38bdf8",
+  inputNode: "#1e40af",
+  inputNodeStroke: "#3b82f6",
+  inputNodeActive: "#60a5fa",
+  summationNode: "#7c3aed",
+  summationStroke: "#a78bfa",
+  activationBox: "#6d28d9",
+  activationStroke: "#c084fc",
+  outputNode: "#9333ea",
+  outputStroke: "#c084fc",
+  outputActive: "#e879f9",
+  connection: "#6b7280",
+  connectionActive: "#a78bfa",
+  weightPositive: "#22c55e",
+  weightNegative: "#ef4444",
+  biasColor: "#f59e0b",
+  labelText: "#e2e8f0",
+  valueText: "#f5f3ff",
+  dimmedText: "#6b7394",
+  gradientPositive: "#fb923c",
+  gradientNegative: "#38bdf8",
 } as const;
 
 function weightColor(w: number): string {
@@ -256,11 +256,16 @@ function neuronDiagramLayout(
   primitives.push(sumToAct);
 
   // Activation function box
-  const fnLabel = activationFn === "sigmoid" ? "σ(z)"
-    : activationFn === "relu" ? "ReLU(z)"
-    : activationFn === "tanh" ? "tanh(z)"
-    : activationFn === "step" ? "step(z)"
-    : "f(z)";
+  const fnLabel =
+    activationFn === "sigmoid"
+      ? "σ(z)"
+      : activationFn === "relu"
+        ? "ReLU(z)"
+        : activationFn === "tanh"
+          ? "tanh(z)"
+          : activationFn === "step"
+            ? "step(z)"
+            : "f(z)";
 
   const actBox: ElementPrimitive = {
     kind: "element",
@@ -349,14 +354,18 @@ function neuronDiagramLayout(
       kind: "annotation",
       id: `phase-label-${text.toLowerCase().replace(/\s/g, "-")}`,
       form: "label",
-      x, y: phaseLabelY,
+      x,
+      y: phaseLabelY,
       text,
       fontSize: 10,
       textColor: THEME.dimmedText,
       color: THEME.dimmedText,
-      pointerHeight: 0, pointerWidth: 0,
-      bracketWidth: 0, bracketTickHeight: 0,
-      badgePaddingX: 0, badgePaddingY: 0,
+      pointerHeight: 0,
+      pointerWidth: 0,
+      bracketWidth: 0,
+      bracketTickHeight: 0,
+      badgePaddingX: 0,
+      badgePaddingY: 0,
       opacity: 0.7,
       zIndex: Z_INDEX.ANNOTATION,
     };
@@ -377,9 +386,12 @@ function neuronDiagramLayout(
         fontSize: 13,
         textColor: THEME.labelText,
         color: THEME.labelText,
-        pointerHeight: 0, pointerWidth: 0,
-        bracketWidth: 0, bracketTickHeight: 0,
-        badgePaddingX: 0, badgePaddingY: 0,
+        pointerHeight: 0,
+        pointerWidth: 0,
+        bracketWidth: 0,
+        bracketTickHeight: 0,
+        badgePaddingX: 0,
+        badgePaddingY: 0,
         opacity: 1,
         zIndex: Z_INDEX.ANNOTATION,
       };

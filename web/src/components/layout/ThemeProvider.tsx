@@ -14,14 +14,7 @@
 
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-} from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 
 type Theme = "dark" | "light";
 
@@ -75,14 +68,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const value = useMemo(
-    () => ({ theme, toggleTheme }),
-    [theme, toggleTheme],
-  );
+  const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
 
-  return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

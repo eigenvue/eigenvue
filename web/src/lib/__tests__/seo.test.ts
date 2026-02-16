@@ -45,8 +45,7 @@ const mockAlgorithm: AlgorithmSeoInput = {
 const mockCategory: CategorySeoInput = {
   slug: "classical",
   name: "Classical Algorithms",
-  description:
-    "Interactive step-by-step visualizations of classical algorithms.",
+  description: "Interactive step-by-step visualizations of classical algorithms.",
   algorithmCount: 7,
 };
 
@@ -87,7 +86,10 @@ describe("buildAlgorithmMetadata", () => {
   });
 
   it("includes width and height for the OG image", () => {
-    const ogImages = (meta.openGraph as Record<string, unknown>)?.images as Array<{ width: number; height: number }>;
+    const ogImages = (meta.openGraph as Record<string, unknown>)?.images as Array<{
+      width: number;
+      height: number;
+    }>;
     expect(ogImages[0].width).toBe(1200);
     expect(ogImages[0].height).toBe(630);
   });

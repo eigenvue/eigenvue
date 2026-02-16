@@ -8,13 +8,9 @@
  * See Phase7_Implementation.md §17 — Page: /algorithms layout.
  */
 
-import { Container } from '@/components/ui/Container';
+import { Container } from "@/components/ui/Container";
 
-export default function CatalogLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function CatalogLayout({ children }: { children: React.ReactNode }) {
   return (
     <section aria-labelledby="catalog-heading" className="py-12 md:py-16">
       <Container>{children}</Container>

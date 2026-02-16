@@ -15,9 +15,7 @@ import type { Config } from "tailwindcss";
  * purple-to-cyan gradient works well on both dark and light backgrounds.
  */
 const config: Config = {
-  content: [
-    "./src/**/*.{ts,tsx,mdx}",
-  ],
+  content: ["./src/**/*.{ts,tsx,mdx}"],
   theme: {
     extend: {
       /**

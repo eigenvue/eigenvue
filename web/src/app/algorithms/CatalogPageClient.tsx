@@ -21,29 +21,26 @@
  * See Phase7_Implementation.md §17 — Page: /algorithms.
  */
 
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { type AlgorithmMeta } from '@/shared/types/step';
-import { useCatalogFilters } from '@/hooks/useCatalogFilters';
-import { useCatalogSearch } from '@/hooks/useCatalogSearch';
-import { useCatalogUrlState } from '@/hooks/useCatalogUrlState';
+import { useEffect, useRef } from "react";
+import { type AlgorithmMeta } from "@/shared/types/step";
+import { useCatalogFilters } from "@/hooks/useCatalogFilters";
+import { useCatalogSearch } from "@/hooks/useCatalogSearch";
+import { useCatalogUrlState } from "@/hooks/useCatalogUrlState";
 import {
   CatalogHeader,
   CategoryFilterBar,
   CatalogToolbar,
   AlgorithmGrid,
-} from '@/components/catalog';
+} from "@/components/catalog";
 
 interface CatalogPageClientProps {
   readonly algorithms: readonly AlgorithmMeta[];
   readonly categoryCounts: Record<string, number>;
 }
 
-export function CatalogPageClient({
-  algorithms,
-  categoryCounts,
-}: CatalogPageClientProps) {
+export function CatalogPageClient({ algorithms, categoryCounts }: CatalogPageClientProps) {
   // ── URL state ──
   const { initialState, syncToUrl } = useCatalogUrlState();
 
@@ -107,10 +104,10 @@ export function CatalogPageClient({
   }
 
   const isFiltered =
-    state.category !== 'all' ||
+    state.category !== "all" ||
     state.difficulties.size > 0 ||
-    state.searchQuery !== '' ||
-    state.sortBy !== 'name-asc';
+    state.searchQuery !== "" ||
+    state.sortBy !== "name-asc";
 
   return (
     <>
@@ -143,11 +140,7 @@ export function CatalogPageClient({
       </div>
 
       {/* Algorithm grid */}
-      <AlgorithmGrid
-        algorithms={results}
-        isFiltered={isFiltered}
-        onClearFilters={handleResetAll}
-      />
+      <AlgorithmGrid algorithms={results} isFiltered={isFiltered} onClearFilters={handleResetAll} />
     </>
   );
 }

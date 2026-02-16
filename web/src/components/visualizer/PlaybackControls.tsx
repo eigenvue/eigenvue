@@ -27,11 +27,7 @@ interface PlaybackControlsProps {
   readonly totalSteps: number;
 }
 
-export function PlaybackControls({
-  state,
-  controls,
-  totalSteps,
-}: PlaybackControlsProps) {
+export function PlaybackControls({ state, controls, totalSteps }: PlaybackControlsProps) {
   const { currentIndex, isPlaying, speedIndex } = state;
   const maxIndex = Math.max(0, totalSteps - 1);
 
@@ -90,7 +86,10 @@ export function PlaybackControls({
       </button>
 
       {/* Step Counter */}
-      <span className="text-xs font-mono text-text-tertiary ml-2 whitespace-nowrap" aria-live="polite">
+      <span
+        className="text-xs font-mono text-text-tertiary ml-2 whitespace-nowrap"
+        aria-live="polite"
+      >
         {currentIndex + 1} / {totalSteps}
       </span>
 

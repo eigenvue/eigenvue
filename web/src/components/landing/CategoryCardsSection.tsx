@@ -17,15 +17,12 @@ export function CategoryCardsSection() {
     <SectionWrapper id="categories" ariaLabelledBy="categories-heading">
       <Container>
         <div className="mx-auto max-w-prose text-center">
-          <h2
-            id="categories-heading"
-            className="text-3xl font-bold text-text-primary md:text-4xl"
-          >
+          <h2 id="categories-heading" className="text-3xl font-bold text-text-primary md:text-4xl">
             Four Domains, One Platform
           </h2>
           <p className="mt-4 text-lg text-text-secondary">
-            From sorting algorithms to self-attention — explore every domain
-            with the same interactive, step-by-step experience.
+            From sorting algorithms to self-attention — explore every domain with the same
+            interactive, step-by-step experience.
           </p>
         </div>
 

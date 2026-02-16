@@ -29,7 +29,7 @@ import { registerLayout } from "./registry";
 // -- Constants ----------------------------------------------------------------
 
 const GRID_RESOLUTION = 50;
-const PLOT_HEIGHT_RATIO = 0.80;
+const PLOT_HEIGHT_RATIO = 0.8;
 const CONTOUR_CORNER_RADIUS = 0;
 const TRAJECTORY_LINE_WIDTH = 2.5;
 const GRADIENT_ARROW_LENGTH = 30;
@@ -60,11 +60,7 @@ const THEME = {
  */
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.startsWith("#") ? hex.slice(1) : hex;
-  return [
-    parseInt(h.slice(0, 2), 16),
-    parseInt(h.slice(2, 4), 16),
-    parseInt(h.slice(4, 6), 16),
-  ];
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
 }
 
 /**
@@ -87,11 +83,7 @@ function rgbToHex(r: number, g: number, b: number): string {
 function interpolateHex(a: string, b: string, t: number): string {
   const [r1, g1, b1] = hexToRgb(a);
   const [r2, g2, b2] = hexToRgb(b);
-  return rgbToHex(
-    r1 + (r2 - r1) * t,
-    g1 + (g2 - g1) * t,
-    b1 + (b2 - b1) * t,
-  );
+  return rgbToHex(r1 + (r2 - r1) * t, g1 + (g2 - g1) * t, b1 + (b2 - b1) * t);
 }
 
 /**
@@ -199,14 +191,12 @@ function lossLandscapeLayout(
   const parameters = (state.parameters as number[]) ?? [0, 0];
   const loss = (state.loss as number) ?? 0;
   const gradient = (state.gradient as number[]) ?? [0, 0];
-  const trajectory =
-    (state.trajectory as Array<{ parameters: number[]; loss: number }>) ?? [];
+  const trajectory = (state.trajectory as Array<{ parameters: number[]; loss: number }>) ?? [];
   const optimizer = (state.optimizer as string) ?? "sgd";
   const learningRate = (state.learningRate as number) ?? 0.01;
   const stepNumber = (state.stepNumber as number) ?? 0;
   const surfaceType = (state.surfaceType as string) ?? "quadratic";
-  const surfaceParams =
-    (state.surfaceParams as { a?: number; b?: number }) ?? {};
+  const surfaceParams = (state.surfaceParams as { a?: number; b?: number }) ?? {};
   const xRange = (state.xRange as [number, number]) ?? [-3, 3];
   const yRange = (state.yRange as [number, number]) ?? [-3, 3];
   const minimum = (state.minimum as number[]) ?? [0, 0];
@@ -258,10 +248,8 @@ function lossLandscapeLayout(
     lossGrid[r] = [];
     for (let c = 0; c < GRID_RESOLUTION; c++) {
       // Map grid cell center to parameter space
-      const px =
-        xRange[0] + ((c + 0.5) / GRID_RESOLUTION) * (xRange[1] - xRange[0]);
-      const py =
-        yRange[1] - ((r + 0.5) / GRID_RESOLUTION) * (yRange[1] - yRange[0]);
+      const px = xRange[0] + ((c + 0.5) / GRID_RESOLUTION) * (xRange[1] - xRange[0]);
+      const py = yRange[1] - ((r + 0.5) / GRID_RESOLUTION) * (yRange[1] - yRange[0]);
 
       const cellLoss = computeLoss(px, py, surfaceType, surfaceParams);
       lossGrid[r]![c] = cellLoss;
@@ -476,10 +464,7 @@ function lossLandscapeLayout(
 
   const optimizerDisplay = optimizer.toUpperCase();
   const lossDisplay = loss < 0.001 ? loss.toExponential(2) : loss.toFixed(4);
-  const lrDisplay =
-    learningRate < 0.001
-      ? learningRate.toExponential(2)
-      : learningRate.toFixed(4);
+  const lrDisplay = learningRate < 0.001 ? learningRate.toExponential(2) : learningRate.toFixed(4);
 
   const infoItems = [
     `Step: ${stepNumber}`,

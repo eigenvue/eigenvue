@@ -28,12 +28,8 @@ export function StatsStrip() {
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
           {STATS.map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="font-mono text-4xl font-bold text-text-primary">
-                {stat.value}
-              </div>
-              <div className="mt-1 text-sm text-text-tertiary">
-                {stat.label}
-              </div>
+              <div className="font-mono text-4xl font-bold text-text-primary">{stat.value}</div>
+              <div className="mt-1 text-sm text-text-tertiary">{stat.label}</div>
             </div>
           ))}
         </div>

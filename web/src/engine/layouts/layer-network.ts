@@ -38,24 +38,24 @@ const WEIGHT_LINE_MAX = 3.5;
 const GRADIENT_LINE_MIN = 1;
 const GRADIENT_LINE_MAX = 5;
 const THEME = {
-  inputNode:        "#1e40af",
-  inputStroke:      "#3b82f6",
-  hiddenNode:       "#6d28d9",
-  hiddenStroke:     "#a78bfa",
-  outputNode:       "#9333ea",
-  outputStroke:     "#c084fc",
-  activeNode:       "#7c3aed",
-  activeStroke:     "#f472b6",
-  weightPositive:   "#22c55e",
-  weightNegative:   "#ef4444",
-  weightZero:       "#4b5563",
-  gradientHigh:     "#fb923c",
-  gradientLow:      "#fdba74",
-  gradientArrow:    "#f97316",
-  signalColor:      "#38bdf8",
-  valueText:        "#f5f3ff",
-  labelText:        "#94a3b8",
-  layerLabel:       "#cbd5e1",
+  inputNode: "#1e40af",
+  inputStroke: "#3b82f6",
+  hiddenNode: "#6d28d9",
+  hiddenStroke: "#a78bfa",
+  outputNode: "#9333ea",
+  outputStroke: "#c084fc",
+  activeNode: "#7c3aed",
+  activeStroke: "#f472b6",
+  weightPositive: "#22c55e",
+  weightNegative: "#ef4444",
+  weightZero: "#4b5563",
+  gradientHigh: "#fb923c",
+  gradientLow: "#fdba74",
+  gradientArrow: "#f97316",
+  signalColor: "#38bdf8",
+  valueText: "#f5f3ff",
+  labelText: "#94a3b8",
+  layerLabel: "#cbd5e1",
 } as const;
 
 function nodeColor(layerIdx: number, totalLayers: number, isActive: boolean): string {
@@ -162,13 +162,17 @@ function layerNetworkLayout(
           x2: layerX(l) - NODE_RADIUS,
           y2: neuronY(l, j),
           curveOffset: 0,
-          color: isForwardActive ? THEME.signalColor
-            : isGradientActive ? THEME.gradientHigh
-            : weightToColor(w),
-          lineWidth: isGradientActive && wg !== undefined
-            ? gradientToWidth(wg)
-            : isForwardActive ? 2.5
-            : weightToWidth(w),
+          color: isForwardActive
+            ? THEME.signalColor
+            : isGradientActive
+              ? THEME.gradientHigh
+              : weightToColor(w),
+          lineWidth:
+            isGradientActive && wg !== undefined
+              ? gradientToWidth(wg)
+              : isForwardActive
+                ? 2.5
+                : weightToWidth(w),
           dashPattern: isGradientActive ? [4, 3] : [],
           arrowHead: isForwardActive ? "end" : isGradientActive ? "start" : "none",
           arrowSize: 5,
@@ -236,9 +240,7 @@ function layerNetworkLayout(
   // Layer labels
   const layerLabelsY = canvasSize.height - LAYOUT_PADDING - 10;
   for (let l = 0; l < totalLayers; l++) {
-    const labelText = l === 0 ? "Input"
-      : l === totalLayers - 1 ? "Output"
-      : `Hidden ${l}`;
+    const labelText = l === 0 ? "Input" : l === totalLayers - 1 ? "Output" : `Hidden ${l}`;
     const lbl: AnnotationPrimitive = {
       kind: "annotation",
       id: `layer-label-${l}`,
@@ -249,9 +251,12 @@ function layerNetworkLayout(
       fontSize: LAYER_LABEL_FONT_SIZE,
       textColor: THEME.layerLabel,
       color: THEME.layerLabel,
-      pointerHeight: 0, pointerWidth: 0,
-      bracketWidth: 0, bracketTickHeight: 0,
-      badgePaddingX: 0, badgePaddingY: 0,
+      pointerHeight: 0,
+      pointerWidth: 0,
+      bracketWidth: 0,
+      bracketTickHeight: 0,
+      badgePaddingX: 0,
+      badgePaddingY: 0,
       opacity: 0.8,
       zIndex: Z_INDEX.ANNOTATION,
     };
@@ -271,9 +276,12 @@ function layerNetworkLayout(
       fontSize: 11,
       textColor: "#fef2f2",
       color: "#dc2626",
-      pointerHeight: 0, pointerWidth: 0,
-      bracketWidth: 0, bracketTickHeight: 0,
-      badgePaddingX: 10, badgePaddingY: 4,
+      pointerHeight: 0,
+      pointerWidth: 0,
+      bracketWidth: 0,
+      bracketTickHeight: 0,
+      badgePaddingX: 10,
+      badgePaddingY: 4,
       opacity: 1,
       zIndex: Z_INDEX.ANNOTATION + 10,
     };

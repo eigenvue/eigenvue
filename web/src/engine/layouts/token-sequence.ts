@@ -81,29 +81,29 @@ const ARC_MAX_OPACITY = 0.9;
 
 const THEME = {
   /** Default token chip fill. */
-  chipDefault:     "#2d1b4e",
+  chipDefault: "#2d1b4e",
   /** Token chip stroke/border. */
-  chipStroke:      "#6b21a8",
+  chipStroke: "#6b21a8",
   /** Token text color. */
-  chipText:        "#f5f3ff",
+  chipText: "#f5f3ff",
   /** Index sub-label text. */
-  chipIndex:       "#a78bfa",
+  chipIndex: "#a78bfa",
   /** Highlighted token chip fill. */
-  chipHighlight:   "#7c3aed",
+  chipHighlight: "#7c3aed",
   /** Active/selected token chip fill. */
-  chipActive:      "#f472b6",
+  chipActive: "#f472b6",
   /** Merge indicator glow. */
-  mergeGlow:       "#f9a8d4",
+  mergeGlow: "#f9a8d4",
   /** Attention arc default color. */
-  arcDefault:      "#c084fc",
+  arcDefault: "#c084fc",
   /** Attention arc strong weight color. */
-  arcStrong:       "#f472b6",
+  arcStrong: "#f472b6",
   /** Embedding bar positive value color. */
-  barPositive:     "#a78bfa",
+  barPositive: "#a78bfa",
   /** Embedding bar negative value color. */
-  barNegative:     "#f472b6",
+  barNegative: "#f472b6",
   /** Message text color. */
-  message:         "#e9d5ff",
+  message: "#e9d5ff",
 } as const;
 
 // ── Helper: Linear Interpolation ─────────────────────────────────────────────
@@ -170,8 +170,7 @@ function tokenSequenceLayout(
    * Returns the center x-coordinate of the token chip at index i.
    * Formula: rowStartX + i * (chipWidth + CHIP_GAP) + chipWidth / 2
    */
-  const chipCenterX = (i: number): number =>
-    rowStartX + i * (chipWidth + CHIP_GAP) + chipWidth / 2;
+  const chipCenterX = (i: number): number => rowStartX + i * (chipWidth + CHIP_GAP) + chipWidth / 2;
   const chipCenterY = rowCenterY;
 
   // ── Process visual actions ─────────────────────────────────────────────
@@ -367,9 +366,7 @@ function tokenSequenceLayout(
 
       // Bars extend upward (positive) or downward (negative) from the baseline.
       const baselineY = barZoneTop + MAX_BAR_HEIGHT;
-      const barY = isPositive
-        ? baselineY - normalizedHeight / 2
-        : baselineY + normalizedHeight / 2;
+      const barY = isPositive ? baselineY - normalizedHeight / 2 : baselineY + normalizedHeight / 2;
 
       const bar: ElementPrimitive = {
         kind: "element",

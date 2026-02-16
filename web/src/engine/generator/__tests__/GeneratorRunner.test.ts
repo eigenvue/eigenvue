@@ -165,10 +165,12 @@ describe("GeneratorRunner — Validation Errors", () => {
     const gen = createGenerator<Record<string, unknown>>({
       id: "bad-lines",
       *generate(_inputs, step) {
-        yield step(makeStepInput({
-          codeHighlight: { language: "pseudocode", lines: [0] },
-          isTerminal: true,
-        }));
+        yield step(
+          makeStepInput({
+            codeHighlight: { language: "pseudocode", lines: [0] },
+            isTerminal: true,
+          }),
+        );
       },
     });
 
@@ -204,10 +206,12 @@ describe("GeneratorRunner — Visual Action Validation", () => {
     const gen = createGenerator<Record<string, unknown>>({
       id: "bad-range",
       *generate(_inputs, step) {
-        yield step(makeStepInput({
-          visualActions: [{ type: "highlightRange", from: 5, to: 2 }],
-          isTerminal: true,
-        }));
+        yield step(
+          makeStepInput({
+            visualActions: [{ type: "highlightRange", from: 5, to: 2 }],
+            isTerminal: true,
+          }),
+        );
       },
     });
 
@@ -219,10 +223,12 @@ describe("GeneratorRunner — Visual Action Validation", () => {
     const gen = createGenerator<Record<string, unknown>>({
       id: "bad-dim",
       *generate(_inputs, step) {
-        yield step(makeStepInput({
-          visualActions: [{ type: "dimRange", from: 3, to: 1 }],
-          isTerminal: true,
-        }));
+        yield step(
+          makeStepInput({
+            visualActions: [{ type: "dimRange", from: 3, to: 1 }],
+            isTerminal: true,
+          }),
+        );
       },
     });
 
@@ -233,14 +239,18 @@ describe("GeneratorRunner — Visual Action Validation", () => {
     const gen = createGenerator<Record<string, unknown>>({
       id: "bad-weights",
       *generate(_inputs, step) {
-        yield step(makeStepInput({
-          visualActions: [{
-            type: "showAttentionWeights",
-            queryIdx: 0,
-            weights: [0.3, 0.3, 0.3], // sums to 0.9, not 1.0
-          }],
-          isTerminal: true,
-        }));
+        yield step(
+          makeStepInput({
+            visualActions: [
+              {
+                type: "showAttentionWeights",
+                queryIdx: 0,
+                weights: [0.3, 0.3, 0.3], // sums to 0.9, not 1.0
+              },
+            ],
+            isTerminal: true,
+          }),
+        );
       },
     });
 
@@ -253,14 +263,18 @@ describe("GeneratorRunner — Visual Action Validation", () => {
       id: "ok-weights",
       *generate(_inputs, step) {
         // These values sum to exactly 1.0 in IEEE 754.
-        yield step(makeStepInput({
-          visualActions: [{
-            type: "showAttentionWeights",
-            queryIdx: 0,
-            weights: [0.25, 0.25, 0.25, 0.25],
-          }],
-          isTerminal: true,
-        }));
+        yield step(
+          makeStepInput({
+            visualActions: [
+              {
+                type: "showAttentionWeights",
+                queryIdx: 0,
+                weights: [0.25, 0.25, 0.25, 0.25],
+              },
+            ],
+            isTerminal: true,
+          }),
+        );
       },
     });
 
@@ -273,14 +287,18 @@ describe("GeneratorRunner — Visual Action Validation", () => {
     const gen = createGenerator<Record<string, unknown>>({
       id: "bad-weight-range",
       *generate(_inputs, step) {
-        yield step(makeStepInput({
-          visualActions: [{
-            type: "showAttentionWeights",
-            queryIdx: 0,
-            weights: [1.5, -0.5],
-          }],
-          isTerminal: true,
-        }));
+        yield step(
+          makeStepInput({
+            visualActions: [
+              {
+                type: "showAttentionWeights",
+                queryIdx: 0,
+                weights: [1.5, -0.5],
+              },
+            ],
+            isTerminal: true,
+          }),
+        );
       },
     });
 
@@ -292,10 +310,12 @@ describe("GeneratorRunner — Visual Action Validation", () => {
     const gen = createGenerator<Record<string, unknown>>({
       id: "bad-compare",
       *generate(_inputs, step) {
-        yield step(makeStepInput({
-          visualActions: [{ type: "compareElements", i: 0, j: 1, result: "invalid" }],
-          isTerminal: true,
-        }));
+        yield step(
+          makeStepInput({
+            visualActions: [{ type: "compareElements", i: 0, j: 1, result: "invalid" }],
+            isTerminal: true,
+          }),
+        );
       },
     });
 
@@ -306,14 +326,18 @@ describe("GeneratorRunner — Visual Action Validation", () => {
     const gen = createGenerator<Record<string, unknown>>({
       id: "bad-bar",
       *generate(_inputs, step) {
-        yield step(makeStepInput({
-          visualActions: [{
-            type: "updateBarChart",
-            values: [1, 2, 3],
-            labels: ["a", "b"],
-          }],
-          isTerminal: true,
-        }));
+        yield step(
+          makeStepInput({
+            visualActions: [
+              {
+                type: "updateBarChart",
+                values: [1, 2, 3],
+                labels: ["a", "b"],
+              },
+            ],
+            isTerminal: true,
+          }),
+        );
       },
     });
 
@@ -325,10 +349,12 @@ describe("GeneratorRunner — Visual Action Validation", () => {
     const gen = createGenerator<Record<string, unknown>>({
       id: "unknown-action",
       *generate(_inputs, step) {
-        yield step(makeStepInput({
-          visualActions: [{ type: "futureQuantumAction", data: 42 }],
-          isTerminal: true,
-        }));
+        yield step(
+          makeStepInput({
+            visualActions: [{ type: "futureQuantumAction", data: 42 }],
+            isTerminal: true,
+          }),
+        );
       },
     });
 

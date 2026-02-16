@@ -64,12 +64,14 @@ function StateValue({ value }: { value: unknown }) {
   if (Array.isArray(value)) {
     return (
       <span className="text-text-secondary">
-        [{value.map((v, i) => (
+        [
+        {value.map((v, i) => (
           <span key={i}>
             {i > 0 && <span className="text-text-disabled">, </span>}
             <StateValue value={v} />
           </span>
-        ))}]
+        ))}
+        ]
       </span>
     );
   }

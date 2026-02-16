@@ -132,8 +132,10 @@ export type StepBuilderFn = (input: StepInput) => Step;
  * @param step   - The step builder function. Call this to create each step.
  * @yields Step objects in execution order.
  */
-export type GeneratorFunction<TInputs extends Record<string, unknown>> =
-  (inputs: TInputs, step: StepBuilderFn) => Generator<Step, void, undefined>;
+export type GeneratorFunction<TInputs extends Record<string, unknown>> = (
+  inputs: TInputs,
+  step: StepBuilderFn,
+) => Generator<Step, void, undefined>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GENERATOR DEFINITION
@@ -213,8 +215,8 @@ export function createGenerator<TInputs extends Record<string, unknown>>(
   if (!/^[a-z0-9][a-z0-9-]*$/.test(config.id)) {
     throw new Error(
       `Invalid algorithm ID "${config.id}". ` +
-      `Must match pattern: ^[a-z0-9][a-z0-9-]*$ ` +
-      `(lowercase alphanumeric and hyphens, starting with a letter or digit).`
+        `Must match pattern: ^[a-z0-9][a-z0-9-]*$ ` +
+        `(lowercase alphanumeric and hyphens, starting with a letter or digit).`,
     );
   }
 

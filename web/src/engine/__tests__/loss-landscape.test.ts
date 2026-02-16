@@ -9,7 +9,14 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { getLayout } from "../layouts/registry";
-import type { Step, CanvasSize, LayoutFunction, ElementPrimitive, ConnectionPrimitive, AnnotationPrimitive } from "../types";
+import type {
+  Step,
+  CanvasSize,
+  LayoutFunction,
+  ElementPrimitive,
+  ConnectionPrimitive,
+  AnnotationPrimitive,
+} from "../types";
 
 // Import the layout module to trigger self-registration.
 import "../layouts/loss-landscape";
@@ -69,7 +76,7 @@ describe("loss-landscape layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const contourCells = scene.primitives.filter(
-        p => p.kind === "element" && p.id.startsWith("contour-")
+        (p) => p.kind === "element" && p.id.startsWith("contour-"),
       );
 
       // The grid is 50x50 = 2500 cells.
@@ -80,7 +87,7 @@ describe("loss-landscape layout", () => {
       const step = makeStep();
       const scene = layout(step, mockCanvasSize, {});
 
-      const currentPos = scene.primitives.find(p => p.id === "current-pos");
+      const currentPos = scene.primitives.find((p) => p.id === "current-pos");
       expect(currentPos).toBeDefined();
       expect(currentPos?.kind).toBe("element");
     });
@@ -89,7 +96,7 @@ describe("loss-landscape layout", () => {
       const step = makeStep();
       const scene = layout(step, mockCanvasSize, {});
 
-      const minMarker = scene.primitives.find(p => p.id === "minimum-marker");
+      const minMarker = scene.primitives.find((p) => p.id === "minimum-marker");
       expect(minMarker).toBeDefined();
       expect(minMarker?.kind).toBe("element");
       expect((minMarker as ElementPrimitive).shape).toBe("diamond");
@@ -99,7 +106,7 @@ describe("loss-landscape layout", () => {
       const step = makeStep();
       const scene = layout(step, mockCanvasSize, {});
 
-      const gradArrow = scene.primitives.find(p => p.id === "gradient-arrow");
+      const gradArrow = scene.primitives.find((p) => p.id === "gradient-arrow");
       expect(gradArrow).toBeDefined();
       expect(gradArrow?.kind).toBe("connection");
       expect((gradArrow as ConnectionPrimitive).arrowHead).toBe("end");
@@ -124,7 +131,7 @@ describe("loss-landscape layout", () => {
       });
       const scene = layout(step, mockCanvasSize, {});
 
-      const gradArrow = scene.primitives.find(p => p.id === "gradient-arrow");
+      const gradArrow = scene.primitives.find((p) => p.id === "gradient-arrow");
       expect(gradArrow).toBeUndefined();
     });
 
@@ -134,7 +141,7 @@ describe("loss-landscape layout", () => {
 
       // The layout produces 4 info labels: info-0 through info-3.
       for (let i = 0; i < 4; i++) {
-        const infoLabel = scene.primitives.find(p => p.id === `info-${i}`);
+        const infoLabel = scene.primitives.find((p) => p.id === `info-${i}`);
         expect(infoLabel).toBeDefined();
         expect(infoLabel?.kind).toBe("annotation");
       }
@@ -144,10 +151,10 @@ describe("loss-landscape layout", () => {
       const step = makeStep();
       const scene = layout(step, mockCanvasSize, {});
 
-      expect(scene.primitives.find(p => p.id === "x-axis-min")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "x-axis-max")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "y-axis-min")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "y-axis-max")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "x-axis-min")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "x-axis-max")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "y-axis-min")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "y-axis-max")).toBeDefined();
     });
   });
 
@@ -179,7 +186,7 @@ describe("loss-landscape layout", () => {
 
       // 4 trajectory points produce 3 segments.
       const trajSegments = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("traj-segment-")
+        (p) => p.kind === "connection" && p.id.startsWith("traj-segment-"),
       );
       expect(trajSegments.length).toBe(3);
     });
@@ -207,7 +214,7 @@ describe("loss-landscape layout", () => {
 
       const scene = layout(step, mockCanvasSize, {});
 
-      const startPos = scene.primitives.find(p => p.id === "start-pos");
+      const startPos = scene.primitives.find((p) => p.id === "start-pos");
       expect(startPos).toBeDefined();
       expect(startPos?.kind).toBe("element");
     });
@@ -217,7 +224,7 @@ describe("loss-landscape layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const trajSegments = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("traj-segment-")
+        (p) => p.kind === "connection" && p.id.startsWith("traj-segment-"),
       );
       expect(trajSegments.length).toBe(0);
     });
@@ -281,7 +288,7 @@ describe("loss-landscape layout", () => {
       });
 
       const scene = layout(step, mockCanvasSize, {});
-      const ids = scene.primitives.map(p => p.id);
+      const ids = scene.primitives.map((p) => p.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);
     });

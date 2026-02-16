@@ -16,10 +16,10 @@
  * See Phase7_Implementation.md §7.1 — useCatalogSearch.
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { SEARCH_DEBOUNCE_MS } from '@/lib/catalog-constants';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { SEARCH_DEBOUNCE_MS } from "@/lib/catalog-constants";
 
 interface UseCatalogSearchReturn {
   /** Current input field value — updates on every keystroke. */
@@ -34,12 +34,10 @@ interface UseCatalogSearchReturn {
 
 export function useCatalogSearch(
   /** Optional initial query (e.g., from URL params). */
-  initialQuery: string = ''
+  initialQuery: string = "",
 ): UseCatalogSearchReturn {
   const [inputValue, setInputValue] = useState(initialQuery);
-  const [debouncedQuery, setDebouncedQuery] = useState(
-    initialQuery.trim().toLowerCase()
-  );
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery.trim().toLowerCase());
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /**
@@ -64,8 +62,8 @@ export function useCatalogSearch(
     if (timerRef.current !== null) {
       clearTimeout(timerRef.current);
     }
-    setInputValue('');
-    setDebouncedQuery('');
+    setInputValue("");
+    setDebouncedQuery("");
   }, []);
 
   /** Cleanup: cancel any pending timer on unmount. */

@@ -24,20 +24,17 @@
  * See Phase7_Implementation.md §7.2 — useCatalogFilters.
  */
 
-'use client';
+"use client";
 
-import { useState, useMemo, useCallback } from 'react';
-import {
-  type AlgorithmMeta,
-  type DifficultyLevel,
-} from '@/shared/types/step';
+import { useState, useMemo, useCallback } from "react";
+import { type AlgorithmMeta, type DifficultyLevel } from "@/shared/types/step";
 import {
   type CatalogFilterState,
   type CategoryFilter,
   type SortOption,
   DEFAULT_CATALOG_STATE,
   DIFFICULTY_WEIGHT,
-} from '@/lib/catalog-types';
+} from "@/lib/catalog-types";
 
 // ——————————————————————————————————————————————————
 // PURE FUNCTIONS (no React dependency — fully unit-testable)
@@ -63,7 +60,7 @@ import {
  * @returns true if the algorithm matches the query.
  */
 export function matchesSearch(algo: AlgorithmMeta, query: string): boolean {
-  if (query === '') return true;
+  if (query === "") return true;
 
   const nameLower = algo.name.toLowerCase();
   if (nameLower.includes(query)) return true;
@@ -92,19 +89,16 @@ export function matchesSearch(algo: AlgorithmMeta, query: string): boolean {
  */
 export function filterAlgorithms(
   algorithms: readonly AlgorithmMeta[],
-  state: CatalogFilterState
+  state: CatalogFilterState,
 ): AlgorithmMeta[] {
   return algorithms.filter((algo) => {
     // --- Category filter ---
-    if (state.category !== 'all' && algo.category !== state.category) {
+    if (state.category !== "all" && algo.category !== state.category) {
       return false;
     }
 
     // --- Difficulty filter (empty set = show all) ---
-    if (
-      state.difficulties.size > 0 &&
-      !state.difficulties.has(algo.complexity.level)
-    ) {
+    if (state.difficulties.size > 0 && !state.difficulties.has(algo.complexity.level)) {
       return false;
     }
 
@@ -130,42 +124,34 @@ export function filterAlgorithms(
  */
 export function sortAlgorithms(
   algorithms: readonly AlgorithmMeta[],
-  sortBy: SortOption
+  sortBy: SortOption,
 ): AlgorithmMeta[] {
   const sorted = [...algorithms];
 
   switch (sortBy) {
-    case 'name-asc':
-      sorted.sort((a, b) =>
-        a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })
-      );
+    case "name-asc":
+      sorted.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
       break;
 
-    case 'name-desc':
-      sorted.sort((a, b) =>
-        b.name.localeCompare(a.name, 'en', { sensitivity: 'base' })
-      );
+    case "name-desc":
+      sorted.sort((a, b) => b.name.localeCompare(a.name, "en", { sensitivity: "base" }));
       break;
 
-    case 'difficulty-asc':
+    case "difficulty-asc":
       sorted.sort((a, b) => {
         // INVARIANT: DIFFICULTY_WEIGHT values are integers 0–3, strictly ordered.
-        const diff =
-          DIFFICULTY_WEIGHT[a.complexity.level] -
-          DIFFICULTY_WEIGHT[b.complexity.level];
+        const diff = DIFFICULTY_WEIGHT[a.complexity.level] - DIFFICULTY_WEIGHT[b.complexity.level];
         // Secondary sort: alphabetical by name for stable ordering.
         if (diff !== 0) return diff;
-        return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
+        return a.name.localeCompare(b.name, "en", { sensitivity: "base" });
       });
       break;
 
-    case 'difficulty-desc':
+    case "difficulty-desc":
       sorted.sort((a, b) => {
-        const diff =
-          DIFFICULTY_WEIGHT[b.complexity.level] -
-          DIFFICULTY_WEIGHT[a.complexity.level];
+        const diff = DIFFICULTY_WEIGHT[b.complexity.level] - DIFFICULTY_WEIGHT[a.complexity.level];
         if (diff !== 0) return diff;
-        return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
+        return a.name.localeCompare(b.name, "en", { sensitivity: "base" });
       });
       break;
 
@@ -207,7 +193,7 @@ interface UseCatalogFiltersReturn {
 
 export function useCatalogFilters(
   algorithms: readonly AlgorithmMeta[],
-  initialState: CatalogFilterState = DEFAULT_CATALOG_STATE
+  initialState: CatalogFilterState = DEFAULT_CATALOG_STATE,
 ): UseCatalogFiltersReturn {
   const [state, setState] = useState<CatalogFilterState>(initialState);
 

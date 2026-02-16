@@ -57,28 +57,28 @@ interface DomainConfig {
 
 const DOMAINS: DomainConfig[] = [
   {
-    color: "rgba(56, 189, 248, 0.8)",   // classical — blue
+    color: "rgba(56, 189, 248, 0.8)", // classical — blue
     orbitRadius: 0.25,
     nodeCount: 16,
     angularSpeed: 0.15,
     angleOffset: 0,
   },
   {
-    color: "rgba(139, 92, 246, 0.8)",   // deep learning — purple
-    orbitRadius: 0.30,
+    color: "rgba(139, 92, 246, 0.8)", // deep learning — purple
+    orbitRadius: 0.3,
     nodeCount: 16,
     angularSpeed: -0.12,
     angleOffset: Math.PI / 4,
   },
   {
-    color: "rgba(244, 114, 182, 0.8)",  // genai — pink
+    color: "rgba(244, 114, 182, 0.8)", // genai — pink
     orbitRadius: 0.35,
     nodeCount: 16,
-    angularSpeed: 0.10,
+    angularSpeed: 0.1,
     angleOffset: Math.PI / 2,
   },
   {
-    color: "rgba(0, 255, 200, 0.8)",    // quantum — cyan
+    color: "rgba(0, 255, 200, 0.8)", // quantum — cyan
     orbitRadius: 0.22,
     nodeCount: 12,
     angularSpeed: -0.18,
@@ -141,21 +141,16 @@ export function HeroVisualization() {
    *   node.x = cx + r × cos(currentAngle)
    *   node.y = cy + r × sin(currentAngle)
    */
-  const updatePositions = useCallback(
-    (time: number, cx: number, cy: number, minDim: number) => {
-      for (const node of nodesRef.current) {
-        const domain = DOMAINS[node.domainIndex];
-        const currentAngle = node.angle + time * domain.angularSpeed;
-        const r =
-          minDim * domain.orbitRadius +
-          8 * Math.sin(time * 0.5 + node.phaseOffset);
+  const updatePositions = useCallback((time: number, cx: number, cy: number, minDim: number) => {
+    for (const node of nodesRef.current) {
+      const domain = DOMAINS[node.domainIndex];
+      const currentAngle = node.angle + time * domain.angularSpeed;
+      const r = minDim * domain.orbitRadius + 8 * Math.sin(time * 0.5 + node.phaseOffset);
 
-        node.x = cx + r * Math.cos(currentAngle);
-        node.y = cy + r * Math.sin(currentAngle);
-      }
-    },
-    []
-  );
+      node.x = cx + r * Math.cos(currentAngle);
+      node.y = cy + r * Math.sin(currentAngle);
+    }
+  }, []);
 
   /**
    * Render the complete scene: connections, nodes, and center glow.
@@ -215,7 +210,7 @@ export function HeroVisualization() {
       ctx.fillStyle = gradient;
       ctx.fill();
     },
-    []
+    [],
   );
 
   useEffect(() => {

@@ -14,11 +14,7 @@
 // interpolated state becomes the new source and the transition restarts.
 // =============================================================================
 
-import type {
-  PrimitiveScene,
-  AnimationConfig,
-  RenderPrimitive,
-} from "../types";
+import type { PrimitiveScene, AnimationConfig, RenderPrimitive } from "../types";
 
 import { DEFAULT_ANIMATION_DURATION_MS } from "../types";
 import { diffScenes } from "./SceneDiffer";
@@ -51,10 +47,7 @@ export class AnimationManager {
   /** Whether a transition is currently in progress. */
   private isAnimating = false;
 
-  constructor(
-    onFrame: (scene: PrimitiveScene) => void,
-    config?: Partial<AnimationConfig>,
-  ) {
+  constructor(onFrame: (scene: PrimitiveScene) => void, config?: Partial<AnimationConfig>) {
     this.onFrame = onFrame;
     this.config = {
       durationMs: config?.durationMs ?? DEFAULT_ANIMATION_DURATION_MS,

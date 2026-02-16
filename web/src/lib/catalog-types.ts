@@ -9,7 +9,7 @@
  * See Phase7_Implementation.md §4 — Type Definitions.
  */
 
-import { type AlgorithmCategory, type DifficultyLevel } from '@/shared/types/step';
+import { type AlgorithmCategory, type DifficultyLevel } from "@/shared/types/step";
 
 // ——————————————————————————————————————————————————
 // FILTER STATE
@@ -19,7 +19,7 @@ import { type AlgorithmCategory, type DifficultyLevel } from '@/shared/types/ste
  * The "all" sentinel value for the category filter.
  * When active, no category filtering is applied.
  */
-export type CategoryFilter = AlgorithmCategory | 'all';
+export type CategoryFilter = AlgorithmCategory | "all";
 
 /**
  * The complete filter + sort state for the catalog page.
@@ -51,21 +51,17 @@ export interface CatalogFilterState {
  * "difficulty-asc" — Beginner → Expert.
  * "difficulty-desc"— Expert → Beginner.
  */
-export type SortOption =
-  | 'name-asc'
-  | 'name-desc'
-  | 'difficulty-asc'
-  | 'difficulty-desc';
+export type SortOption = "name-asc" | "name-desc" | "difficulty-asc" | "difficulty-desc";
 
 /**
  * Human-readable labels for each sort option.
  * Used in the SortSelector dropdown.
  */
 export const SORT_OPTION_LABELS: Record<SortOption, string> = {
-  'name-asc': 'Name (A → Z)',
-  'name-desc': 'Name (Z → A)',
-  'difficulty-asc': 'Difficulty (Easiest first)',
-  'difficulty-desc': 'Difficulty (Hardest first)',
+  "name-asc": "Name (A → Z)",
+  "name-desc": "Name (Z → A)",
+  "difficulty-asc": "Difficulty (Easiest first)",
+  "difficulty-desc": "Difficulty (Hardest first)",
 } as const;
 
 // ——————————————————————————————————————————————————
@@ -76,10 +72,10 @@ export const SORT_OPTION_LABELS: Record<SortOption, string> = {
  * Default filter state when the catalog page loads without URL params.
  */
 export const DEFAULT_CATALOG_STATE: CatalogFilterState = {
-  category: 'all',
+  category: "all",
   difficulties: new Set<DifficultyLevel>(),
-  searchQuery: '',
-  sortBy: 'name-asc',
+  searchQuery: "",
+  sortBy: "name-asc",
 } as const;
 
 // ——————————————————————————————————————————————————

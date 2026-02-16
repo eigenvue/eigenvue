@@ -11,9 +11,9 @@
  * See Phase7_Implementation.md §12 — Component: SortSelector.
  */
 
-'use client';
+"use client";
 
-import { type SortOption, SORT_OPTION_LABELS } from '@/lib/catalog-types';
+import { type SortOption, SORT_OPTION_LABELS } from "@/lib/catalog-types";
 
 interface SortSelectorProps {
   readonly value: SortOption;
@@ -31,20 +31,20 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
         value={value}
         onChange={(e) => onChange(e.target.value as SortOption)}
         className={[
-          'appearance-none rounded-lg border bg-background-surface',
-          'border-border focus:border-border-focus',
-          'pl-3 pr-8 py-2',
-          'text-sm text-text-secondary',
-          'outline-none transition-colors duration-normal',
-          'cursor-pointer',
-        ].join(' ')}
+          "appearance-none rounded-lg border bg-background-surface",
+          "border-border focus:border-border-focus",
+          "pl-3 pr-8 py-2",
+          "text-sm text-text-secondary",
+          "outline-none transition-colors duration-normal",
+          "cursor-pointer",
+        ].join(" ")}
       >
         {(Object.entries(SORT_OPTION_LABELS) as [SortOption, string][]).map(
           ([optionValue, label]) => (
             <option key={optionValue} value={optionValue}>
               {label}
             </option>
-          )
+          ),
         )}
       </select>
 
@@ -58,11 +58,7 @@ export function SortSelector({ value, onChange }: SortSelectorProps) {
         strokeWidth={2}
         aria-hidden="true"
       >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
       </svg>
     </div>
   );

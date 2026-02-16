@@ -78,33 +78,33 @@ const BIDIRECTIONAL_OFFSET = 12;
 
 const THEME = {
   // --- Node colors ---
-  nodeDefault:   "#1e293b",
-  nodeStroke:    "#475569",
-  nodeLabel:     "#f1f5f9",
-  nodeSubLabel:  "#94a3b8",
-  nodeVisited:   "#38bdf8",
-  nodeCurrent:   "#fbbf24",
-  nodeInQueue:   "#818cf8",
-  nodePath:      "#22c55e",
-  nodeStart:     "#f59e0b",
+  nodeDefault: "#1e293b",
+  nodeStroke: "#475569",
+  nodeLabel: "#f1f5f9",
+  nodeSubLabel: "#94a3b8",
+  nodeVisited: "#38bdf8",
+  nodeCurrent: "#fbbf24",
+  nodeInQueue: "#818cf8",
+  nodePath: "#22c55e",
+  nodeStart: "#f59e0b",
 
   // --- Edge colors ---
-  edgeDefault:   "#475569",
+  edgeDefault: "#475569",
   edgeHighlight: "#60a5fa",
-  edgePath:      "#22c55e",
-  edgeWeight:    "#94a3b8",
-  edgeArrow:     "#64748b",
+  edgePath: "#22c55e",
+  edgeWeight: "#94a3b8",
+  edgeArrow: "#64748b",
 
   // --- Data structure display ---
-  dsBackground:  "rgba(12, 16, 33, 0.8)",
-  dsBorder:      "rgba(160, 168, 192, 0.15)",
-  dsLabel:       "#94a3b8",
-  dsItemBg:      "#1e293b",
-  dsItemText:    "#f1f5f9",
+  dsBackground: "rgba(12, 16, 33, 0.8)",
+  dsBorder: "rgba(160, 168, 192, 0.15)",
+  dsLabel: "#94a3b8",
+  dsItemBg: "#1e293b",
+  dsItemText: "#f1f5f9",
 
   // --- General ---
-  message:       "#cbd5e1",
-  glowRing:      "rgba(251, 191, 36, 0.3)",
+  message: "#cbd5e1",
+  glowRing: "rgba(251, 191, 36, 0.3)",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -139,12 +139,12 @@ interface EdgeInfo {
 
 function resolveNodeColor(colorValue: string): string {
   const map: Record<string, string> = {
-    visited:  THEME.nodeVisited,
-    current:  THEME.nodeCurrent,
-    inQueue:  THEME.nodeInQueue,
-    path:     THEME.nodePath,
-    start:    THEME.nodeStart,
-    default:  THEME.nodeDefault,
+    visited: THEME.nodeVisited,
+    current: THEME.nodeCurrent,
+    inQueue: THEME.nodeInQueue,
+    path: THEME.nodePath,
+    start: THEME.nodeStart,
+    default: THEME.nodeDefault,
   };
   return map[colorValue] ?? colorValue;
 }
@@ -152,8 +152,8 @@ function resolveNodeColor(colorValue: string): string {
 function resolveEdgeColor(colorValue: string): string {
   const map: Record<string, string> = {
     highlight: THEME.edgeHighlight,
-    path:      THEME.edgePath,
-    default:   THEME.edgeDefault,
+    path: THEME.edgePath,
+    default: THEME.edgeDefault,
   };
   return map[colorValue] ?? colorValue;
 }
@@ -288,10 +288,7 @@ function graphNetworkLayout(
         const color = (a.color as string) ?? "highlight";
         for (const e of edgeInfos) {
           // Match edge in either direction for undirected graphs.
-          if (
-            (e.from === from && e.to === to) ||
-            (!e.directed && e.from === to && e.to === from)
-          ) {
+          if ((e.from === from && e.to === to) || (!e.directed && e.from === to && e.to === from)) {
             e.color = resolveEdgeColor(color);
             e.lineWidth = EDGE_HIGHLIGHT_LINE_WIDTH;
           }
@@ -336,10 +333,7 @@ function graphNetworkLayout(
           pathEdgeSet.add(`${fromId}->${toId}`);
           pathEdgeSet.add(`${toId}->${fromId}`); // Mark both directions.
           for (const e of edgeInfos) {
-            if (
-              (e.from === fromId && e.to === toId) ||
-              (e.from === toId && e.to === fromId)
-            ) {
+            if ((e.from === fromId && e.to === toId) || (e.from === toId && e.to === fromId)) {
               e.color = THEME.edgePath;
               e.lineWidth = EDGE_PATH_LINE_WIDTH;
               e.isOnPath = true;
@@ -618,9 +612,7 @@ function graphNetworkLayout(
       if (text === "") continue;
 
       const msgColor =
-        msgType === "success" ? "#22c55e" :
-        msgType === "error"   ? "#ef4444" :
-        THEME.message;
+        msgType === "success" ? "#22c55e" : msgType === "error" ? "#ef4444" : THEME.message;
 
       const msgLabel: AnnotationPrimitive = {
         kind: "annotation",

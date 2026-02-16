@@ -51,8 +51,7 @@ export const easeOutQuad: EasingFunction = (t) => t * (2 - t);
  *   f(0.5) = -2(0.25) + 4(0.5) - 1 = -0.5 + 2 - 1 = 0.5 ✓ (continuity at t=0.5)
  *   f(1) = -2(1) + 4(1) - 1 = 1 ✓
  */
-export const easeInOutQuad: EasingFunction = (t) =>
-  t < 0.5 ? 2 * t * t : -2 * t * t + 4 * t - 1;
+export const easeInOutQuad: EasingFunction = (t) => (t < 0.5 ? 2 * t * t : -2 * t * t + 4 * t - 1);
 
 /**
  * Cubic ease-in: f(t) = t³.

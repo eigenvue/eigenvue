@@ -28,10 +28,7 @@ import type {
  * @param target - The scene to transition to (step N+1).
  * @returns A SceneTransitionPlan with one PrimitiveTransition per unique ID.
  */
-export function diffScenes(
-  source: PrimitiveScene,
-  target: PrimitiveScene,
-): SceneTransitionPlan {
+export function diffScenes(source: PrimitiveScene, target: PrimitiveScene): SceneTransitionPlan {
   // Build index maps for O(1) lookup by ID.
   const sourceMap = new Map<string, RenderPrimitive>();
   for (const p of source.primitives) {

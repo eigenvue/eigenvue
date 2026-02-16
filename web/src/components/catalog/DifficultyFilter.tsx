@@ -14,10 +14,10 @@
  * See Phase7_Implementation.md §10 — Component: DifficultyFilter.
  */
 
-'use client';
+"use client";
 
-import { type DifficultyLevel } from '@/shared/types/step';
-import { DIFFICULTIES } from '@/lib/catalog-constants';
+import { type DifficultyLevel } from "@/shared/types/step";
+import { DIFFICULTIES } from "@/lib/catalog-constants";
 
 interface DifficultyFilterProps {
   readonly activeDifficulties: ReadonlySet<DifficultyLevel>;
@@ -25,11 +25,7 @@ interface DifficultyFilterProps {
   readonly onClear: () => void;
 }
 
-export function DifficultyFilter({
-  activeDifficulties,
-  onToggle,
-  onClear,
-}: DifficultyFilterProps) {
+export function DifficultyFilter({ activeDifficulties, onToggle, onClear }: DifficultyFilterProps) {
   const hasSelection = activeDifficulties.size > 0;
 
   return (
@@ -38,9 +34,7 @@ export function DifficultyFilter({
       aria-label="Filter by difficulty level"
       className="flex flex-wrap items-center gap-2"
     >
-      <span className="text-xs font-medium text-text-tertiary mr-1">
-        Difficulty:
-      </span>
+      <span className="text-xs font-medium text-text-tertiary mr-1">Difficulty:</span>
 
       {DIFFICULTIES.map((diff) => {
         const isActive = activeDifficulties.has(diff.id);
@@ -51,12 +45,12 @@ export function DifficultyFilter({
             aria-pressed={isActive}
             onClick={() => onToggle(diff.id)}
             className={[
-              'rounded-full border px-3 py-1 text-xs font-medium',
-              'transition-all duration-fast',
+              "rounded-full border px-3 py-1 text-xs font-medium",
+              "transition-all duration-fast",
               isActive
                 ? `${diff.colorClass} ${diff.bgClass} border-current/30`
-                : 'text-text-tertiary bg-transparent border-border hover:border-border-hover hover:text-text-secondary',
-            ].join(' ')}
+                : "text-text-tertiary bg-transparent border-border hover:border-border-hover hover:text-text-secondary",
+            ].join(" ")}
           >
             {diff.label}
           </button>

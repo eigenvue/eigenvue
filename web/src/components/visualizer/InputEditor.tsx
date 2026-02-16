@@ -49,14 +49,25 @@ export function InputEditor({ meta, currentInputs, onRun }: InputEditorProps) {
     const newErrors: Record<string, string> = {};
     const schema = meta.inputs.schema as Record<
       string,
-      { type: string; items?: { type: string }; minItems?: number; maxItems?: number; sorted?: boolean; minimum?: number; maximum?: number }
+      {
+        type: string;
+        items?: { type: string };
+        minItems?: number;
+        maxItems?: number;
+        sorted?: boolean;
+        minimum?: number;
+        maximum?: number;
+      }
     >;
 
     for (const [key, fieldSchema] of Object.entries(schema)) {
       const raw = inputs[key] ?? "";
 
       if (fieldSchema.type === "array") {
-        const parts = raw.split(",").map((s) => s.trim()).filter((s) => s !== "");
+        const parts = raw
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s !== "");
         const nums = parts.map(Number);
 
         if (parts.length === 0) {
@@ -125,9 +136,7 @@ export function InputEditor({ meta, currentInputs, onRun }: InputEditorProps) {
 
   return (
     <div className="bg-background-surface rounded-lg border border-border p-4 space-y-3">
-      <h3 className="text-xs font-mono text-text-tertiary uppercase tracking-wider">
-        Inputs
-      </h3>
+      <h3 className="text-xs font-mono text-text-tertiary uppercase tracking-wider">Inputs</h3>
 
       {/* Example presets dropdown */}
       <div>
@@ -152,33 +161,31 @@ export function InputEditor({ meta, currentInputs, onRun }: InputEditorProps) {
       </div>
 
       {/* Input fields */}
-      {Object.entries(meta.inputs.schema as Record<string, { type: string; description?: string }>).map(
-        ([key, fieldSchema]) => (
-          <div key={key}>
-            <label className="text-xs text-text-secondary" htmlFor={`input-${key}`}>
-              {key}
-              {fieldSchema.description && (
-                <span className="text-text-disabled ml-1">— {fieldSchema.description}</span>
-              )}
-            </label>
-            <input
-              id={`input-${key}`}
-              type="text"
-              value={inputs[key] ?? ""}
-              onChange={(e) => setInputs((prev) => ({ ...prev, [key]: e.target.value }))}
-              className={`
+      {Object.entries(
+        meta.inputs.schema as Record<string, { type: string; description?: string }>,
+      ).map(([key, fieldSchema]) => (
+        <div key={key}>
+          <label className="text-xs text-text-secondary" htmlFor={`input-${key}`}>
+            {key}
+            {fieldSchema.description && (
+              <span className="text-text-disabled ml-1">— {fieldSchema.description}</span>
+            )}
+          </label>
+          <input
+            id={`input-${key}`}
+            type="text"
+            value={inputs[key] ?? ""}
+            onChange={(e) => setInputs((prev) => ({ ...prev, [key]: e.target.value }))}
+            className={`
                 mt-1 w-full px-3 py-1.5 text-sm font-mono rounded-md
                 bg-background-elevated text-text-primary border
                 ${errors[key] ? "border-red-500" : "border-border"}
                 focus:outline-none focus:border-border-focus
               `}
-            />
-            {errors[key] && (
-              <p className="text-xs text-red-400 mt-1">{errors[key]}</p>
-            )}
-          </div>
-        ),
-      )}
+          />
+          {errors[key] && <p className="text-xs text-red-400 mt-1">{errors[key]}</p>}
+        </div>
+      ))}
 
       {/* Run button */}
       <button

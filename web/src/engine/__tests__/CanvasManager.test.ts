@@ -24,9 +24,7 @@ function createMockContext(): CanvasRenderingContext2D {
   } as unknown as CanvasRenderingContext2D;
 }
 
-function createMockCanvas(
-  ctxOverride?: CanvasRenderingContext2D | null,
-): HTMLCanvasElement {
+function createMockCanvas(ctxOverride?: CanvasRenderingContext2D | null): HTMLCanvasElement {
   const ctx = ctxOverride === undefined ? createMockContext() : ctxOverride;
   const canvas = {
     getContext: vi.fn().mockReturnValue(ctx),
@@ -55,12 +53,15 @@ beforeEach(() => {
   mockObserverDisconnect = vi.fn();
   mockObserverObserve = vi.fn();
 
-  vi.stubGlobal("ResizeObserver", class MockResizeObserver {
-    constructor(_callback: ResizeObserverCallback) {}
-    observe = mockObserverObserve;
-    unobserve = vi.fn();
-    disconnect = mockObserverDisconnect;
-  });
+  vi.stubGlobal(
+    "ResizeObserver",
+    class MockResizeObserver {
+      constructor(_callback: ResizeObserverCallback) {}
+      observe = mockObserverObserve;
+      unobserve = vi.fn();
+      disconnect = mockObserverDisconnect;
+    },
+  );
 
   vi.stubGlobal("requestAnimationFrame", vi.fn().mockReturnValue(1));
   vi.stubGlobal("cancelAnimationFrame", vi.fn());
@@ -87,9 +88,7 @@ describe("CanvasManager", () => {
     it("throws if getContext('2d') returns null", () => {
       const canvas = createMockCanvas(null);
 
-      expect(() => new CanvasManager(canvas)).toThrow(
-        "Failed to get Canvas 2D rendering context.",
-      );
+      expect(() => new CanvasManager(canvas)).toThrow("Failed to get Canvas 2D rendering context.");
     });
 
     it("succeeds with a valid 2D context", () => {

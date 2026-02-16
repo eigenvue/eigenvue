@@ -26,8 +26,7 @@ const HARDCODED_STEPS: Step[] = [
     index: 0,
     id: "initialize",
     title: "Initialize Pointers",
-    explanation:
-      "Searching for 7 in a sorted array of 7 elements. Setting left=0, right=6.",
+    explanation: "Searching for 7 in a sorted array of 7 elements. Setting left=0, right=6.",
     state: {
       array: [1, 3, 5, 7, 9, 11, 13],
       target: 7,
@@ -47,8 +46,7 @@ const HARDCODED_STEPS: Step[] = [
     index: 1,
     id: "calculate_mid",
     title: "Calculate Middle",
-    explanation:
-      "mid = floor((0 + 6) / 2) = 3. Checking array[3] = 7.",
+    explanation: "mid = floor((0 + 6) / 2) = 3. Checking array[3] = 7.",
     state: {
       array: [1, 3, 5, 7, 9, 11, 13],
       target: 7,
@@ -71,8 +69,7 @@ const HARDCODED_STEPS: Step[] = [
     index: 2,
     id: "found",
     title: "Target Found!",
-    explanation:
-      "array[3] = 7 equals target 7. Found at index 3!",
+    explanation: "array[3] = 7 equals target 7. Found at index 3!",
     state: {
       array: [1, 3, 5, 7, 9, 11, 13],
       target: 7,
@@ -102,8 +99,7 @@ const NOT_FOUND_STEPS: Step[] = [
     index: 0,
     id: "initialize",
     title: "Initialize Pointers",
-    explanation:
-      "Searching for 2 in a sorted array of 7 elements. Setting left=0, right=6.",
+    explanation: "Searching for 2 in a sorted array of 7 elements. Setting left=0, right=6.",
     state: {
       array: [1, 3, 5, 7, 9, 11, 13],
       target: 2,
@@ -123,8 +119,7 @@ const NOT_FOUND_STEPS: Step[] = [
     index: 1,
     id: "calculate_mid_1",
     title: "Calculate Middle",
-    explanation:
-      "mid = floor((0 + 6) / 2) = 3. Checking array[3] = 7.",
+    explanation: "mid = floor((0 + 6) / 2) = 3. Checking array[3] = 7.",
     state: {
       array: [1, 3, 5, 7, 9, 11, 13],
       target: 2,
@@ -147,8 +142,7 @@ const NOT_FOUND_STEPS: Step[] = [
     index: 2,
     id: "go_left",
     title: "Target Is Smaller \u2014 Go Left",
-    explanation:
-      "7 > 2, so the target is in the left half. Setting right = mid - 1 = 2.",
+    explanation: "7 > 2, so the target is in the left half. Setting right = mid - 1 = 2.",
     state: {
       array: [1, 3, 5, 7, 9, 11, 13],
       target: 2,
@@ -170,8 +164,7 @@ const NOT_FOUND_STEPS: Step[] = [
     index: 3,
     id: "calculate_mid_2",
     title: "Calculate Middle",
-    explanation:
-      "mid = floor((0 + 2) / 2) = 1. Checking array[1] = 3.",
+    explanation: "mid = floor((0 + 2) / 2) = 1. Checking array[1] = 3.",
     state: {
       array: [1, 3, 5, 7, 9, 11, 13],
       target: 2,
@@ -195,8 +188,7 @@ const NOT_FOUND_STEPS: Step[] = [
     index: 4,
     id: "go_left_2",
     title: "Target Is Smaller \u2014 Go Left",
-    explanation:
-      "3 > 2, so the target is in the left half. Setting right = mid - 1 = 0.",
+    explanation: "3 > 2, so the target is in the left half. Setting right = mid - 1 = 0.",
     state: {
       array: [1, 3, 5, 7, 9, 11, 13],
       target: 2,
@@ -218,8 +210,7 @@ const NOT_FOUND_STEPS: Step[] = [
     index: 5,
     id: "calculate_mid_3",
     title: "Calculate Middle",
-    explanation:
-      "mid = floor((0 + 0) / 2) = 0. Checking array[0] = 1.",
+    explanation: "mid = floor((0 + 0) / 2) = 0. Checking array[0] = 1.",
     state: {
       array: [1, 3, 5, 7, 9, 11, 13],
       target: 2,
@@ -250,9 +241,7 @@ const NOT_FOUND_STEPS: Step[] = [
       left: 1,
       right: 0,
     },
-    visualActions: [
-      { type: "dimRange", from: 0, to: 6 },
-    ],
+    visualActions: [{ type: "dimRange", from: 0, to: 6 }],
     codeHighlight: { language: "pseudocode", lines: [12, 13] },
     isTerminal: false,
     phase: "search",
@@ -261,8 +250,7 @@ const NOT_FOUND_STEPS: Step[] = [
     index: 7,
     id: "not_found",
     title: "Target Not Found",
-    explanation:
-      "Search space exhausted. 2 is not in the array.",
+    explanation: "Search space exhausted. 2 is not in the array.",
     state: {
       array: [1, 3, 5, 7, 9, 11, 13],
       target: 2,
@@ -270,10 +258,7 @@ const NOT_FOUND_STEPS: Step[] = [
       right: 0,
       result: -1,
     },
-    visualActions: [
-      { type: "dimRange", from: 0, to: 6 },
-      { type: "markNotFound" },
-    ],
+    visualActions: [{ type: "dimRange", from: 0, to: 6 }, { type: "markNotFound" }],
     codeHighlight: { language: "pseudocode", lines: [15] },
     isTerminal: true,
     phase: "result",
@@ -290,16 +275,14 @@ const STEP_SETS = {
 };
 
 export default function RendererTestPage() {
-  const [activeSet, setActiveSet] =
-    useState<keyof typeof STEP_SETS>("Found (target=7)");
+  const [activeSet, setActiveSet] = useState<keyof typeof STEP_SETS>("Found (target=7)");
   const steps = STEP_SETS[activeSet];
   const [stepIndex, setStepIndex] = useState(0);
 
   const currentStep = steps[stepIndex]!;
 
   const handlePrev = () => setStepIndex((i) => Math.max(0, i - 1));
-  const handleNext = () =>
-    setStepIndex((i) => Math.min(steps.length - 1, i + 1));
+  const handleNext = () => setStepIndex((i) => Math.min(steps.length - 1, i + 1));
 
   const handleSetChange = (name: keyof typeof STEP_SETS) => {
     setActiveSet(name);
@@ -325,27 +308,25 @@ export default function RendererTestPage() {
 
       {/* Dataset selector */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        {(Object.keys(STEP_SETS) as Array<keyof typeof STEP_SETS>).map(
-          (name) => (
-            <button
-              key={name}
-              onClick={() => handleSetChange(name)}
-              style={{
-                padding: "6px 14px",
-                borderRadius: 6,
-                border: "1px solid",
-                borderColor: activeSet === name ? "#38bdf8" : "#475569",
-                background: activeSet === name ? "#1e3a5f" : "transparent",
-                color: activeSet === name ? "#38bdf8" : "#94a3b8",
-                cursor: "pointer",
-                fontSize: 13,
-                fontWeight: activeSet === name ? 600 : 400,
-              }}
-            >
-              {name}
-            </button>
-          ),
-        )}
+        {(Object.keys(STEP_SETS) as Array<keyof typeof STEP_SETS>).map((name) => (
+          <button
+            key={name}
+            onClick={() => handleSetChange(name)}
+            style={{
+              padding: "6px 14px",
+              borderRadius: 6,
+              border: "1px solid",
+              borderColor: activeSet === name ? "#38bdf8" : "#475569",
+              background: activeSet === name ? "#1e3a5f" : "transparent",
+              color: activeSet === name ? "#38bdf8" : "#94a3b8",
+              cursor: "pointer",
+              fontSize: 13,
+              fontWeight: activeSet === name ? 600 : 400,
+            }}
+          >
+            {name}
+          </button>
+        ))}
       </div>
 
       {/* Visualization canvas */}
@@ -404,11 +385,9 @@ export default function RendererTestPage() {
             padding: "8px 18px",
             borderRadius: 6,
             border: "none",
-            background:
-              stepIndex === steps.length - 1 ? "#1e293b" : "#38bdf8",
+            background: stepIndex === steps.length - 1 ? "#1e293b" : "#38bdf8",
             color: stepIndex === steps.length - 1 ? "#475569" : "#0f172a",
-            cursor:
-              stepIndex === steps.length - 1 ? "not-allowed" : "pointer",
+            cursor: stepIndex === steps.length - 1 ? "not-allowed" : "pointer",
             fontSize: 14,
             fontWeight: 600,
           }}
@@ -427,9 +406,7 @@ export default function RendererTestPage() {
           maxWidth: 900,
         }}
       >
-        <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>
-          {currentStep.title}
-        </div>
+        <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>{currentStep.title}</div>
         <div style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.5 }}>
           {currentStep.explanation}
         </div>

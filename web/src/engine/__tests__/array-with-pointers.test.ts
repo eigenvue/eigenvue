@@ -8,7 +8,13 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { getLayout } from "../layouts/registry";
-import type { Step, CanvasSize, LayoutFunction, ElementPrimitive, AnnotationPrimitive } from "../types";
+import type {
+  Step,
+  CanvasSize,
+  LayoutFunction,
+  ElementPrimitive,
+  AnnotationPrimitive,
+} from "../types";
 
 // Import the layout module to trigger self-registration.
 import "../layouts/array-with-pointers";
@@ -77,7 +83,7 @@ describe("array-with-pointers layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       // Should have exactly 7 element primitives (one per array cell).
-      const elements = scene.primitives.filter(p => p.kind === "element");
+      const elements = scene.primitives.filter((p) => p.kind === "element");
       expect(elements.length).toBe(7);
 
       // Verify IDs are stable and sequential.
@@ -99,15 +105,13 @@ describe("array-with-pointers layout", () => {
         title: "Highlight",
         explanation: "Highlighting cell 3.",
         state: { array: [1, 3, 5, 7, 9, 11, 13] },
-        visualActions: [
-          { type: "highlightElement", index: 3 },
-        ],
+        visualActions: [{ type: "highlightElement", index: 3 }],
         codeHighlight: { language: "python", lines: [] },
         isTerminal: false,
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const cell3 = scene.primitives.find(p => p.id === "cell-3");
+      const cell3 = scene.primitives.find((p) => p.id === "cell-3");
 
       expect(cell3).toBeDefined();
       expect((cell3 as ElementPrimitive).fillColor).toBe("#38bdf8"); // THEME.highlight
@@ -120,15 +124,13 @@ describe("array-with-pointers layout", () => {
         title: "Move Pointer",
         explanation: "Moving 'mid' pointer to index 3.",
         state: { array: [1, 3, 5, 7, 9, 11, 13] },
-        visualActions: [
-          { type: "movePointer", id: "mid", to: 3 },
-        ],
+        visualActions: [{ type: "movePointer", id: "mid", to: 3 }],
         codeHighlight: { language: "python", lines: [] },
         isTerminal: false,
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const pointer = scene.primitives.find(p => p.id === "pointer-mid");
+      const pointer = scene.primitives.find((p) => p.id === "pointer-mid");
 
       expect(pointer).toBeDefined();
       expect(pointer?.kind).toBe("annotation");
@@ -136,7 +138,7 @@ describe("array-with-pointers layout", () => {
       expect((pointer as AnnotationPrimitive).text).toBe("mid");
 
       // The pointer's x should align with cell-3's center x.
-      const cell3 = scene.primitives.find(p => p.id === "cell-3");
+      const cell3 = scene.primitives.find((p) => p.id === "cell-3");
       expect((pointer as AnnotationPrimitive).x).toBe((cell3 as ElementPrimitive).x);
     });
 
@@ -156,8 +158,8 @@ describe("array-with-pointers layout", () => {
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const pointerLeft = scene.primitives.find(p => p.id === "pointer-left");
-      const pointerRight = scene.primitives.find(p => p.id === "pointer-right");
+      const pointerLeft = scene.primitives.find((p) => p.id === "pointer-left");
+      const pointerRight = scene.primitives.find((p) => p.id === "pointer-right");
 
       expect(pointerLeft).toBeDefined();
       expect(pointerRight).toBeDefined();
@@ -166,7 +168,9 @@ describe("array-with-pointers layout", () => {
       expect((pointerLeft as AnnotationPrimitive).x).toBe((pointerRight as AnnotationPrimitive).x);
 
       // They should have different y (staggered vertically).
-      expect((pointerLeft as AnnotationPrimitive).y).not.toBe((pointerRight as AnnotationPrimitive).y);
+      expect((pointerLeft as AnnotationPrimitive).y).not.toBe(
+        (pointerRight as AnnotationPrimitive).y,
+      );
     });
 
     it("applies markFound action: green cell and 'Found!' badge", () => {
@@ -176,16 +180,14 @@ describe("array-with-pointers layout", () => {
         title: "Found",
         explanation: "Target found at index 5.",
         state: { array: [1, 3, 5, 7, 9, 11, 13] },
-        visualActions: [
-          { type: "markFound", index: 5 },
-        ],
+        visualActions: [{ type: "markFound", index: 5 }],
         codeHighlight: { language: "python", lines: [] },
         isTerminal: false,
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const cell5 = scene.primitives.find(p => p.id === "cell-5");
-      const badge = scene.primitives.find(p => p.id === "badge-found");
+      const cell5 = scene.primitives.find((p) => p.id === "cell-5");
+      const badge = scene.primitives.find((p) => p.id === "badge-found");
 
       expect(cell5).toBeDefined();
       expect((cell5 as ElementPrimitive).fillColor).toBe("#22c55e"); // THEME.found (green)
@@ -203,15 +205,13 @@ describe("array-with-pointers layout", () => {
         title: "Not Found",
         explanation: "Target not in array.",
         state: { array: [1, 3, 5, 7, 9, 11, 13] },
-        visualActions: [
-          { type: "markNotFound" },
-        ],
+        visualActions: [{ type: "markNotFound" }],
         codeHighlight: { language: "python", lines: [] },
         isTerminal: false,
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const label = scene.primitives.find(p => p.id === "label-not-found");
+      const label = scene.primitives.find((p) => p.id === "label-not-found");
 
       expect(label).toBeDefined();
       expect(label?.kind).toBe("annotation");
@@ -250,8 +250,8 @@ describe("array-with-pointers layout", () => {
       const scene1 = layout(step1, mockCanvasSize, {});
       const scene2 = layout(step2, mockCanvasSize, {});
 
-      const ids1 = scene1.primitives.filter(p => p.kind === "element").map(p => p.id);
-      const ids2 = scene2.primitives.filter(p => p.kind === "element").map(p => p.id);
+      const ids1 = scene1.primitives.filter((p) => p.kind === "element").map((p) => p.id);
+      const ids2 = scene2.primitives.filter((p) => p.kind === "element").map((p) => p.id);
 
       // Cell IDs must be the same across both steps.
       expect(ids1).toEqual(ids2);
@@ -286,8 +286,8 @@ describe("array-with-pointers layout", () => {
       const scene1 = layout(step1, mockCanvasSize, {});
       const scene2 = layout(step2, mockCanvasSize, {});
 
-      const pointer1 = scene1.primitives.find(p => p.id === "pointer-ptr");
-      const pointer2 = scene2.primitives.find(p => p.id === "pointer-ptr");
+      const pointer1 = scene1.primitives.find((p) => p.id === "pointer-ptr");
+      const pointer2 = scene2.primitives.find((p) => p.id === "pointer-ptr");
 
       expect(pointer1).toBeDefined();
       expect(pointer2).toBeDefined();
@@ -330,7 +330,7 @@ describe("array-with-pointers layout", () => {
 
       // Pointer should not be created.
       const scene = layout(step, mockCanvasSize, {});
-      const pointer = scene.primitives.find(p => p.id === "pointer-ptr");
+      const pointer = scene.primitives.find((p) => p.id === "pointer-ptr");
       expect(pointer).toBeUndefined();
     });
 

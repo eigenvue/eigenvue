@@ -23,7 +23,7 @@ interface ObserverOptions {
 
 export function useIntersectionObserver(
   ref: RefObject<Element | null>,
-  options: ObserverOptions = {}
+  options: ObserverOptions = {},
 ): boolean {
   const { threshold = 0.1, rootMargin = "0px", triggerOnce = true } = options;
   const [isVisible, setIsVisible] = useState(false);
@@ -43,7 +43,7 @@ export function useIntersectionObserver(
           setIsVisible(false);
         }
       },
-      { threshold, rootMargin }
+      { threshold, rootMargin },
     );
 
     observer.observe(element);

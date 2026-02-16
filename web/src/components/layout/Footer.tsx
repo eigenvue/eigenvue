@@ -45,13 +45,11 @@ export function Footer() {
           {/* Link columns */}
           {Object.entries(FOOTER_LINKS).map(([category, links]) => (
             <div key={category}>
-              <h3 className="text-sm font-semibold text-text-primary">
-                {category}
-              </h3>
+              <h3 className="text-sm font-semibold text-text-primary">{category}</h3>
               <ul className="mt-3 space-y-2" role="list">
                 {links.map((link) => (
                   <li key={link.href}>
-                    {link.href.startsWith('http') ? (
+                    {link.href.startsWith("http") ? (
                       <a
                         href={link.href}
                         className="text-sm text-text-tertiary transition-colors duration-fast hover:text-text-secondary"

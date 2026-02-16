@@ -19,20 +19,16 @@
  * See Phase7_Implementation.md §15 — Component: EmptyState.
  */
 
-import Link from 'next/link';
+import Link from "next/link";
 
 interface EmptyStateProps {
-  readonly type: 'no-results' | 'empty-category';
+  readonly type: "no-results" | "empty-category";
   readonly onClearFilters?: () => void;
   /** Category name for context in empty-category mode. */
   readonly categoryName?: string;
 }
 
-export function EmptyState({
-  type,
-  onClearFilters,
-  categoryName,
-}: EmptyStateProps) {
+export function EmptyState({ type, onClearFilters, categoryName }: EmptyStateProps) {
   return (
     <div
       className="flex flex-col items-center justify-center py-20 text-center"
@@ -50,7 +46,7 @@ export function EmptyState({
           strokeWidth={1.5}
           aria-hidden="true"
         >
-          {type === 'no-results' ? (
+          {type === "no-results" ? (
             /* Search-not-found icon */
             <path
               strokeLinecap="round"
@@ -70,20 +66,20 @@ export function EmptyState({
 
       {/* Title */}
       <h3 className="mb-2 text-lg font-semibold text-text-primary">
-        {type === 'no-results'
-          ? 'No algorithms found'
-          : `${categoryName ?? 'This category'} — Coming Soon`}
+        {type === "no-results"
+          ? "No algorithms found"
+          : `${categoryName ?? "This category"} — Coming Soon`}
       </h3>
 
       {/* Description */}
       <p className="mb-6 max-w-sm text-sm text-text-secondary">
-        {type === 'no-results'
+        {type === "no-results"
           ? "Try adjusting your search or filters to find what you're looking for."
-          : 'We\'re working on adding algorithms to this category. Check back soon, or explore other categories in the meantime.'}
+          : "We're working on adding algorithms to this category. Check back soon, or explore other categories in the meantime."}
       </p>
 
       {/* CTA */}
-      {type === 'no-results' && onClearFilters ? (
+      {type === "no-results" && onClearFilters ? (
         <button
           onClick={onClearFilters}
           className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary hover:border-border-hover transition-all duration-normal"

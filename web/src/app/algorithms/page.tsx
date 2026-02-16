@@ -24,14 +24,14 @@
  * See Phase7_Implementation.md §17 — Page: /algorithms.
  */
 
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import { getAllAlgorithms } from '@/lib/algorithm-registry';
-import { type AlgorithmMeta } from '@/shared/types/step';
-import { buildCatalogMetadata } from '@/lib/seo';
-import { buildCatalogJsonLd } from '@/lib/json-ld';
-import { JsonLd } from '@/components/seo/JsonLd';
-import { CatalogPageClient } from './CatalogPageClient';
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import { getAllAlgorithms } from "@/lib/algorithm-registry";
+import { type AlgorithmMeta } from "@/shared/types/step";
+import { buildCatalogMetadata } from "@/lib/seo";
+import { buildCatalogJsonLd } from "@/lib/json-ld";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { CatalogPageClient } from "./CatalogPageClient";
 
 // ——————————————————————————————————————————————————
 // METADATA (SEO) — Phase 10 Enhanced
@@ -59,14 +59,11 @@ export default function AlgorithmsPage() {
    */
   const categoryCounts: Record<string, number> = {};
   for (const algo of algorithms) {
-    categoryCounts[algo.category] =
-      (categoryCounts[algo.category] ?? 0) + 1;
+    categoryCounts[algo.category] = (categoryCounts[algo.category] ?? 0) + 1;
   }
 
   // Build JSON-LD ItemList for the catalog.
-  const catalogJsonLd = buildCatalogJsonLd(
-    algorithms.map((a) => ({ id: a.id, name: a.name })),
-  );
+  const catalogJsonLd = buildCatalogJsonLd(algorithms.map((a) => ({ id: a.id, name: a.name })));
 
   return (
     <>

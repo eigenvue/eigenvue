@@ -129,7 +129,7 @@ const ALGORITHM_REGISTRY: Record<string, RegistryEntry> = {
       ),
     precomputed: null,
   },
-  "quicksort": {
+  quicksort: {
     meta: () =>
       import("@/../../algorithms/classical/quicksort/meta.json").then(
         (m) => m.default as AlgorithmMeta,
@@ -151,29 +151,25 @@ const ALGORITHM_REGISTRY: Record<string, RegistryEntry> = {
       ),
     precomputed: null,
   },
-  "bfs": {
+  bfs: {
     meta: () =>
-      import("@/../../algorithms/classical/bfs/meta.json").then(
-        (m) => m.default as AlgorithmMeta,
-      ),
+      import("@/../../algorithms/classical/bfs/meta.json").then((m) => m.default as AlgorithmMeta),
     generator: () =>
       import("@/../../algorithms/classical/bfs/generator").then(
         (m) => m.default as GeneratorDefinition<Record<string, unknown>>,
       ),
     precomputed: null,
   },
-  "dfs": {
+  dfs: {
     meta: () =>
-      import("@/../../algorithms/classical/dfs/meta.json").then(
-        (m) => m.default as AlgorithmMeta,
-      ),
+      import("@/../../algorithms/classical/dfs/meta.json").then((m) => m.default as AlgorithmMeta),
     generator: () =>
       import("@/../../algorithms/classical/dfs/generator").then(
         (m) => m.default as GeneratorDefinition<Record<string, unknown>>,
       ),
     precomputed: null,
   },
-  "dijkstra": {
+  dijkstra: {
     meta: () =>
       import("@/../../algorithms/classical/dijkstra/meta.json").then(
         (m) => m.default as AlgorithmMeta,
@@ -245,7 +241,7 @@ const ALGORITHM_REGISTRY: Record<string, RegistryEntry> = {
 
   // ── Phase 9: Deep Learning Algorithms ───────────────────────────────────────
 
-  "perceptron": {
+  perceptron: {
     meta: () =>
       import("@/../../algorithms/deep-learning/perceptron/meta.json").then(
         (m) => m.default as AlgorithmMeta,
@@ -267,7 +263,7 @@ const ALGORITHM_REGISTRY: Record<string, RegistryEntry> = {
       ),
     precomputed: null,
   },
-  "backpropagation": {
+  backpropagation: {
     meta: () =>
       import("@/../../algorithms/deep-learning/backpropagation/meta.json").then(
         (m) => m.default as AlgorithmMeta,
@@ -278,7 +274,7 @@ const ALGORITHM_REGISTRY: Record<string, RegistryEntry> = {
       ),
     precomputed: null,
   },
-  "convolution": {
+  convolution: {
     meta: () =>
       import("@/../../algorithms/deep-learning/convolution/meta.json").then(
         (m) => m.default as AlgorithmMeta,

@@ -63,11 +63,7 @@ export async function generateMetadata({
 
 // ─── Page Component — enhanced in Phase 10 ────────────────────────────────────
 
-export default async function AlgorithmPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function AlgorithmPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const algorithm = await loadAlgorithm(id);
 

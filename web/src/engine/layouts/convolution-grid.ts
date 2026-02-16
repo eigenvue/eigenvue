@@ -34,22 +34,22 @@ const FONT_SIZE_VALUE = 11;
 const FONT_SIZE_GRID_TITLE = 13;
 
 const THEME = {
-  inputCell:        "#1e293b",
-  inputStroke:      "#334155",
-  kernelCell:       "#1e293b",
-  kernelStroke:     "#f59e0b",
-  outputCell:       "#1e293b",
-  outputStroke:     "#334155",
-  outputFilled:     "#065f46",
+  inputCell: "#1e293b",
+  inputStroke: "#334155",
+  kernelCell: "#1e293b",
+  kernelStroke: "#f59e0b",
+  outputCell: "#1e293b",
+  outputStroke: "#334155",
+  outputFilled: "#065f46",
   outputFilledStroke: "#22c55e",
-  highlightCell:    "#1e3a5f",
-  highlightStroke:  "#38bdf8",
-  productOverlay:   "#7c3aed",
-  valueText:        "#e2e8f0",
-  labelText:        "#94a3b8",
-  titleText:        "#e2e8f0",
-  sumBadge:         "#22c55e",
-  sumBadgeText:     "#ffffff",
+  highlightCell: "#1e3a5f",
+  highlightStroke: "#38bdf8",
+  productOverlay: "#7c3aed",
+  valueText: "#e2e8f0",
+  labelText: "#94a3b8",
+  titleText: "#e2e8f0",
+  sumBadge: "#22c55e",
+  sumBadgeText: "#ffffff",
 } as const;
 
 /**
@@ -150,9 +150,12 @@ function convolutionGridLayout(
     fontSize: FONT_SIZE_GRID_TITLE,
     textColor: THEME.titleText,
     color: THEME.titleText,
-    pointerHeight: 0, pointerWidth: 0,
-    bracketWidth: 0, bracketTickHeight: 0,
-    badgePaddingX: 0, badgePaddingY: 0,
+    pointerHeight: 0,
+    pointerWidth: 0,
+    bracketWidth: 0,
+    bracketTickHeight: 0,
+    badgePaddingX: 0,
+    badgePaddingY: 0,
     opacity: 1,
     zIndex: Z_INDEX.ANNOTATION,
   };
@@ -165,15 +168,20 @@ function convolutionGridLayout(
       const cy = gridTopY + r * (CELL_SIZE + CELL_GAP) + CELL_SIZE / 2;
 
       // Check if this cell is under the kernel highlight
-      const isHighlighted = highlightRow >= 0 &&
-        r >= highlightRow && r < highlightRow + highlightKH &&
-        c >= highlightCol && c < highlightCol + highlightKW;
+      const isHighlighted =
+        highlightRow >= 0 &&
+        r >= highlightRow &&
+        r < highlightRow + highlightKH &&
+        c >= highlightCol &&
+        c < highlightCol + highlightKW;
 
       const cell: ElementPrimitive = {
         kind: "element",
         id: `input-cell-${r}-${c}`,
-        x: cx, y: cy,
-        width: CELL_SIZE, height: CELL_SIZE,
+        x: cx,
+        y: cy,
+        width: CELL_SIZE,
+        height: CELL_SIZE,
         shape: "roundedRect",
         cornerRadius: 4,
         fillColor: isHighlighted ? THEME.highlightCell : cellValueColor(value),
@@ -207,9 +215,12 @@ function convolutionGridLayout(
             fontSize: 9,
             textColor: "#ffffff",
             color: THEME.productOverlay,
-            pointerHeight: 0, pointerWidth: 0,
-            bracketWidth: 0, bracketTickHeight: 0,
-            badgePaddingX: 3, badgePaddingY: 1,
+            pointerHeight: 0,
+            pointerWidth: 0,
+            bracketWidth: 0,
+            bracketTickHeight: 0,
+            badgePaddingX: 3,
+            badgePaddingY: 1,
             opacity: 0.9,
             zIndex: Z_INDEX.ANNOTATION + 5,
           };
@@ -231,9 +242,12 @@ function convolutionGridLayout(
     fontSize: FONT_SIZE_GRID_TITLE,
     textColor: THEME.titleText,
     color: THEME.titleText,
-    pointerHeight: 0, pointerWidth: 0,
-    bracketWidth: 0, bracketTickHeight: 0,
-    badgePaddingX: 0, badgePaddingY: 0,
+    pointerHeight: 0,
+    pointerWidth: 0,
+    bracketWidth: 0,
+    bracketTickHeight: 0,
+    badgePaddingX: 0,
+    badgePaddingY: 0,
     opacity: 1,
     zIndex: Z_INDEX.ANNOTATION,
   };
@@ -248,8 +262,10 @@ function convolutionGridLayout(
       const cell: ElementPrimitive = {
         kind: "element",
         id: `kernel-cell-${kr}-${kc}`,
-        x: cx, y: cy,
-        width: CELL_SIZE, height: CELL_SIZE,
+        x: cx,
+        y: cy,
+        width: CELL_SIZE,
+        height: CELL_SIZE,
         shape: "roundedRect",
         cornerRadius: 4,
         fillColor: cellValueColor(value),
@@ -281,9 +297,12 @@ function convolutionGridLayout(
     fontSize: FONT_SIZE_GRID_TITLE,
     textColor: THEME.titleText,
     color: THEME.titleText,
-    pointerHeight: 0, pointerWidth: 0,
-    bracketWidth: 0, bracketTickHeight: 0,
-    badgePaddingX: 0, badgePaddingY: 0,
+    pointerHeight: 0,
+    pointerWidth: 0,
+    bracketWidth: 0,
+    bracketTickHeight: 0,
+    badgePaddingX: 0,
+    badgePaddingY: 0,
     opacity: 1,
     zIndex: Z_INDEX.ANNOTATION,
   };
@@ -301,14 +320,18 @@ function convolutionGridLayout(
       const cell: ElementPrimitive = {
         kind: "element",
         id: `output-cell-${r}-${c}`,
-        x: cx, y: cy,
-        width: CELL_SIZE, height: CELL_SIZE,
+        x: cx,
+        y: cy,
+        width: CELL_SIZE,
+        height: CELL_SIZE,
         shape: "roundedRect",
         cornerRadius: 4,
         fillColor: isFilled ? THEME.outputFilled : THEME.outputCell,
-        strokeColor: isJustWritten ? THEME.outputFilledStroke
-          : isFilled ? THEME.outputFilledStroke
-          : THEME.outputStroke,
+        strokeColor: isJustWritten
+          ? THEME.outputFilledStroke
+          : isFilled
+            ? THEME.outputFilledStroke
+            : THEME.outputStroke,
         strokeWidth: isJustWritten ? 2.5 : 1,
         label: isFilled ? value.toString() : "",
         labelFontSize: FONT_SIZE_VALUE,
@@ -337,9 +360,12 @@ function convolutionGridLayout(
       fontSize: 12,
       textColor: THEME.sumBadgeText,
       color: THEME.sumBadge,
-      pointerHeight: 0, pointerWidth: 0,
-      bracketWidth: 0, bracketTickHeight: 0,
-      badgePaddingX: 10, badgePaddingY: 4,
+      pointerHeight: 0,
+      pointerWidth: 0,
+      bracketWidth: 0,
+      bracketTickHeight: 0,
+      badgePaddingX: 10,
+      badgePaddingY: 4,
       opacity: 1,
       zIndex: Z_INDEX.ANNOTATION + 10,
     };
@@ -348,7 +374,7 @@ function convolutionGridLayout(
 
   // ── Operator Labels ─────────────────────────────────────────────────────
 
-  const operatorY = gridTopY + Math.max(H, kH, outH) * (CELL_SIZE + CELL_GAP) / 2;
+  const operatorY = gridTopY + (Math.max(H, kH, outH) * (CELL_SIZE + CELL_GAP)) / 2;
 
   const starLabel: AnnotationPrimitive = {
     kind: "annotation",
@@ -360,9 +386,12 @@ function convolutionGridLayout(
     fontSize: 24,
     textColor: THEME.labelText,
     color: THEME.labelText,
-    pointerHeight: 0, pointerWidth: 0,
-    bracketWidth: 0, bracketTickHeight: 0,
-    badgePaddingX: 0, badgePaddingY: 0,
+    pointerHeight: 0,
+    pointerWidth: 0,
+    bracketWidth: 0,
+    bracketTickHeight: 0,
+    badgePaddingX: 0,
+    badgePaddingY: 0,
     opacity: 0.8,
     zIndex: Z_INDEX.ANNOTATION,
   };
@@ -378,9 +407,12 @@ function convolutionGridLayout(
     fontSize: 24,
     textColor: THEME.labelText,
     color: THEME.labelText,
-    pointerHeight: 0, pointerWidth: 0,
-    bracketWidth: 0, bracketTickHeight: 0,
-    badgePaddingX: 0, badgePaddingY: 0,
+    pointerHeight: 0,
+    pointerWidth: 0,
+    bracketWidth: 0,
+    bracketTickHeight: 0,
+    badgePaddingX: 0,
+    badgePaddingY: 0,
     opacity: 0.8,
     zIndex: Z_INDEX.ANNOTATION,
   };

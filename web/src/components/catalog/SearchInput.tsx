@@ -16,9 +16,9 @@
  * See Phase7_Implementation.md §11 — Component: SearchInput.
  */
 
-'use client';
+"use client";
 
-import { useRef, useEffect, useCallback, type KeyboardEvent } from 'react';
+import { useRef, useEffect, useCallback, type KeyboardEvent } from "react";
 
 interface SearchInputProps {
   readonly value: string;
@@ -31,7 +31,7 @@ export function SearchInput({
   value,
   onChange,
   onClear,
-  placeholder = 'Search algorithms...',
+  placeholder = "Search algorithms...",
 }: SearchInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -46,29 +46,27 @@ export function SearchInput({
   useEffect(() => {
     function handleGlobalKeyDown(e: globalThis.KeyboardEvent) {
       if (
-        e.key === '/' &&
-        !['INPUT', 'TEXTAREA', 'SELECT'].includes(
-          (document.activeElement?.tagName ?? '')
-        )
+        e.key === "/" &&
+        !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName ?? "")
       ) {
         e.preventDefault();
         inputRef.current?.focus();
       }
     }
 
-    document.addEventListener('keydown', handleGlobalKeyDown);
-    return () => document.removeEventListener('keydown', handleGlobalKeyDown);
+    document.addEventListener("keydown", handleGlobalKeyDown);
+    return () => document.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
   /** Escape key: clear search and blur the field. */
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         onClear();
         inputRef.current?.blur();
       }
     },
-    [onClear]
+    [onClear],
   );
 
   return (
@@ -99,12 +97,12 @@ export function SearchInput({
         placeholder={placeholder}
         aria-label="Search algorithms by name, description, or keyword"
         className={[
-          'w-full rounded-lg border bg-background-surface',
-          'border-border focus:border-border-focus',
-          'pl-10 pr-16 py-2',
-          'text-sm text-text-primary placeholder:text-text-disabled',
-          'outline-none transition-colors duration-normal',
-        ].join(' ')}
+          "w-full rounded-lg border bg-background-surface",
+          "border-border focus:border-border-focus",
+          "pl-10 pr-16 py-2",
+          "text-sm text-text-primary placeholder:text-text-disabled",
+          "outline-none transition-colors duration-normal",
+        ].join(" ")}
       />
 
       {/* Right-side controls: clear button OR shortcut hint */}
@@ -124,11 +122,7 @@ export function SearchInput({
               strokeWidth={2}
               aria-hidden="true"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         ) : (

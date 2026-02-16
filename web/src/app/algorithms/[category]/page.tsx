@@ -17,17 +17,14 @@
  * See Phase7_Implementation.md §18 — Page: /algorithms/[category].
  */
 
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { getAlgorithmsByCategory } from '@/lib/algorithm-registry';
-import {
-  CATEGORY_BY_SLUG,
-  ALL_CATEGORY_SLUGS,
-} from '@/lib/catalog-constants';
-import { type AlgorithmCategory, type AlgorithmMeta } from '@/shared/types/step';
-import { buildCategoryMetadata } from '@/lib/seo';
-import { CategoryPageClient } from './CategoryPageClient';
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getAlgorithmsByCategory } from "@/lib/algorithm-registry";
+import { CATEGORY_BY_SLUG, ALL_CATEGORY_SLUGS } from "@/lib/catalog-constants";
+import { type AlgorithmCategory, type AlgorithmMeta } from "@/shared/types/step";
+import { buildCategoryMetadata } from "@/lib/seo";
+import { CategoryPageClient } from "./CategoryPageClient";
 
 // ——————————————————————————————————————————————————
 // STATIC PARAMS
@@ -49,14 +46,12 @@ interface PageProps {
   params: Promise<{ category: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category: slug } = await params;
   const categoryInfo = CATEGORY_BY_SLUG.get(slug);
 
   if (!categoryInfo) {
-    return { title: 'Category Not Found' };
+    return { title: "Category Not Found" };
   }
 
   const algorithms = getAlgorithmsByCategory(categoryInfo.id as AlgorithmCategory);
@@ -82,9 +77,7 @@ export default async function CategoryPage({ params }: PageProps) {
     notFound();
   }
 
-  const algorithms = getAlgorithmsByCategory(
-    categoryInfo.id as AlgorithmCategory
-  );
+  const algorithms = getAlgorithmsByCategory(categoryInfo.id as AlgorithmCategory);
 
   return (
     <Suspense>

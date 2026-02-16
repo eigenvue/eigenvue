@@ -184,7 +184,9 @@ describe("AnimationManager", () => {
       expect(onFrame.mock.calls.length).toBeGreaterThanOrEqual(2);
 
       // The intermediate scene should have interpolated x.
-      const intermediateScene = onFrame.mock.calls[onFrame.mock.calls.length - 1]![0] as PrimitiveScene;
+      const intermediateScene = onFrame.mock.calls[
+        onFrame.mock.calls.length - 1
+      ]![0] as PrimitiveScene;
       const elem = intermediateScene.primitives[0] as ElementPrimitive;
       expect(elem.x).toBeGreaterThan(100);
       expect(elem.x).toBeLessThan(200);

@@ -66,9 +66,7 @@ export function Navbar() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-normal ${
-          isScrolled
-            ? "glass border-b border-border"
-            : "bg-transparent"
+          isScrolled ? "glass border-b border-border" : "bg-transparent"
         }`}
       >
         <nav
@@ -142,19 +140,28 @@ export function Navbar() {
                 aria-hidden="true"
               >
                 <line
-                  x1="3" y1="6" x2="21" y2="6"
+                  x1="3"
+                  y1="6"
+                  x2="21"
+                  y2="6"
                   className={`origin-center transition-transform duration-normal ${
                     isMobileMenuOpen ? "translate-y-[6px] rotate-45" : ""
                   }`}
                 />
                 <line
-                  x1="3" y1="12" x2="21" y2="12"
+                  x1="3"
+                  y1="12"
+                  x2="21"
+                  y2="12"
                   className={`transition-opacity duration-fast ${
                     isMobileMenuOpen ? "opacity-0" : "opacity-100"
                   }`}
                 />
                 <line
-                  x1="3" y1="18" x2="21" y2="18"
+                  x1="3"
+                  y1="18"
+                  x2="21"
+                  y2="18"
                   className={`origin-center transition-transform duration-normal ${
                     isMobileMenuOpen ? "-translate-y-[6px] -rotate-45" : ""
                   }`}
@@ -166,11 +173,7 @@ export function Navbar() {
       </header>
 
       {/* Mobile menu drawer */}
-      <MobileMenu
-        isOpen={isMobileMenuOpen}
-        onClose={closeMobileMenu}
-        items={NAV_ITEMS}
-      />
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={closeMobileMenu} items={NAV_ITEMS} />
     </>
   );
 }

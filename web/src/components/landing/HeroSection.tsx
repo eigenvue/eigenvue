@@ -56,7 +56,9 @@ export function HeroSection() {
             <div className="mt-8 flex flex-wrap gap-4">
               <Button variant="primary" size="lg" href="/algorithms">
                 Explore Algorithms
-                <span aria-hidden="true" className="ml-1">→</span>
+                <span aria-hidden="true" className="ml-1">
+                  →
+                </span>
               </Button>
               <Button
                 variant="secondary"
@@ -66,7 +68,9 @@ export function HeroSection() {
                 rel="noopener noreferrer"
               >
                 View on GitHub
-                <span aria-hidden="true" className="ml-1">↗</span>
+                <span aria-hidden="true" className="ml-1">
+                  ↗
+                </span>
               </Button>
             </div>
 
@@ -85,12 +89,21 @@ export function HeroSection() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" className="shrink-0">
-                  <path d="M7.932.5c-.4.007-.809.039-1.16.09C5.6.787 5.42 1.07 5.42 1.74v2.03h2.57v.68H4.66c-.78 0-1.46.47-1.67 1.36-.25 1.03-.26 1.67 0 2.74.19.8.64 1.36 1.42 1.36h.92V8.23c0-.88.76-1.66 1.67-1.66h2.56c.75 0 1.34-.62 1.34-1.36V2.35c0-.73-.62-1.27-1.34-1.4-.46-.08-.93-.12-1.34-.13l-.24-.01zM5.26 1.67c.28 0 .5.23.5.51a.51.51 0 01-.5.51.51.51 0 01-.5-.51c0-.28.23-.51.5-.51z"/>
-                  <path d="M11.77 4.45v1.63c0 .92-.78 1.72-1.67 1.72H7.54c-.74 0-1.34.63-1.34 1.37v2.56c0 .73.64 1.16 1.34 1.37.84.25 1.65.29 2.56 0 .61-.2 1.34-.6 1.34-1.37V10.1H8.87v-.68h3.9c.78 0 1.07-.54 1.34-1.36.28-.84.27-1.66 0-2.74-.19-.78-.56-1.36-1.34-1.36h-1zm-1.34 6.63c.28 0 .5.23.5.51a.51.51 0 01-.5.51.51.51 0 01-.5-.51c0-.28.23-.51.5-.51z"/>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  aria-hidden="true"
+                  className="shrink-0"
+                >
+                  <path d="M7.932.5c-.4.007-.809.039-1.16.09C5.6.787 5.42 1.07 5.42 1.74v2.03h2.57v.68H4.66c-.78 0-1.46.47-1.67 1.36-.25 1.03-.26 1.67 0 2.74.19.8.64 1.36 1.42 1.36h.92V8.23c0-.88.76-1.66 1.67-1.66h2.56c.75 0 1.34-.62 1.34-1.36V2.35c0-.73-.62-1.27-1.34-1.4-.46-.08-.93-.12-1.34-.13l-.24-.01zM5.26 1.67c.28 0 .5.23.5.51a.51.51 0 01-.5.51.51.51 0 01-.5-.51c0-.28.23-.51.5-.51z" />
+                  <path d="M11.77 4.45v1.63c0 .92-.78 1.72-1.67 1.72H7.54c-.74 0-1.34.63-1.34 1.37v2.56c0 .73.64 1.16 1.34 1.37.84.25 1.65.29 2.56 0 .61-.2 1.34-.6 1.34-1.37V10.1H8.87v-.68h3.9c.78 0 1.07-.54 1.34-1.36.28-.84.27-1.66 0-2.74-.19-.78-.56-1.36-1.34-1.36h-1zm-1.34 6.63c.28 0 .5.23.5.51a.51.51 0 01-.5.51.51.51 0 01-.5-.51c0-.28.23-.51.5-.51z" />
                 </svg>
                 PyPI
-                <span aria-hidden="true" className="ml-0.5">↗</span>
+                <span aria-hidden="true" className="ml-0.5">
+                  ↗
+                </span>
               </Button>
               <Button
                 variant="ghost"
@@ -99,23 +112,41 @@ export function HeroSection() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" className="shrink-0">
-                  <path d="M0 0v16h16V0H0zm13.2 13.2H9.67V5.6H6.33v7.6H2.8V2.8h10.4v10.4z"/>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  aria-hidden="true"
+                  className="shrink-0"
+                >
+                  <path d="M0 0v16h16V0H0zm13.2 13.2H9.67V5.6H6.33v7.6H2.8V2.8h10.4v10.4z" />
                 </svg>
                 npm
-                <span aria-hidden="true" className="ml-0.5">↗</span>
+                <span aria-hidden="true" className="ml-0.5">
+                  ↗
+                </span>
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                href="/docs"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              <Button variant="ghost" size="sm" href="/docs">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  className="shrink-0"
+                >
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                 </svg>
                 Documentation
-                <span aria-hidden="true" className="ml-0.5">→</span>
+                <span aria-hidden="true" className="ml-0.5">
+                  →
+                </span>
               </Button>
             </div>
 

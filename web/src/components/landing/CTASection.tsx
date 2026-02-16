@@ -28,10 +28,7 @@ export function CTASection() {
 
       <Container className="relative z-10">
         <div className="mx-auto max-w-2xl text-center">
-          <h2
-            id="cta-heading"
-            className="text-3xl font-bold text-text-primary md:text-4xl"
-          >
+          <h2 id="cta-heading" className="text-3xl font-bold text-text-primary md:text-4xl">
             Start <span className="gradient-text">Exploring</span> Now
           </h2>
           <p className="mt-4 text-lg text-text-secondary">
@@ -40,7 +37,9 @@ export function CTASection() {
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Button variant="primary" size="lg" href="/algorithms">
               Browse Algorithms
-              <span aria-hidden="true" className="ml-1">→</span>
+              <span aria-hidden="true" className="ml-1">
+                →
+              </span>
             </Button>
             <Button
               variant="secondary"
@@ -50,7 +49,9 @@ export function CTASection() {
               rel="noopener noreferrer"
             >
               Star on GitHub
-              <span aria-hidden="true" className="ml-1">⭐</span>
+              <span aria-hidden="true" className="ml-1">
+                ⭐
+              </span>
             </Button>
           </div>
         </div>

@@ -99,11 +99,7 @@ export function rgbaToString(rgba: RGBA): string {
  * @param t         - Progress in [0, 1]. 0 = fromColor, 1 = toColor.
  * @returns Interpolated CSS rgba() string.
  */
-export function interpolateColor(
-  fromColor: string,
-  toColor: string,
-  t: number,
-): string {
+export function interpolateColor(fromColor: string, toColor: string, t: number): string {
   // Fast path: identical colors.
   if (fromColor === toColor) return fromColor;
 

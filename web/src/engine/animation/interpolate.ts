@@ -67,11 +67,7 @@ function lerp(a: number, b: number, t: number): number {
 // Stable: interpolate from → to
 // ---------------------------------------------------------------------------
 
-function interpolateStable(
-  from: RenderPrimitive,
-  to: RenderPrimitive,
-  t: number,
-): RenderPrimitive {
+function interpolateStable(from: RenderPrimitive, to: RenderPrimitive, t: number): RenderPrimitive {
   // Both primitives must be the same kind (enforced by SceneDiffer matching on ID).
   // If somehow they differ in kind, return the target.
   if (from.kind !== to.kind) return to;
@@ -201,10 +197,7 @@ function interpolateAnnotation(
 // Entering: fade in from transparent
 // ---------------------------------------------------------------------------
 
-function interpolateEntering(
-  to: RenderPrimitive,
-  t: number,
-): RenderPrimitive {
+function interpolateEntering(to: RenderPrimitive, t: number): RenderPrimitive {
   // Create a copy with opacity scaled by progress.
   // At t=0, opacity=0 (invisible). At t=1, opacity = to.opacity (fully visible).
   return setOpacity(to, to.opacity * t);
@@ -214,10 +207,7 @@ function interpolateEntering(
 // Exiting: fade out to transparent
 // ---------------------------------------------------------------------------
 
-function interpolateExiting(
-  from: RenderPrimitive,
-  t: number,
-): RenderPrimitive | null {
+function interpolateExiting(from: RenderPrimitive, t: number): RenderPrimitive | null {
   // At t=0, opacity = from.opacity (fully visible). At t=1, opacity=0.
   const opacity = from.opacity * (1 - t);
   if (opacity <= 0.01) return null; // Skip drawing near-invisible primitives.

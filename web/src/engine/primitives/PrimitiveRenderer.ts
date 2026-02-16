@@ -148,10 +148,10 @@ function drawElement(ctx: CanvasRenderingContext2D, el: ElementPrimitive): void 
 
     case "diamond":
       // Rhombus inscribed in the bounding box: four vertices at edge midpoints.
-      ctx.moveTo(0, -hh);   // Top
-      ctx.lineTo(hw, 0);    // Right
-      ctx.lineTo(0, hh);    // Bottom
-      ctx.lineTo(-hw, 0);   // Left
+      ctx.moveTo(0, -hh); // Top
+      ctx.lineTo(hw, 0); // Right
+      ctx.lineTo(0, hh); // Bottom
+      ctx.lineTo(-hw, 0); // Left
       ctx.closePath();
       break;
   }
@@ -425,15 +425,12 @@ function drawAnnotation(ctx: CanvasRenderingContext2D, ann: AnnotationPrimitive)
  *
  * The text label is drawn centered above the triangle base.
  */
-function drawPointerAnnotation(
-  ctx: CanvasRenderingContext2D,
-  ann: AnnotationPrimitive,
-): void {
+function drawPointerAnnotation(ctx: CanvasRenderingContext2D, ann: AnnotationPrimitive): void {
   const halfW = ann.pointerWidth / 2;
 
   // Draw the triangle.
   ctx.beginPath();
-  ctx.moveTo(ann.x, ann.y);                          // Tip
+  ctx.moveTo(ann.x, ann.y); // Tip
   ctx.lineTo(ann.x - halfW, ann.y - ann.pointerHeight); // Left base
   ctx.lineTo(ann.x + halfW, ann.y - ann.pointerHeight); // Right base
   ctx.closePath();
@@ -457,10 +454,7 @@ function drawPointerAnnotation(
  * (x, y) is the left end. The bracket extends to (x + bracketWidth, y).
  * Ticks extend downward by bracketTickHeight at each end.
  */
-function drawBracketAnnotation(
-  ctx: CanvasRenderingContext2D,
-  ann: AnnotationPrimitive,
-): void {
+function drawBracketAnnotation(ctx: CanvasRenderingContext2D, ann: AnnotationPrimitive): void {
   ctx.strokeStyle = ann.color;
   ctx.lineWidth = 2;
 
@@ -488,10 +482,7 @@ function drawBracketAnnotation(
 /**
  * Draws a free-floating text label centered at (x, y).
  */
-function drawLabelAnnotation(
-  ctx: CanvasRenderingContext2D,
-  ann: AnnotationPrimitive,
-): void {
+function drawLabelAnnotation(ctx: CanvasRenderingContext2D, ann: AnnotationPrimitive): void {
   if (ann.text === "") return;
 
   ctx.fillStyle = ann.textColor;
@@ -506,10 +497,7 @@ function drawLabelAnnotation(
  *
  * The pill dimensions are computed from the text measurement plus padding.
  */
-function drawBadgeAnnotation(
-  ctx: CanvasRenderingContext2D,
-  ann: AnnotationPrimitive,
-): void {
+function drawBadgeAnnotation(ctx: CanvasRenderingContext2D, ann: AnnotationPrimitive): void {
   if (ann.text === "") return;
 
   ctx.font = `bold ${ann.fontSize}px ${UI_FONT_FAMILY}`;
@@ -609,12 +597,7 @@ function drawHeatmapOverlay(ctx: CanvasRenderingContext2D, ov: OverlayPrimitive)
       const color = interpolateColor(ov.heatmapColorLow, ov.heatmapColorHigh, value);
 
       ctx.fillStyle = color;
-      ctx.fillRect(
-        ov.x + col * cellW,
-        ov.y + row * cellH,
-        cellW,
-        cellH,
-      );
+      ctx.fillRect(ov.x + col * cellW, ov.y + row * cellH, cellW, cellH);
     }
   }
 }

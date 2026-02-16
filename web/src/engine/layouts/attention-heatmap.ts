@@ -53,21 +53,21 @@ const CELL_GAP = 2;
 
 const THEME = {
   /** Heatmap color for weight = 0. */
-  heatLow:           "#1e1040",
+  heatLow: "#1e1040",
   /** Heatmap color for weight = 1. */
-  heatHigh:          "#f472b6",
+  heatHigh: "#f472b6",
   /** Heatmap mid-range color (for 3-stop gradient). */
-  heatMid:           "#7c3aed",
+  heatMid: "#7c3aed",
   /** Cell text color (weight value). */
-  cellText:          "#f5f3ff",
+  cellText: "#f5f3ff",
   /** Header text color. */
-  headerText:        "#c4b5fd",
+  headerText: "#c4b5fd",
   /** Highlighted row/column header. */
-  headerHighlight:   "#f472b6",
+  headerHighlight: "#f472b6",
   /** Active cell outline. */
-  cellActiveStroke:  "#fbbf24",
+  cellActiveStroke: "#fbbf24",
   /** Legend text. */
-  legendText:        "#a78bfa",
+  legendText: "#a78bfa",
 } as const;
 
 // ── Heatmap Color Function ───────────────────────────────────────────────────
@@ -137,10 +137,8 @@ function attentionHeatmapLayout(
   const gridLeft = LAYOUT_PADDING + HEADER_LABEL_WIDTH;
   const gridTop = LAYOUT_PADDING + HEADER_LABEL_HEIGHT;
 
-  const cellCenterX = (col: number): number =>
-    gridLeft + col * cellWidth + cellWidth / 2;
-  const cellCenterY = (row: number): number =>
-    gridTop + row * cellHeight + cellHeight / 2;
+  const cellCenterX = (col: number): number => gridLeft + col * cellWidth + cellWidth / 2;
+  const cellCenterY = (row: number): number => gridTop + row * cellHeight + cellHeight / 2;
 
   // ── Process visual actions to extract matrix data ──────────────────────
   let weightMatrix: number[][] | null = null;
@@ -266,9 +264,12 @@ function attentionHeatmapLayout(
     fontSize: 11,
     textColor: THEME.legendText,
     color: THEME.legendText,
-    pointerHeight: 0, pointerWidth: 0,
-    bracketWidth: 0, bracketTickHeight: 0,
-    badgePaddingX: 0, badgePaddingY: 0,
+    pointerHeight: 0,
+    pointerWidth: 0,
+    bracketWidth: 0,
+    bracketTickHeight: 0,
+    badgePaddingX: 0,
+    badgePaddingY: 0,
     opacity: 0.7,
     zIndex: Z_INDEX.ANNOTATION,
   };
@@ -284,9 +285,12 @@ function attentionHeatmapLayout(
     fontSize: 11,
     textColor: THEME.legendText,
     color: THEME.legendText,
-    pointerHeight: 0, pointerWidth: 0,
-    bracketWidth: 0, bracketTickHeight: 0,
-    badgePaddingX: 0, badgePaddingY: 0,
+    pointerHeight: 0,
+    pointerWidth: 0,
+    bracketWidth: 0,
+    bracketTickHeight: 0,
+    badgePaddingX: 0,
+    badgePaddingY: 0,
     opacity: 0.7,
     zIndex: Z_INDEX.ANNOTATION,
   };
@@ -306,9 +310,12 @@ function attentionHeatmapLayout(
       fontSize: 11,
       textColor: "#f5f3ff",
       color: THEME.heatMid,
-      pointerHeight: 0, pointerWidth: 0,
-      bracketWidth: 0, bracketTickHeight: 0,
-      badgePaddingX: 10, badgePaddingY: 4,
+      pointerHeight: 0,
+      pointerWidth: 0,
+      bracketWidth: 0,
+      bracketTickHeight: 0,
+      badgePaddingX: 10,
+      badgePaddingY: 4,
       opacity: 1,
       zIndex: Z_INDEX.ANNOTATION + 10,
     };
@@ -327,9 +334,12 @@ function attentionHeatmapLayout(
       fontSize: 13,
       textColor: THEME.legendText,
       color: THEME.legendText,
-      pointerHeight: 0, pointerWidth: 0,
-      bracketWidth: 0, bracketTickHeight: 0,
-      badgePaddingX: 0, badgePaddingY: 0,
+      pointerHeight: 0,
+      pointerWidth: 0,
+      bracketWidth: 0,
+      bracketTickHeight: 0,
+      badgePaddingX: 0,
+      badgePaddingY: 0,
       opacity: 1,
       zIndex: Z_INDEX.ANNOTATION,
     };

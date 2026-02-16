@@ -32,8 +32,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.4",
-    "ajv": "^8.18.0",
-    "ajv-formats": "^2.1.1",
     "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.12",

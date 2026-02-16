@@ -31,10 +31,10 @@
  * See Phase7_Implementation.md §8 — Component: AlgorithmCard.
  */
 
-import Link from 'next/link';
-import { type AlgorithmMeta } from '@/shared/types/step';
-import { Badge } from '@/components/ui/Badge';
-import { CATEGORY_BY_ID, DIFFICULTY_BY_ID } from '@/lib/catalog-constants';
+import Link from "next/link";
+import { type AlgorithmMeta } from "@/shared/types/step";
+import { Badge } from "@/components/ui/Badge";
+import { CATEGORY_BY_ID, DIFFICULTY_BY_ID } from "@/lib/catalog-constants";
 
 interface AlgorithmCardProps {
   readonly algorithm: AlgorithmMeta;
@@ -52,7 +52,7 @@ export function AlgorithmCard({ algorithm }: AlgorithmCardProps) {
   if (!categoryInfo || !difficultyInfo) {
     console.warn(
       `[AlgorithmCard] Missing display info for category="${algorithm.category}" ` +
-      `or difficulty="${algorithm.complexity.level}" on algorithm "${algorithm.id}".`
+        `or difficulty="${algorithm.complexity.level}" on algorithm "${algorithm.id}".`,
     );
   }
 
@@ -61,29 +61,29 @@ export function AlgorithmCard({ algorithm }: AlgorithmCardProps) {
       href={`/algo/${algorithm.id}`}
       className={[
         /* ── Base card styling ── */
-        'group block rounded-xl border p-5',
-        'bg-background-surface border-border',
+        "group block rounded-xl border p-5",
+        "bg-background-surface border-border",
         /* ── Hover state ── */
-        'hover:bg-background-elevated hover:border-border-hover',
-        'hover:shadow-card-hover',
+        "hover:bg-background-elevated hover:border-border-hover",
+        "hover:shadow-card-hover",
         /* ── Transition ── */
-        'transition-all duration-normal',
+        "transition-all duration-normal",
         /* ── Focus state (keyboard navigation) ── */
-        'focus-visible:outline-2 focus-visible:outline-offset-2',
-        'focus-visible:outline-border-focus',
-      ].join(' ')}
+        "focus-visible:outline-2 focus-visible:outline-offset-2",
+        "focus-visible:outline-border-focus",
+      ].join(" ")}
       aria-label={`${algorithm.name} — ${categoryInfo?.label ?? algorithm.category}, ${difficultyInfo?.label ?? algorithm.complexity.level} difficulty`}
     >
       {/* ── Row 1: Category badge + Difficulty tag ── */}
       <div className="mb-3 flex items-center justify-between gap-2">
-        <Badge category={categoryInfo?.badgeCategory ?? 'default'}>
+        <Badge category={categoryInfo?.badgeCategory ?? "default"}>
           {categoryInfo?.label ?? algorithm.category}
         </Badge>
 
         <span
           className={`inline-flex items-center rounded-full px-2 py-0.5 font-mono text-xs font-medium ${
-            difficultyInfo?.colorClass ?? 'text-text-tertiary'
-          } ${difficultyInfo?.bgClass ?? 'bg-background-elevated'}`}
+            difficultyInfo?.colorClass ?? "text-text-tertiary"
+          } ${difficultyInfo?.bgClass ?? "bg-background-elevated"}`}
         >
           {difficultyInfo?.label ?? algorithm.complexity.level}
         </span>
@@ -102,7 +102,7 @@ export function AlgorithmCard({ algorithm }: AlgorithmCardProps) {
       {/* ── Row 4: Complexity notation ── */}
       <div className="flex items-center gap-4 text-xs font-mono text-text-tertiary">
         <span>
-          Time:{' '}
+          Time:{" "}
           <abbr
             title={`Time complexity: ${algorithm.complexity.time}`}
             className="no-underline text-text-secondary"
@@ -111,7 +111,7 @@ export function AlgorithmCard({ algorithm }: AlgorithmCardProps) {
           </abbr>
         </span>
         <span>
-          Space:{' '}
+          Space:{" "}
           <abbr
             title={`Space complexity: ${algorithm.complexity.space}`}
             className="no-underline text-text-secondary"

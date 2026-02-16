@@ -58,7 +58,8 @@ const nextConfig: NextConfig = {
         splitChunks: {
           ...config.optimization?.splitChunks,
           cacheGroups: {
-            ...((config.optimization?.splitChunks as Record<string, unknown>)?.cacheGroups as Record<string, unknown> || {}),
+            ...(((config.optimization?.splitChunks as Record<string, unknown>)
+              ?.cacheGroups as Record<string, unknown>) || {}),
             engine: {
               test: /[\\/]src[\\/]engine[\\/]/,
               name: "engine",

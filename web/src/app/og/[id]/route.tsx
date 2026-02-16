@@ -70,18 +70,12 @@ const DEFAULT_ACCENT = "#8b5cf6";
 
 // ─── GET Handler ──────────────────────────────────────────────────────────────
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   // ── Home page OG image ────────────────────────────────────────
   if (id === "home") {
-    return new ImageResponse(
-      renderHomeOgImage(),
-      { width: 1200, height: 630 },
-    );
+    return new ImageResponse(renderHomeOgImage(), { width: 1200, height: 630 });
   }
 
   // ── Algorithm-specific OG image ───────────────────────────────
@@ -89,10 +83,7 @@ export async function GET(
 
   if (!algorithm) {
     // Return a generic fallback image for unknown algorithms.
-    return new ImageResponse(
-      renderFallbackOgImage(id),
-      { width: 1200, height: 630 },
-    );
+    return new ImageResponse(renderFallbackOgImage(id), { width: 1200, height: 630 });
   }
 
   const { meta } = algorithm;
@@ -144,8 +135,7 @@ interface AlgorithmOgProps {
 }
 
 function renderAlgorithmOgImage(props: AlgorithmOgProps) {
-  const { name, categoryDisplay, timeComplexity, spaceComplexity, accentColor } =
-    props;
+  const { name, categoryDisplay, timeComplexity, spaceComplexity, accentColor } = props;
 
   return (
     <div
@@ -157,8 +147,7 @@ function renderAlgorithmOgImage(props: AlgorithmOgProps) {
         justifyContent: "space-between",
         padding: "60px 80px",
         backgroundColor: "#06080f",
-        backgroundImage:
-          `radial-gradient(circle at 1px 1px, ${accentColor}15 1px, transparent 0)`,
+        backgroundImage: `radial-gradient(circle at 1px 1px, ${accentColor}15 1px, transparent 0)`,
         backgroundSize: "40px 40px",
         fontFamily: "Inter, system-ui, sans-serif",
         color: "#ffffff",
@@ -244,9 +233,7 @@ function renderAlgorithmOgImage(props: AlgorithmOgProps) {
         {/* Complexity badges */}
         <div style={{ display: "flex", gap: "24px" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <span style={{ fontSize: "14px", color: "#64748b", fontWeight: 500 }}>
-              TIME
-            </span>
+            <span style={{ fontSize: "14px", color: "#64748b", fontWeight: 500 }}>TIME</span>
             <span
               style={{
                 fontSize: "22px",
@@ -259,9 +246,7 @@ function renderAlgorithmOgImage(props: AlgorithmOgProps) {
             </span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <span style={{ fontSize: "14px", color: "#64748b", fontWeight: 500 }}>
-              SPACE
-            </span>
+            <span style={{ fontSize: "14px", color: "#64748b", fontWeight: 500 }}>SPACE</span>
             <span
               style={{
                 fontSize: "22px",
@@ -313,8 +298,7 @@ function renderHomeOgImage() {
         alignItems: "center",
         padding: "60px 80px",
         backgroundColor: "#06080f",
-        backgroundImage:
-          "radial-gradient(circle at 1px 1px, #8b5cf615 1px, transparent 0)",
+        backgroundImage: "radial-gradient(circle at 1px 1px, #8b5cf615 1px, transparent 0)",
         backgroundSize: "40px 40px",
         fontFamily: "Inter, system-ui, sans-serif",
         color: "#ffffff",

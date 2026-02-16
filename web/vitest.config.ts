@@ -26,9 +26,6 @@ export default defineConfig({
       "../algorithms/**/*.{test,spec}.{ts,tsx}",
       "../tests/web/**/*.{test,spec}.{ts,tsx}",
     ],
-    exclude: [
-      "**/node_modules/**",
-      "../tests/web/e2e/**",
-    ],
+    exclude: ["**/node_modules/**", "../tests/web/e2e/**"],
   },
 });

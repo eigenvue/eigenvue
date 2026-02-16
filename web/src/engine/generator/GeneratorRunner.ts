@@ -95,24 +95,20 @@ export function runGenerator<TInputs extends Record<string, unknown>>(
         definition.id,
         index,
         `Invalid step ID "${input.id}". ` +
-        `Must match pattern: ^[a-z0-9][a-z0-9_-]*$ ` +
-        `(lowercase alphanumeric, hyphens, underscores).`
+          `Must match pattern: ^[a-z0-9][a-z0-9_-]*$ ` +
+          `(lowercase alphanumeric, hyphens, underscores).`,
       );
     }
 
     // Validate title is non-empty and within length limit.
     if (input.title.length === 0) {
-      throw new GeneratorError(
-        definition.id,
-        index,
-        `Step title must not be empty.`
-      );
+      throw new GeneratorError(definition.id, index, `Step title must not be empty.`);
     }
     if (input.title.length > 200) {
       throw new GeneratorError(
         definition.id,
         index,
-        `Step title exceeds 200 characters (got ${input.title.length}).`
+        `Step title exceeds 200 characters (got ${input.title.length}).`,
       );
     }
 
@@ -122,7 +118,7 @@ export function runGenerator<TInputs extends Record<string, unknown>>(
         throw new GeneratorError(
           definition.id,
           index,
-          `Code highlight lines must be positive integers. Got: ${line}`
+          `Code highlight lines must be positive integers. Got: ${line}`,
         );
       }
     }
@@ -161,8 +157,8 @@ export function runGenerator<TInputs extends Record<string, unknown>>(
           definition.id,
           steps.length - 1,
           `Generator exceeded maximum step limit of ${maxSteps}. ` +
-          `This usually indicates an infinite loop in the generator. ` +
-          `If this is intentional, increase the maxSteps option.`
+            `This usually indicates an infinite loop in the generator. ` +
+            `If this is intentional, increase the maxSteps option.`,
         );
       }
     }
@@ -219,7 +215,7 @@ function validateSteps(algorithmId: string, steps: readonly Step[]): void {
     throw new GeneratorError(
       algorithmId,
       -1,
-      "Generator produced zero steps. Every algorithm must yield at least one step."
+      "Generator produced zero steps. Every algorithm must yield at least one step.",
     );
   }
 
@@ -230,22 +226,20 @@ function validateSteps(algorithmId: string, steps: readonly Step[]): void {
         algorithmId,
         i,
         `Index contiguity violation: steps[${i}].index is ${steps[i]!.index}, expected ${i}. ` +
-        `This is a bug in the GeneratorRunner, not in the generator.`
+          `This is a bug in the GeneratorRunner, not in the generator.`,
       );
     }
   }
 
   // ── Invariant 3 & 4: Single terminal, and it must be the last step ──
-  const terminalIndices = steps
-    .map((s, i) => (s.isTerminal ? i : -1))
-    .filter((i) => i !== -1);
+  const terminalIndices = steps.map((s, i) => (s.isTerminal ? i : -1)).filter((i) => i !== -1);
 
   if (terminalIndices.length === 0) {
     throw new GeneratorError(
       algorithmId,
       steps.length - 1,
       "No terminal step found. The last step must have isTerminal: true. " +
-      "Did you forget to set isTerminal: true on the final yield?"
+        "Did you forget to set isTerminal: true on the final yield?",
     );
   }
 
@@ -254,7 +248,7 @@ function validateSteps(algorithmId: string, steps: readonly Step[]): void {
       algorithmId,
       terminalIndices[1]!,
       `Multiple terminal steps found at indices: [${terminalIndices.join(", ")}]. ` +
-      `Exactly one step must be terminal, and it must be the last step.`
+        `Exactly one step must be terminal, and it must be the last step.`,
     );
   }
 
@@ -263,7 +257,7 @@ function validateSteps(algorithmId: string, steps: readonly Step[]): void {
       algorithmId,
       terminalIndices[0]!,
       `Terminal step is at index ${terminalIndices[0]}, but the last step is at ` +
-      `index ${steps.length - 1}. The terminal step must be the last step.`
+        `index ${steps.length - 1}. The terminal step must be the last step.`,
     );
   }
 
@@ -297,7 +291,7 @@ function validateVisualActions(algorithmId: string, step: Step): void {
           throw new GeneratorError(
             algorithmId,
             step.index,
-            `${action.type}: "from" (${from}) must be <= "to" (${to}).`
+            `${action.type}: "from" (${from}) must be <= "to" (${to}).`,
           );
         }
         break;
@@ -309,7 +303,7 @@ function validateVisualActions(algorithmId: string, step: Step): void {
           throw new GeneratorError(
             algorithmId,
             step.index,
-            `compareElements: "result" must be "less", "greater", or "equal". Got: "${result}".`
+            `compareElements: "result" must be "less", "greater", or "equal". Got: "${result}".`,
           );
         }
         break;
@@ -324,7 +318,7 @@ function validateVisualActions(algorithmId: string, step: Step): void {
             throw new GeneratorError(
               algorithmId,
               step.index,
-              `showAttentionWeights: weight[${i}] = ${weights[i]} is outside [0, 1].`
+              `showAttentionWeights: weight[${i}] = ${weights[i]} is outside [0, 1].`,
             );
           }
         }
@@ -346,11 +340,11 @@ function validateVisualActions(algorithmId: string, step: Step): void {
         let sum = 0;
         let compensation = 0; // Running compensation for lost low-order bits.
         for (const w of weights) {
-          const y = w - compensation;       // Compensated value to add.
-          const t = sum + y;                // New sum (some low bits of y may be lost).
-          compensation = (t - sum) - y;     // Recover what was lost: (t - sum) is the
-                                            // high-order part of y; subtracting y gives
-                                            // the negative of the lost low-order bits.
+          const y = w - compensation; // Compensated value to add.
+          const t = sum + y; // New sum (some low bits of y may be lost).
+          compensation = t - sum - y; // Recover what was lost: (t - sum) is the
+          // high-order part of y; subtracting y gives
+          // the negative of the lost low-order bits.
           sum = t;
         }
 
@@ -359,8 +353,8 @@ function validateVisualActions(algorithmId: string, step: Step): void {
             algorithmId,
             step.index,
             `showAttentionWeights: weights must sum to 1.0 (±1e-6). ` +
-            `Got sum = ${sum} (delta = ${Math.abs(sum - 1.0).toExponential(6)}). ` +
-            `Sum computed using Kahan summation for numerical stability.`
+              `Got sum = ${sum} (delta = ${Math.abs(sum - 1.0).toExponential(6)}). ` +
+              `Sum computed using Kahan summation for numerical stability.`,
           );
         }
         break;
@@ -374,7 +368,7 @@ function validateVisualActions(algorithmId: string, step: Step): void {
             algorithmId,
             step.index,
             `updateBarChart: labels.length (${labels.length}) must equal ` +
-            `values.length (${values.length}).`
+              `values.length (${values.length}).`,
           );
         }
         break;
@@ -410,12 +404,7 @@ export class GeneratorError extends Error {
   /** The original error, if this wraps an unexpected exception. */
   readonly cause?: Error;
 
-  constructor(
-    algorithmId: string,
-    stepIndex: number,
-    message: string,
-    cause?: Error,
-  ) {
+  constructor(algorithmId: string, stepIndex: number, message: string, cause?: Error) {
     super(`[${algorithmId}] Step ${stepIndex}: ${message}`);
     this.name = "GeneratorError";
     this.algorithmId = algorithmId;

@@ -47,9 +47,7 @@ function makeControls(): Controls {
 describe("PlaybackControls — Rendering", () => {
   it("renders all transport buttons", () => {
     const controls = makeControls();
-    render(
-      <PlaybackControls state={makeState()} controls={controls} totalSteps={10} />,
-    );
+    render(<PlaybackControls state={makeState()} controls={controls} totalSteps={10} />);
 
     expect(screen.getByLabelText("Reset to first step")).toBeInTheDocument();
     expect(screen.getByLabelText("Previous step")).toBeInTheDocument();
@@ -155,9 +153,7 @@ describe("PlaybackControls — Step Boundaries", () => {
 describe("PlaybackControls — Interactions", () => {
   it("calls togglePlay when play button clicked", () => {
     const controls = makeControls();
-    render(
-      <PlaybackControls state={makeState()} controls={controls} totalSteps={10} />,
-    );
+    render(<PlaybackControls state={makeState()} controls={controls} totalSteps={10} />);
 
     fireEvent.click(screen.getByLabelText("Play"));
     expect(controls.togglePlay).toHaveBeenCalledTimes(1);
@@ -219,9 +215,7 @@ describe("PlaybackControls — Interactions", () => {
 
   it("calls cycleSpeed when speed button clicked", () => {
     const controls = makeControls();
-    render(
-      <PlaybackControls state={makeState()} controls={controls} totalSteps={10} />,
-    );
+    render(<PlaybackControls state={makeState()} controls={controls} totalSteps={10} />);
 
     fireEvent.click(screen.getByText("1×"));
     expect(controls.cycleSpeed).toHaveBeenCalledTimes(1);
@@ -229,9 +223,7 @@ describe("PlaybackControls — Interactions", () => {
 
   it("calls goToStep when progress bar changes", () => {
     const controls = makeControls();
-    render(
-      <PlaybackControls state={makeState()} controls={controls} totalSteps={10} />,
-    );
+    render(<PlaybackControls state={makeState()} controls={controls} totalSteps={10} />);
 
     const slider = screen.getByRole("slider");
     fireEvent.change(slider, { target: { value: "7" } });
@@ -243,14 +235,9 @@ describe("PlaybackControls — Interactions", () => {
 
 describe("PlaybackControls — Accessibility", () => {
   it("has toolbar role with aria-label", () => {
-    render(
-      <PlaybackControls state={makeState()} controls={makeControls()} totalSteps={10} />,
-    );
+    render(<PlaybackControls state={makeState()} controls={makeControls()} totalSteps={10} />);
 
-    expect(screen.getByRole("toolbar")).toHaveAttribute(
-      "aria-label",
-      "Playback controls",
-    );
+    expect(screen.getByRole("toolbar")).toHaveAttribute("aria-label", "Playback controls");
   });
 
   it("speed button includes current speed in aria-label", () => {

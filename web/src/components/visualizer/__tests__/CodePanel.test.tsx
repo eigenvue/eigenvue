@@ -18,9 +18,11 @@ import { CodePanel } from "../CodePanel";
 // ─── Test Data ────────────────────────────────────────────────────────────────
 
 const IMPLEMENTATIONS: Record<string, string> = {
-  pseudocode: "function binarySearch(array, target):\n  left = 0\n  right = length(array) - 1\n\n  while left <= right:\n    mid = floor((left + right) / 2)",
+  pseudocode:
+    "function binarySearch(array, target):\n  left = 0\n  right = length(array) - 1\n\n  while left <= right:\n    mid = floor((left + right) / 2)",
   python: "def binary_search(array, target):\n    left = 0\n    right = len(array) - 1",
-  javascript: "function binarySearch(array, target) {\n  let left = 0;\n  let right = array.length - 1;\n}",
+  javascript:
+    "function binarySearch(array, target) {\n  let left = 0;\n  let right = array.length - 1;\n}",
 };
 
 // ─── Rendering Tests ─────────────────────────────────────────────────────────
@@ -142,10 +144,7 @@ describe("CodePanel — Tab Switching", () => {
     expect(screen.getByText(/binary_search/)).toBeInTheDocument();
 
     // Python tab should now be selected.
-    expect(screen.getByRole("tab", { name: "python" })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
+    expect(screen.getByRole("tab", { name: "python" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("tab", { name: "pseudocode" })).toHaveAttribute(
       "aria-selected",
       "false",
@@ -186,10 +185,7 @@ describe("CodePanel — Accessibility", () => {
       />,
     );
 
-    expect(screen.getByRole("tablist")).toHaveAttribute(
-      "aria-label",
-      "Code language",
-    );
+    expect(screen.getByRole("tablist")).toHaveAttribute("aria-label", "Code language");
   });
 
   it("has a code region with aria-label", () => {
@@ -201,10 +197,7 @@ describe("CodePanel — Accessibility", () => {
       />,
     );
 
-    expect(screen.getByRole("region")).toHaveAttribute(
-      "aria-label",
-      "pseudocode source code",
-    );
+    expect(screen.getByRole("region")).toHaveAttribute("aria-label", "pseudocode source code");
   });
 
   it("has an aria-live region for active line announcements", () => {

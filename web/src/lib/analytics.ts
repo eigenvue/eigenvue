@@ -61,15 +61,19 @@ export function trackEvent(event: AnalyticsEvent): void {
   // Plausible integration.
   const plausible = (window as unknown as Record<string, unknown>).plausible;
   if (typeof plausible === "function") {
-    (plausible as (name: string, opts: { props: Record<string, unknown> }) => void)(
-      event.name,
-      { props: event.props },
-    );
+    (plausible as (name: string, opts: { props: Record<string, unknown> }) => void)(event.name, {
+      props: event.props,
+    });
     return;
   }
 
   // Umami integration (fallback).
-  const umami = (window as unknown as Record<string, { track?: (name: string, props: Record<string, unknown>) => void }>).umami;
+  const umami = (
+    window as unknown as Record<
+      string,
+      { track?: (name: string, props: Record<string, unknown>) => void }
+    >
+  ).umami;
   if (umami && typeof umami.track === "function") {
     umami.track(event.name, event.props);
     return;

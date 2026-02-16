@@ -8,7 +8,14 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { getLayout } from "../layouts/registry";
-import type { Step, CanvasSize, LayoutFunction, ElementPrimitive, ConnectionPrimitive, AnnotationPrimitive } from "../types";
+import type {
+  Step,
+  CanvasSize,
+  LayoutFunction,
+  ElementPrimitive,
+  ConnectionPrimitive,
+  AnnotationPrimitive,
+} from "../types";
 
 // Import the layout module to trigger self-registration.
 import "../layouts/layer-diagram";
@@ -56,7 +63,7 @@ describe("layer-diagram layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const blocks = scene.primitives.filter(
-        p => p.kind === "element" && p.id.startsWith("block-")
+        (p) => p.kind === "element" && p.id.startsWith("block-"),
       );
       expect(blocks.length).toBe(6);
     });
@@ -75,7 +82,7 @@ describe("layer-diagram layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       for (const expectedId of expectedIds) {
-        const block = scene.primitives.find(p => p.id === expectedId);
+        const block = scene.primitives.find((p) => p.id === expectedId);
         expect(block).toBeDefined();
         expect(block?.kind).toBe("element");
       }
@@ -88,13 +95,13 @@ describe("layer-diagram layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const arrows = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("flow-arrow-")
+        (p) => p.kind === "connection" && p.id.startsWith("flow-arrow-"),
       );
       expect(arrows.length).toBe(5);
 
       // Verify sequential IDs: flow-arrow-0 through flow-arrow-4.
       for (let i = 0; i < 5; i++) {
-        const arrow = scene.primitives.find(p => p.id === `flow-arrow-${i}`);
+        const arrow = scene.primitives.find((p) => p.id === `flow-arrow-${i}`);
         expect(arrow).toBeDefined();
         expect(arrow?.kind).toBe("connection");
       }
@@ -107,21 +114,21 @@ describe("layer-diagram layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const residualSegments = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("residual-")
+        (p) => p.kind === "connection" && p.id.startsWith("residual-"),
       );
 
       // 2 residual connections x 3 segments each = 6 connection primitives.
       expect(residualSegments.length).toBe(6);
 
       // First residual: input (idx 0) to add-norm-1 (idx 2).
-      expect(scene.primitives.find(p => p.id === "residual-0-2-top")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "residual-0-2-vert")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "residual-0-2-bottom")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "residual-0-2-top")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "residual-0-2-vert")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "residual-0-2-bottom")).toBeDefined();
 
       // Second residual: add-norm-1 (idx 2) to add-norm-2 (idx 4).
-      expect(scene.primitives.find(p => p.id === "residual-2-4-top")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "residual-2-4-vert")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "residual-2-4-bottom")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "residual-2-4-top")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "residual-2-4-vert")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "residual-2-4-bottom")).toBeDefined();
     });
 
     it("renders 2 add symbols with text content", () => {
@@ -129,7 +136,7 @@ describe("layer-diagram layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const addSymbols = scene.primitives.filter(
-        p => p.kind === "annotation" && p.id.startsWith("add-symbol-")
+        (p) => p.kind === "annotation" && p.id.startsWith("add-symbol-"),
       );
       expect(addSymbols.length).toBe(2);
 
@@ -152,8 +159,8 @@ describe("layer-diagram layout", () => {
 
       const scene = layout(step, mockCanvasSize, {});
 
-      const ffnBlock = scene.primitives.find(p => p.id === "block-ffn") as ElementPrimitive;
-      const inputBlock = scene.primitives.find(p => p.id === "block-input") as ElementPrimitive;
+      const ffnBlock = scene.primitives.find((p) => p.id === "block-ffn") as ElementPrimitive;
+      const inputBlock = scene.primitives.find((p) => p.id === "block-input") as ElementPrimitive;
 
       expect(ffnBlock).toBeDefined();
       expect(inputBlock).toBeDefined();
@@ -189,13 +196,11 @@ describe("layer-diagram layout", () => {
   describe("ID uniqueness and coordinate validity", () => {
     it("all primitive IDs are unique within a scene", () => {
       const step = makeStep({
-        visualActions: [
-          { type: "activateSublayer", sublayerId: "ffn", label: "FFN" },
-        ],
+        visualActions: [{ type: "activateSublayer", sublayerId: "ffn", label: "FFN" }],
       });
 
       const scene = layout(step, mockCanvasSize, {});
-      const ids = scene.primitives.map(p => p.id);
+      const ids = scene.primitives.map((p) => p.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);
     });

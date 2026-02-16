@@ -9,7 +9,14 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { getLayout } from "../layouts/registry";
-import type { Step, CanvasSize, LayoutFunction, ElementPrimitive, ConnectionPrimitive, AnnotationPrimitive } from "../types";
+import type {
+  Step,
+  CanvasSize,
+  LayoutFunction,
+  ElementPrimitive,
+  ConnectionPrimitive,
+  AnnotationPrimitive,
+} from "../types";
 
 // Import the layout module to trigger self-registration.
 import "../layouts/convolution-grid";
@@ -72,14 +79,14 @@ describe("convolution-grid layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const inputCells = scene.primitives.filter(
-        p => p.kind === "element" && p.id.startsWith("input-cell-")
+        (p) => p.kind === "element" && p.id.startsWith("input-cell-"),
       );
       expect(inputCells.length).toBe(9);
 
       // Verify specific input cell IDs exist.
       for (let r = 0; r < 3; r++) {
         for (let c = 0; c < 3; c++) {
-          expect(scene.primitives.find(p => p.id === `input-cell-${r}-${c}`)).toBeDefined();
+          expect(scene.primitives.find((p) => p.id === `input-cell-${r}-${c}`)).toBeDefined();
         }
       }
     });
@@ -89,13 +96,13 @@ describe("convolution-grid layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const kernelCells = scene.primitives.filter(
-        p => p.kind === "element" && p.id.startsWith("kernel-cell-")
+        (p) => p.kind === "element" && p.id.startsWith("kernel-cell-"),
       );
       expect(kernelCells.length).toBe(4);
 
       for (let kr = 0; kr < 2; kr++) {
         for (let kc = 0; kc < 2; kc++) {
-          expect(scene.primitives.find(p => p.id === `kernel-cell-${kr}-${kc}`)).toBeDefined();
+          expect(scene.primitives.find((p) => p.id === `kernel-cell-${kr}-${kc}`)).toBeDefined();
         }
       }
     });
@@ -105,13 +112,13 @@ describe("convolution-grid layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const outputCells = scene.primitives.filter(
-        p => p.kind === "element" && p.id.startsWith("output-cell-")
+        (p) => p.kind === "element" && p.id.startsWith("output-cell-"),
       );
       expect(outputCells.length).toBe(4);
 
       for (let r = 0; r < 2; r++) {
         for (let c = 0; c < 2; c++) {
-          expect(scene.primitives.find(p => p.id === `output-cell-${r}-${c}`)).toBeDefined();
+          expect(scene.primitives.find((p) => p.id === `output-cell-${r}-${c}`)).toBeDefined();
         }
       }
     });
@@ -120,15 +127,15 @@ describe("convolution-grid layout", () => {
       const step = makeStep();
       const scene = layout(step, mockCanvasSize, {});
 
-      const titleInput = scene.primitives.find(p => p.id === "title-input");
+      const titleInput = scene.primitives.find((p) => p.id === "title-input");
       expect(titleInput).toBeDefined();
       expect(titleInput?.kind).toBe("annotation");
 
-      const titleKernel = scene.primitives.find(p => p.id === "title-kernel");
+      const titleKernel = scene.primitives.find((p) => p.id === "title-kernel");
       expect(titleKernel).toBeDefined();
       expect(titleKernel?.kind).toBe("annotation");
 
-      const titleOutput = scene.primitives.find(p => p.id === "title-output");
+      const titleOutput = scene.primitives.find((p) => p.id === "title-output");
       expect(titleOutput).toBeDefined();
       expect(titleOutput?.kind).toBe("annotation");
     });
@@ -137,11 +144,11 @@ describe("convolution-grid layout", () => {
       const step = makeStep();
       const scene = layout(step, mockCanvasSize, {});
 
-      const star = scene.primitives.find(p => p.id === "operator-star");
+      const star = scene.primitives.find((p) => p.id === "operator-star");
       expect(star).toBeDefined();
       expect(star?.kind).toBe("annotation");
 
-      const equals = scene.primitives.find(p => p.id === "operator-equals");
+      const equals = scene.primitives.find((p) => p.id === "operator-equals");
       expect(equals).toBeDefined();
       expect(equals?.kind).toBe("annotation");
     });
@@ -149,9 +156,19 @@ describe("convolution-grid layout", () => {
     it("sum badge appears when sum is defined with currentRow and currentCol", () => {
       const step = makeStep({
         state: {
-          inputGrid: [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
-          kernel: [[1, 0], [0, -1]],
-          outputGrid: [[0, 0], [0, 0]],
+          inputGrid: [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+          ],
+          kernel: [
+            [1, 0],
+            [0, -1],
+          ],
+          outputGrid: [
+            [0, 0],
+            [0, 0],
+          ],
           currentRow: 0,
           currentCol: 0,
           sum: -4,
@@ -159,7 +176,7 @@ describe("convolution-grid layout", () => {
       });
       const scene = layout(step, mockCanvasSize, {});
 
-      const sumBadge = scene.primitives.find(p => p.id === "sum-badge");
+      const sumBadge = scene.primitives.find((p) => p.id === "sum-badge");
       expect(sumBadge).toBeDefined();
       expect(sumBadge?.kind).toBe("annotation");
       expect((sumBadge as AnnotationPrimitive).form).toBe("badge");
@@ -169,14 +186,24 @@ describe("convolution-grid layout", () => {
     it("sum badge does not appear when sum is undefined", () => {
       const step = makeStep({
         state: {
-          inputGrid: [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
-          kernel: [[1, 0], [0, -1]],
-          outputGrid: [[0, 0], [0, 0]],
+          inputGrid: [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+          ],
+          kernel: [
+            [1, 0],
+            [0, -1],
+          ],
+          outputGrid: [
+            [0, 0],
+            [0, 0],
+          ],
         },
       });
       const scene = layout(step, mockCanvasSize, {});
 
-      const sumBadge = scene.primitives.find(p => p.id === "sum-badge");
+      const sumBadge = scene.primitives.find((p) => p.id === "sum-badge");
       expect(sumBadge).toBeUndefined();
     });
   });
@@ -192,8 +219,12 @@ describe("convolution-grid layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       // The highlighted cells should be at rows [1,2], cols [1,2].
-      const highlightedCell = scene.primitives.find(p => p.id === "input-cell-1-1") as ElementPrimitive;
-      const nonHighlightedCell = scene.primitives.find(p => p.id === "input-cell-0-0") as ElementPrimitive;
+      const highlightedCell = scene.primitives.find(
+        (p) => p.id === "input-cell-1-1",
+      ) as ElementPrimitive;
+      const nonHighlightedCell = scene.primitives.find(
+        (p) => p.id === "input-cell-0-0",
+      ) as ElementPrimitive;
 
       expect(highlightedCell).toBeDefined();
       expect(nonHighlightedCell).toBeDefined();
@@ -207,12 +238,25 @@ describe("convolution-grid layout", () => {
     it("showConvolutionProducts action shows product badges", () => {
       const step = makeStep({
         state: {
-          inputGrid: [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
-          kernel: [[1, 0], [0, -1]],
-          outputGrid: [[0, 0], [0, 0]],
+          inputGrid: [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+          ],
+          kernel: [
+            [1, 0],
+            [0, -1],
+          ],
+          outputGrid: [
+            [0, 0],
+            [0, 0],
+          ],
           currentRow: 0,
           currentCol: 0,
-          products: [[1, 0], [0, -5]],
+          products: [
+            [1, 0],
+            [0, -5],
+          ],
         },
         visualActions: [
           { type: "highlightKernelPosition", row: 0, col: 0, kernelHeight: 2, kernelWidth: 2 },
@@ -224,7 +268,7 @@ describe("convolution-grid layout", () => {
 
       // Product badges should appear over the highlighted cells.
       const productBadges = scene.primitives.filter(
-        p => p.kind === "annotation" && p.id.startsWith("product-")
+        (p) => p.kind === "annotation" && p.id.startsWith("product-"),
       );
       expect(productBadges.length).toBeGreaterThan(0);
     });
@@ -232,22 +276,34 @@ describe("convolution-grid layout", () => {
     it("writeOutputCell action changes output cell appearance", () => {
       const stepBase = makeStep();
       const sceneBase = layout(stepBase, mockCanvasSize, {});
-      const outputCellBase = sceneBase.primitives.find(p => p.id === "output-cell-0-0") as ElementPrimitive;
+      const outputCellBase = sceneBase.primitives.find(
+        (p) => p.id === "output-cell-0-0",
+      ) as ElementPrimitive;
 
       const stepActive = makeStep({
         state: {
-          inputGrid: [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
-          kernel: [[1, 0], [0, -1]],
-          outputGrid: [[-4, 0], [0, 0]],
+          inputGrid: [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+          ],
+          kernel: [
+            [1, 0],
+            [0, -1],
+          ],
+          outputGrid: [
+            [-4, 0],
+            [0, 0],
+          ],
           currentRow: 0,
           currentCol: 0,
         },
-        visualActions: [
-          { type: "writeOutputCell", row: 0, col: 0 },
-        ],
+        visualActions: [{ type: "writeOutputCell", row: 0, col: 0 }],
       });
       const sceneActive = layout(stepActive, mockCanvasSize, {});
-      const outputCellActive = sceneActive.primitives.find(p => p.id === "output-cell-0-0") as ElementPrimitive;
+      const outputCellActive = sceneActive.primitives.find(
+        (p) => p.id === "output-cell-0-0",
+      ) as ElementPrimitive;
 
       expect(outputCellActive).toBeDefined();
 
@@ -280,12 +336,25 @@ describe("convolution-grid layout", () => {
     it("all primitive IDs are unique within a scene", () => {
       const step = makeStep({
         state: {
-          inputGrid: [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
-          kernel: [[1, 0], [0, -1]],
-          outputGrid: [[-4, 0], [0, 0]],
+          inputGrid: [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+          ],
+          kernel: [
+            [1, 0],
+            [0, -1],
+          ],
+          outputGrid: [
+            [-4, 0],
+            [0, 0],
+          ],
           currentRow: 0,
           currentCol: 0,
-          products: [[1, 0], [0, -5]],
+          products: [
+            [1, 0],
+            [0, -5],
+          ],
           sum: -4,
         },
         visualActions: [
@@ -296,7 +365,7 @@ describe("convolution-grid layout", () => {
       });
 
       const scene = layout(step, mockCanvasSize, {});
-      const ids = scene.primitives.map(p => p.id);
+      const ids = scene.primitives.map((p) => p.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);
     });

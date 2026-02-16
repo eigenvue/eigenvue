@@ -65,7 +65,7 @@ export function matMul(A: number[][], B: number[][]): number[][] {
   if (p !== p2) {
     throw new Error(
       `matMul dimension mismatch: A is [${m}, ${p}], B is [${p2}, ${n}]. ` +
-      `Inner dimensions ${p} and ${p2} must match.`
+        `Inner dimensions ${p} and ${p2} must match.`,
     );
   }
 
@@ -180,7 +180,7 @@ export function softmaxRows(M: number[][]): number[][] {
 export function cosineSimilarity(a: number[], b: number[]): number {
   if (a.length !== b.length) {
     throw new Error(
-      `cosineSimilarity: vectors must have same length. Got ${a.length} and ${b.length}.`
+      `cosineSimilarity: vectors must have same length. Got ${a.length} and ${b.length}.`,
     );
   }
 
@@ -335,9 +335,7 @@ export function feedForward(
 export function generateEmbeddings(tokens: string[], dim: number): number[][] {
   return tokens.map((token) => {
     const rng = seedRandom(`embedding-${token}`);
-    return Array.from({ length: dim }, () =>
-      Math.round((rng() * 2 - 1) * 1000) / 1000
-    );
+    return Array.from({ length: dim }, () => Math.round((rng() * 2 - 1) * 1000) / 1000);
   });
 }
 
@@ -354,9 +352,7 @@ export function generateEmbeddings(tokens: string[], dim: number): number[][] {
 export function generateWeightMatrix(name: string, rows: number, cols: number): number[][] {
   const rng = seedRandom(`weight-${name}`);
   return Array.from({ length: rows }, () =>
-    Array.from({ length: cols }, () =>
-      Math.round((rng() - 0.5) * 1000) / 1000
-    )
+    Array.from({ length: cols }, () => Math.round((rng() - 0.5) * 1000) / 1000),
   );
 }
 
@@ -371,7 +367,5 @@ export function generateWeightMatrix(name: string, rows: number, cols: number): 
  */
 export function generateBiasVector(name: string, length: number): number[] {
   const rng = seedRandom(`bias-${name}`);
-  return Array.from({ length }, () =>
-    Math.round((rng() - 0.5) * 200) / 1000
-  );
+  return Array.from({ length }, () => Math.round((rng() - 0.5) * 200) / 1000);
 }

@@ -16,9 +16,9 @@
  * See Phase7_Implementation.md §14 — Component: AlgorithmGrid.
  */
 
-import { type AlgorithmMeta } from '@/shared/types/step';
-import { AlgorithmCard } from './AlgorithmCard';
-import { EmptyState } from './EmptyState';
+import { type AlgorithmMeta } from "@/shared/types/step";
+import { AlgorithmCard } from "./AlgorithmCard";
+import { EmptyState } from "./EmptyState";
 
 interface AlgorithmGridProps {
   readonly algorithms: readonly AlgorithmMeta[];
@@ -42,15 +42,11 @@ const MAX_STAGGER_COUNT = 12;
  */
 const STAGGER_DELAY_MS = 50;
 
-export function AlgorithmGrid({
-  algorithms,
-  isFiltered,
-  onClearFilters,
-}: AlgorithmGridProps) {
+export function AlgorithmGrid({ algorithms, isFiltered, onClearFilters }: AlgorithmGridProps) {
   if (algorithms.length === 0) {
     return (
       <EmptyState
-        type={isFiltered ? 'no-results' : 'empty-category'}
+        type={isFiltered ? "no-results" : "empty-category"}
         onClearFilters={onClearFilters}
       />
     );
@@ -79,10 +75,8 @@ export function AlgorithmGrid({
              * For index=12: delay=600ms
              * For index=20: delay=600ms (clamped)
              */
-            animationDelay: `${
-              Math.min(index, MAX_STAGGER_COUNT) * STAGGER_DELAY_MS
-            }ms`,
-            animationFillMode: 'backwards',
+            animationDelay: `${Math.min(index, MAX_STAGGER_COUNT) * STAGGER_DELAY_MS}ms`,
+            animationFillMode: "backwards",
           }}
         >
           <AlgorithmCard algorithm={algo} />

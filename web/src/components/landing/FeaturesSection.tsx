@@ -14,15 +14,12 @@ export function FeaturesSection() {
     <SectionWrapper id="features" ariaLabelledBy="features-heading">
       <Container>
         <div className="mx-auto max-w-prose text-center">
-          <h2
-            id="features-heading"
-            className="text-3xl font-bold text-text-primary md:text-4xl"
-          >
+          <h2 id="features-heading" className="text-3xl font-bold text-text-primary md:text-4xl">
             Built for <span className="gradient-text">Real Understanding</span>
           </h2>
           <p className="mt-4 text-lg text-text-secondary">
-            Every feature is designed to help you build genuine intuition,
-            not just watch animations.
+            Every feature is designed to help you build genuine intuition, not just watch
+            animations.
           </p>
         </div>
 
@@ -45,12 +42,8 @@ export function FeaturesSection() {
                 </span>
               </div>
 
-              <h3 className="mt-4 text-lg font-semibold text-text-primary">
-                {feature.title}
-              </h3>
-              <p className="mt-2 text-sm text-text-secondary">
-                {feature.description}
-              </p>
+              <h3 className="mt-4 text-lg font-semibold text-text-primary">{feature.title}</h3>
+              <p className="mt-2 text-sm text-text-secondary">{feature.description}</p>
             </div>
           ))}
         </div>

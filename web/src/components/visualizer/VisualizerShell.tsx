@@ -141,9 +141,7 @@ export function VisualizerShell({ algorithmId, meta }: VisualizerShellProps) {
       {/* ── Algorithm Title Bar ──────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-text-primary">
-            {meta.name}
-          </h1>
+          <h1 className="text-xl font-semibold text-text-primary">{meta.name}</h1>
           <p className="text-xs text-text-tertiary font-mono">
             {meta.complexity.time} time · {meta.complexity.space} space · {meta.complexity.level}
           </p>
@@ -188,11 +186,7 @@ export function VisualizerShell({ algorithmId, meta }: VisualizerShellProps) {
         {/* Right: Explanation + State Inspector */}
         <div className="hidden lg:flex flex-col gap-3 min-h-0">
           <div className="min-h-[200px] flex-shrink-0 overflow-y-auto max-h-[50%]">
-            <ExplanationPanel
-              currentStep={currentStep}
-              totalSteps={totalSteps}
-              meta={meta}
-            />
+            <ExplanationPanel currentStep={currentStep} totalSteps={totalSteps} meta={meta} />
           </div>
           <div className="flex-1 min-h-0 overflow-y-auto">
             <StateInspector state={currentStep?.state ?? null} />
@@ -201,11 +195,7 @@ export function VisualizerShell({ algorithmId, meta }: VisualizerShellProps) {
       </div>
 
       {/* ── Playback Controls ────────────────────────────────────── */}
-      <PlaybackControls
-        state={playbackState}
-        controls={playbackControls}
-        totalSteps={totalSteps}
-      />
+      <PlaybackControls state={playbackState} controls={playbackControls} totalSteps={totalSteps} />
 
       {/* ── Input Editor (Collapsible) ───────────────────────────── */}
       <details className="mt-1">
@@ -213,11 +203,7 @@ export function VisualizerShell({ algorithmId, meta }: VisualizerShellProps) {
           Edit Inputs & Examples
         </summary>
         <div className="mt-2">
-          <InputEditor
-            meta={meta}
-            currentInputs={inputs}
-            onRun={algoControls.setInputs}
-          />
+          <InputEditor meta={meta} currentInputs={inputs} onRun={algoControls.setInputs} />
         </div>
       </details>
     </div>

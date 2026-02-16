@@ -10,7 +10,7 @@
  * See Phase7_Implementation.md §6 — Catalog Constants & Configuration.
  */
 
-import { type AlgorithmCategory, type DifficultyLevel } from '@/shared/types/step';
+import { type AlgorithmCategory, type DifficultyLevel } from "@/shared/types/step";
 
 // ——————————————————————————————————————————————————
 // CATEGORY METADATA
@@ -48,7 +48,7 @@ export interface CategoryDisplayInfo {
    * Badge category key for the <Badge> component (Phase 2).
    * Maps to the categoryStyles lookup in Badge.tsx.
    */
-  readonly badgeCategory: 'classical' | 'deeplearning' | 'genai' | 'quantum';
+  readonly badgeCategory: "classical" | "deeplearning" | "genai" | "quantum";
   /** Icon identifier. Maps to a Lucide icon name or a custom SVG. */
   readonly icon: string;
   /**
@@ -70,47 +70,46 @@ export interface CategoryDisplayInfo {
  */
 export const CATEGORIES: readonly CategoryDisplayInfo[] = [
   {
-    id: 'classical',
-    slug: 'classical',
-    label: 'Classical Algorithms',
-    description:
-      'Sorting, searching, and graph algorithms — the foundation of computer science.',
-    colorToken: 'classical',
-    badgeCategory: 'classical',
-    icon: 'Layers',
+    id: "classical",
+    slug: "classical",
+    label: "Classical Algorithms",
+    description: "Sorting, searching, and graph algorithms — the foundation of computer science.",
+    colorToken: "classical",
+    badgeCategory: "classical",
+    icon: "Layers",
     isAvailable: true,
   },
   {
-    id: 'deep-learning',
-    slug: 'deep-learning',
-    label: 'Deep Learning',
+    id: "deep-learning",
+    slug: "deep-learning",
+    label: "Deep Learning",
     description:
-      'Neural networks, backpropagation, and gradient descent — how machines learn from data.',
-    colorToken: 'deeplearning',
-    badgeCategory: 'deeplearning',
-    icon: 'Brain',
+      "Neural networks, backpropagation, and gradient descent — how machines learn from data.",
+    colorToken: "deeplearning",
+    badgeCategory: "deeplearning",
+    icon: "Brain",
     isAvailable: true,
   },
   {
-    id: 'generative-ai',
-    slug: 'generative-ai',
-    label: 'Generative AI',
+    id: "generative-ai",
+    slug: "generative-ai",
+    label: "Generative AI",
     description:
-      'Tokenization, embeddings, attention, and transformers — the building blocks of modern AI.',
-    colorToken: 'genai',
-    badgeCategory: 'genai',
-    icon: 'Sparkles',
+      "Tokenization, embeddings, attention, and transformers — the building blocks of modern AI.",
+    colorToken: "genai",
+    badgeCategory: "genai",
+    icon: "Sparkles",
     isAvailable: true,
   },
   {
-    id: 'quantum',
-    slug: 'quantum',
-    label: 'Quantum Computing',
+    id: "quantum",
+    slug: "quantum",
+    label: "Quantum Computing",
     description:
-      'Qubits, gates, entanglement, and quantum algorithms — computing beyond classical limits.',
-    colorToken: 'quantum',
-    badgeCategory: 'quantum',
-    icon: 'Atom',
+      "Qubits, gates, entanglement, and quantum algorithms — computing beyond classical limits.",
+    colorToken: "quantum",
+    badgeCategory: "quantum",
+    icon: "Atom",
     isAvailable: false,
   },
 ] as const;
@@ -120,7 +119,7 @@ export const CATEGORIES: readonly CategoryDisplayInfo[] = [
  * Used for O(1) access by the [category] dynamic route.
  */
 export const CATEGORY_BY_SLUG: ReadonlyMap<string, CategoryDisplayInfo> = new Map(
-  CATEGORIES.map((cat) => [cat.slug, cat])
+  CATEGORIES.map((cat) => [cat.slug, cat]),
 );
 
 /**
@@ -128,15 +127,13 @@ export const CATEGORY_BY_SLUG: ReadonlyMap<string, CategoryDisplayInfo> = new Ma
  * Used for rendering category badges and icons on algorithm cards.
  */
 export const CATEGORY_BY_ID: ReadonlyMap<AlgorithmCategory, CategoryDisplayInfo> = new Map(
-  CATEGORIES.map((cat) => [cat.id, cat])
+  CATEGORIES.map((cat) => [cat.id, cat]),
 );
 
 /**
  * Valid category slugs for Next.js generateStaticParams.
  */
-export const ALL_CATEGORY_SLUGS: readonly string[] = CATEGORIES.map(
-  (cat) => cat.slug
-);
+export const ALL_CATEGORY_SLUGS: readonly string[] = CATEGORIES.map((cat) => cat.slug);
 
 // ——————————————————————————————————————————————————
 // DIFFICULTY METADATA
@@ -166,28 +163,28 @@ export interface DifficultyDisplayInfo {
  */
 export const DIFFICULTIES: readonly DifficultyDisplayInfo[] = [
   {
-    id: 'beginner',
-    label: 'Beginner',
-    colorClass: 'text-difficulty-beginner',
-    bgClass: 'bg-difficulty-beginner-bg',
+    id: "beginner",
+    label: "Beginner",
+    colorClass: "text-difficulty-beginner",
+    bgClass: "bg-difficulty-beginner-bg",
   },
   {
-    id: 'intermediate',
-    label: 'Intermediate',
-    colorClass: 'text-difficulty-intermediate',
-    bgClass: 'bg-difficulty-intermediate-bg',
+    id: "intermediate",
+    label: "Intermediate",
+    colorClass: "text-difficulty-intermediate",
+    bgClass: "bg-difficulty-intermediate-bg",
   },
   {
-    id: 'advanced',
-    label: 'Advanced',
-    colorClass: 'text-difficulty-advanced',
-    bgClass: 'bg-difficulty-advanced-bg',
+    id: "advanced",
+    label: "Advanced",
+    colorClass: "text-difficulty-advanced",
+    bgClass: "bg-difficulty-advanced-bg",
   },
   {
-    id: 'expert',
-    label: 'Expert',
-    colorClass: 'text-difficulty-expert',
-    bgClass: 'bg-difficulty-expert-bg',
+    id: "expert",
+    label: "Expert",
+    colorClass: "text-difficulty-expert",
+    bgClass: "bg-difficulty-expert-bg",
   },
 ] as const;
 
@@ -195,7 +192,7 @@ export const DIFFICULTIES: readonly DifficultyDisplayInfo[] = [
  * Lookup map: DifficultyLevel → DifficultyDisplayInfo.
  */
 export const DIFFICULTY_BY_ID: ReadonlyMap<DifficultyLevel, DifficultyDisplayInfo> = new Map(
-  DIFFICULTIES.map((diff) => [diff.id, diff])
+  DIFFICULTIES.map((diff) => [diff.id, diff]),
 );
 
 // ——————————————————————————————————————————————————

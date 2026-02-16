@@ -48,8 +48,8 @@ const MAX_OPACITY = 0.6;
  * Speed range in pixels per second.
  * Brighter (higher opacity) stars move faster to simulate depth.
  */
-const MIN_SPEED = 3;   // px/s — distant (dim) stars
-const MAX_SPEED = 12;  // px/s — closer (bright) stars
+const MIN_SPEED = 3; // px/s — distant (dim) stars
+const MAX_SPEED = 12; // px/s — closer (bright) stars
 
 interface Star {
   x: number;
@@ -105,13 +105,8 @@ export function Starfield() {
    */
   const initializeStars = useCallback((width: number, height: number) => {
     const area = width * height;
-    const count = Math.min(
-      MAX_STARS,
-      Math.round((area / 1_000_000) * STARS_PER_MILLION_PX)
-    );
-    starsRef.current = Array.from({ length: count }, () =>
-      createStar(width, height)
-    );
+    const count = Math.min(MAX_STARS, Math.round((area / 1_000_000) * STARS_PER_MILLION_PX));
+    starsRef.current = Array.from({ length: count }, () => createStar(width, height));
   }, []);
 
   /**
@@ -147,7 +142,7 @@ export function Starfield() {
         ctx.fill();
       }
     },
-    [prefersReducedMotion]
+    [prefersReducedMotion],
   );
 
   /**
@@ -231,10 +226,7 @@ export function Starfield() {
       }
 
       /** deltaTime in seconds, clamped to 0.1s max */
-      const deltaTime = Math.min(
-        (timestamp - (lastTimeRef.current || timestamp)) / 1000,
-        0.1
-      );
+      const deltaTime = Math.min((timestamp - (lastTimeRef.current || timestamp)) / 1000, 0.1);
       lastTimeRef.current = timestamp;
 
       renderFrame(ctx, window.innerWidth, window.innerHeight, deltaTime);

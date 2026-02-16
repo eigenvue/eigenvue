@@ -32,8 +32,7 @@ import type { Metadata } from "next";
  * IMPORTANT: No trailing slash. All URL construction appends paths to this.
  */
 export const SITE_URL: string =
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
-  "https://eigenvue.dev";
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") || "https://eigenvue.dev";
 
 /** Site name used in Open Graph and title suffixes. */
 export const SITE_NAME = "Eigenvue";
@@ -98,8 +97,7 @@ export interface CategorySeoInput {
  */
 export function buildAlgorithmMetadata(algo: AlgorithmSeoInput): Metadata {
   const title = `${algo.name} Visualization — Step-by-Step${TITLE_SEPARATOR}${SITE_NAME}`;
-  const description =
-    algo.seo.ogDescription || algo.description.short;
+  const description = algo.seo.ogDescription || algo.description.short;
   const canonicalUrl = `${SITE_URL}/algo/${algo.id}`;
   const ogImageUrl = `${SITE_URL}/og/${algo.id}`;
 
@@ -261,8 +259,7 @@ export function buildStaticPageMetadata(
  * @returns A complete Metadata object.
  */
 export function buildLandingPageMetadata(): Metadata {
-  const title =
-    "Eigenvue — Interactive Algorithm Visualizations for AI, ML & Computer Science";
+  const title = "Eigenvue — Interactive Algorithm Visualizations for AI, ML & Computer Science";
   const description =
     "Watch algorithms execute step-by-step. Interactive visualizations for " +
     "classical algorithms, deep learning, generative AI, and quantum computing. " +

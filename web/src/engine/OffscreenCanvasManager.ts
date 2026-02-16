@@ -160,12 +160,7 @@ export class OffscreenCanvasRenderer {
   transfer(targetCtx: CanvasRenderingContext2D): void {
     if (!this.offscreen) return;
 
-    targetCtx.clearRect(
-      0,
-      0,
-      targetCtx.canvas.width,
-      targetCtx.canvas.height,
-    );
+    targetCtx.clearRect(0, 0, targetCtx.canvas.width, targetCtx.canvas.height);
     targetCtx.drawImage(this.offscreen, 0, 0);
   }
 

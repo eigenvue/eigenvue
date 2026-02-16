@@ -8,7 +8,13 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { getLayout } from "../layouts/registry";
-import type { Step, CanvasSize, LayoutFunction, ElementPrimitive, AnnotationPrimitive } from "../types";
+import type {
+  Step,
+  CanvasSize,
+  LayoutFunction,
+  ElementPrimitive,
+  AnnotationPrimitive,
+} from "../types";
 
 // Import the layout module to trigger self-registration.
 import "../layouts/attention-heatmap";
@@ -47,16 +53,14 @@ describe("attention-heatmap layout", () => {
         title: "Full Attention Matrix",
         explanation: "Showing 3x3 attention matrix.",
         state: { tokens },
-        visualActions: [
-          { type: "showFullAttentionMatrix", weights },
-        ],
+        visualActions: [{ type: "showFullAttentionMatrix", weights }],
         codeHighlight: { language: "pseudocode", lines: [] },
         isTerminal: false,
       };
 
       const scene = layout(step, mockCanvasSize, {});
       const cells = scene.primitives.filter(
-        p => p.kind === "element" && p.id.startsWith("heatmap-cell-")
+        (p) => p.kind === "element" && p.id.startsWith("heatmap-cell-"),
       );
 
       // N x N grid should produce N*N cells.
@@ -76,16 +80,14 @@ describe("attention-heatmap layout", () => {
         title: "Colored Cells",
         explanation: "Cells should have heatmap colors.",
         state: { tokens },
-        visualActions: [
-          { type: "showFullAttentionMatrix", weights },
-        ],
+        visualActions: [{ type: "showFullAttentionMatrix", weights }],
         codeHighlight: { language: "pseudocode", lines: [] },
         isTerminal: false,
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const cell00 = scene.primitives.find(p => p.id === "heatmap-cell-0-0") as ElementPrimitive;
-      const cell01 = scene.primitives.find(p => p.id === "heatmap-cell-0-1") as ElementPrimitive;
+      const cell00 = scene.primitives.find((p) => p.id === "heatmap-cell-0-0") as ElementPrimitive;
+      const cell01 = scene.primitives.find((p) => p.id === "heatmap-cell-0-1") as ElementPrimitive;
 
       expect(cell00).toBeDefined();
       expect(cell01).toBeDefined();
@@ -108,9 +110,7 @@ describe("attention-heatmap layout", () => {
         title: "Cell IDs",
         explanation: "Verifying cell ID pattern.",
         state: { tokens },
-        visualActions: [
-          { type: "showFullAttentionMatrix", weights },
-        ],
+        visualActions: [{ type: "showFullAttentionMatrix", weights }],
         codeHighlight: { language: "pseudocode", lines: [] },
         isTerminal: false,
       };
@@ -119,7 +119,7 @@ describe("attention-heatmap layout", () => {
 
       for (let row = 0; row < 3; row++) {
         for (let col = 0; col < 3; col++) {
-          const cell = scene.primitives.find(p => p.id === `heatmap-cell-${row}-${col}`);
+          const cell = scene.primitives.find((p) => p.id === `heatmap-cell-${row}-${col}`);
           expect(cell).toBeDefined();
           expect(cell?.kind).toBe("element");
         }
@@ -144,14 +144,18 @@ describe("attention-heatmap layout", () => {
 
       // Column headers (key tokens).
       for (let col = 0; col < tokens.length; col++) {
-        const colHeader = scene.primitives.find(p => p.id === `col-header-${col}`) as AnnotationPrimitive;
+        const colHeader = scene.primitives.find(
+          (p) => p.id === `col-header-${col}`,
+        ) as AnnotationPrimitive;
         expect(colHeader).toBeDefined();
         expect(colHeader.text).toBe(tokens[col]);
       }
 
       // Row headers (query tokens).
       for (let row = 0; row < tokens.length; row++) {
-        const rowHeader = scene.primitives.find(p => p.id === `row-header-${row}`) as AnnotationPrimitive;
+        const rowHeader = scene.primitives.find(
+          (p) => p.id === `row-header-${row}`,
+        ) as AnnotationPrimitive;
         expect(rowHeader).toBeDefined();
         expect(rowHeader.text).toBe(tokens[row]);
       }
@@ -185,10 +189,10 @@ describe("attention-heatmap layout", () => {
 
       // Highlighted row cells should have a stroke color indicating active state.
       const highlightedCell = scene.primitives.find(
-        p => p.id === "heatmap-cell-1-0"
+        (p) => p.id === "heatmap-cell-1-0",
       ) as ElementPrimitive;
       const nonHighlightedCell = scene.primitives.find(
-        p => p.id === "heatmap-cell-0-0"
+        (p) => p.id === "heatmap-cell-0-0",
       ) as ElementPrimitive;
 
       expect(highlightedCell).toBeDefined();
@@ -217,7 +221,7 @@ describe("attention-heatmap layout", () => {
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const badge = scene.primitives.find(p => p.id === "head-badge") as AnnotationPrimitive;
+      const badge = scene.primitives.find((p) => p.id === "head-badge") as AnnotationPrimitive;
 
       expect(badge).toBeDefined();
       expect(badge.kind).toBe("annotation");
@@ -236,9 +240,7 @@ describe("attention-heatmap layout", () => {
         title: "Unknown Action",
         explanation: "Step with unknown action type.",
         state: { tokens },
-        visualActions: [
-          { type: "someUnrecognizedAction", payload: "test" },
-        ],
+        visualActions: [{ type: "someUnrecognizedAction", payload: "test" }],
         codeHighlight: { language: "pseudocode", lines: [] },
         isTerminal: false,
       };
@@ -292,7 +294,7 @@ describe("attention-heatmap layout", () => {
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const ids = scene.primitives.map(p => p.id);
+      const ids = scene.primitives.map((p) => p.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);
     });
@@ -310,9 +312,7 @@ describe("attention-heatmap layout", () => {
         title: "Finite Coords",
         explanation: "All coordinates should be finite numbers.",
         state: { tokens },
-        visualActions: [
-          { type: "showFullAttentionMatrix", weights },
-        ],
+        visualActions: [{ type: "showFullAttentionMatrix", weights }],
         codeHighlight: { language: "pseudocode", lines: [] },
         isTerminal: false,
       };

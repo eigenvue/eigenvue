@@ -66,34 +66,42 @@ const sizeStyles: Record<ButtonSize, string> = {
   lg: "h-12 px-6 text-base rounded-lg",
 };
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button(
-    { variant = "primary", size = "md", className = "", href, target, rel, children, disabled, ...props },
-    ref
-  ) {
-    const classes = [
-      "inline-flex items-center justify-center gap-2",
-      "font-semibold",
-      "select-none",
-      "whitespace-nowrap",
-      variantStyles[variant],
-      sizeStyles[size],
-      disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "cursor-pointer",
-      className,
-    ].join(" ");
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    variant = "primary",
+    size = "md",
+    className = "",
+    href,
+    target,
+    rel,
+    children,
+    disabled,
+    ...props
+  },
+  ref,
+) {
+  const classes = [
+    "inline-flex items-center justify-center gap-2",
+    "font-semibold",
+    "select-none",
+    "whitespace-nowrap",
+    variantStyles[variant],
+    sizeStyles[size],
+    disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "cursor-pointer",
+    className,
+  ].join(" ");
 
-    if (href && !disabled) {
-      return (
-        <a href={href} className={classes} target={target} rel={rel}>
-          {children}
-        </a>
-      );
-    }
-
+  if (href && !disabled) {
     return (
-      <button ref={ref} className={classes} disabled={disabled} {...props}>
+      <a href={href} className={classes} target={target} rel={rel}>
         {children}
-      </button>
+      </a>
     );
   }
-);
+
+  return (
+    <button ref={ref} className={classes} disabled={disabled} {...props}>
+      {children}
+    </button>
+  );
+});

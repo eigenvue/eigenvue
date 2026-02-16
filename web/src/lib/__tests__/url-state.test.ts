@@ -90,10 +90,14 @@ describe("parseUrlState — Parsing", () => {
 describe("getShareUrl", () => {
   it("includes all input params and step", () => {
     // Mock window.location.origin
-    const url = getShareUrl("binary-search", {
-      array: [1, 3, 5],
-      target: 3,
-    }, 2);
+    const url = getShareUrl(
+      "binary-search",
+      {
+        array: [1, 3, 5],
+        target: 3,
+      },
+      2,
+    );
 
     // In jsdom, window.location.origin is typically "http://localhost:3000" or similar.
     expect(url).toContain("/algo/binary-search");

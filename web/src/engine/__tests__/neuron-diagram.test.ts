@@ -9,7 +9,14 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { getLayout } from "../layouts/registry";
-import type { Step, CanvasSize, LayoutFunction, ElementPrimitive, ConnectionPrimitive, AnnotationPrimitive } from "../types";
+import type {
+  Step,
+  CanvasSize,
+  LayoutFunction,
+  ElementPrimitive,
+  ConnectionPrimitive,
+  AnnotationPrimitive,
+} from "../types";
 
 // Import the layout module to trigger self-registration.
 import "../layouts/neuron-diagram";
@@ -64,27 +71,27 @@ describe("neuron-diagram layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const inputNodes = scene.primitives.filter(
-        p => p.kind === "element" && p.id.startsWith("input-node-")
+        (p) => p.kind === "element" && p.id.startsWith("input-node-"),
       );
       expect(inputNodes.length).toBe(2);
 
-      expect(scene.primitives.find(p => p.id === "input-node-0")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "input-node-1")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "input-node-0")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "input-node-1")).toBeDefined();
     });
 
     it("renders summation-node, activation-box, and output-node", () => {
       const step = makeStep();
       const scene = layout(step, mockCanvasSize, {});
 
-      const sumNode = scene.primitives.find(p => p.id === "summation-node");
+      const sumNode = scene.primitives.find((p) => p.id === "summation-node");
       expect(sumNode).toBeDefined();
       expect(sumNode?.kind).toBe("element");
 
-      const actBox = scene.primitives.find(p => p.id === "activation-box");
+      const actBox = scene.primitives.find((p) => p.id === "activation-box");
       expect(actBox).toBeDefined();
       expect(actBox?.kind).toBe("element");
 
-      const outNode = scene.primitives.find(p => p.id === "output-node");
+      const outNode = scene.primitives.find((p) => p.id === "output-node");
       expect(outNode).toBeDefined();
       expect(outNode?.kind).toBe("element");
     });
@@ -94,19 +101,19 @@ describe("neuron-diagram layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const weightConns = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("weight-conn-")
+        (p) => p.kind === "connection" && p.id.startsWith("weight-conn-"),
       );
       expect(weightConns.length).toBe(2);
 
-      expect(scene.primitives.find(p => p.id === "weight-conn-0")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "weight-conn-1")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "weight-conn-0")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "weight-conn-1")).toBeDefined();
     });
 
     it("renders bias-label annotation", () => {
       const step = makeStep();
       const scene = layout(step, mockCanvasSize, {});
 
-      const biasLabel = scene.primitives.find(p => p.id === "bias-label");
+      const biasLabel = scene.primitives.find((p) => p.id === "bias-label");
       expect(biasLabel).toBeDefined();
       expect(biasLabel?.kind).toBe("annotation");
     });
@@ -115,8 +122,8 @@ describe("neuron-diagram layout", () => {
       const step = makeStep();
       const scene = layout(step, mockCanvasSize, {});
 
-      expect(scene.primitives.find(p => p.id === "sum-to-activation")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "activation-to-output")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "sum-to-activation")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "activation-to-output")).toBeDefined();
     });
 
     it("renders phase labels", () => {
@@ -124,7 +131,7 @@ describe("neuron-diagram layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const phaseLabels = scene.primitives.filter(
-        p => p.kind === "annotation" && p.id.startsWith("phase-label-")
+        (p) => p.kind === "annotation" && p.id.startsWith("phase-label-"),
       );
       expect(phaseLabels.length).toBeGreaterThanOrEqual(5);
     });
@@ -133,15 +140,15 @@ describe("neuron-diagram layout", () => {
   describe("visual actions", () => {
     it("activateNeuron action with layer=0, index=0 changes input-node-0 appearance", () => {
       const step = makeStep({
-        visualActions: [
-          { type: "activateNeuron", layer: 0, index: 0 },
-        ],
+        visualActions: [{ type: "activateNeuron", layer: 0, index: 0 }],
       });
 
       const scene = layout(step, mockCanvasSize, {});
 
-      const activeNode = scene.primitives.find(p => p.id === "input-node-0") as ElementPrimitive;
-      const inactiveNode = scene.primitives.find(p => p.id === "input-node-1") as ElementPrimitive;
+      const activeNode = scene.primitives.find((p) => p.id === "input-node-0") as ElementPrimitive;
+      const inactiveNode = scene.primitives.find(
+        (p) => p.id === "input-node-1",
+      ) as ElementPrimitive;
 
       expect(activeNode).toBeDefined();
       expect(inactiveNode).toBeDefined();
@@ -155,13 +162,17 @@ describe("neuron-diagram layout", () => {
     it("showPreActivation action increases summation-node strokeWidth", () => {
       const stepBase = makeStep();
       const sceneBase = layout(stepBase, mockCanvasSize, {});
-      const sumBase = sceneBase.primitives.find(p => p.id === "summation-node") as ElementPrimitive;
+      const sumBase = sceneBase.primitives.find(
+        (p) => p.id === "summation-node",
+      ) as ElementPrimitive;
 
       const stepActive = makeStep({
         visualActions: [{ type: "showPreActivation" }],
       });
       const sceneActive = layout(stepActive, mockCanvasSize, {});
-      const sumActive = sceneActive.primitives.find(p => p.id === "summation-node") as ElementPrimitive;
+      const sumActive = sceneActive.primitives.find(
+        (p) => p.id === "summation-node",
+      ) as ElementPrimitive;
 
       expect(sumActive.strokeWidth).toBeGreaterThan(sumBase.strokeWidth);
     });
@@ -169,13 +180,17 @@ describe("neuron-diagram layout", () => {
     it("showActivationFunction action changes activation-box strokeColor", () => {
       const stepBase = makeStep();
       const sceneBase = layout(stepBase, mockCanvasSize, {});
-      const actBase = sceneBase.primitives.find(p => p.id === "activation-box") as ElementPrimitive;
+      const actBase = sceneBase.primitives.find(
+        (p) => p.id === "activation-box",
+      ) as ElementPrimitive;
 
       const stepActive = makeStep({
         visualActions: [{ type: "showActivationFunction" }],
       });
       const sceneActive = layout(stepActive, mockCanvasSize, {});
-      const actActive = sceneActive.primitives.find(p => p.id === "activation-box") as ElementPrimitive;
+      const actActive = sceneActive.primitives.find(
+        (p) => p.id === "activation-box",
+      ) as ElementPrimitive;
 
       expect(actActive.strokeColor).not.toBe(actBase.strokeColor);
     });
@@ -184,9 +199,7 @@ describe("neuron-diagram layout", () => {
   describe("purity", () => {
     it("calling twice with same args produces identical output", () => {
       const step = makeStep({
-        visualActions: [
-          { type: "activateNeuron", layer: 0, index: 0 },
-        ],
+        visualActions: [{ type: "activateNeuron", layer: 0, index: 0 }],
       });
 
       const scene1 = layout(step, mockCanvasSize, {});
@@ -204,13 +217,11 @@ describe("neuron-diagram layout", () => {
   describe("ID uniqueness and coordinate validity", () => {
     it("all primitive IDs are unique within a scene", () => {
       const step = makeStep({
-        visualActions: [
-          { type: "activateNeuron", layer: 0, index: 0 },
-        ],
+        visualActions: [{ type: "activateNeuron", layer: 0, index: 0 }],
       });
 
       const scene = layout(step, mockCanvasSize, {});
-      const ids = scene.primitives.map(p => p.id);
+      const ids = scene.primitives.map((p) => p.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);
     });

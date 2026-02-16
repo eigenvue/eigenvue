@@ -103,29 +103,29 @@ const PARTITION_LINE_WIDTH = 1.5;
  */
 const THEME = {
   // --- Base (shared with array-with-pointers) ---
-  cellDefault:    "#1e293b",
-  cellStroke:     "#475569",
-  cellLabel:      "#f1f5f9",
-  cellSubLabel:   "#94a3b8",
-  highlight:      "#38bdf8",
-  highlightAlt:   "#818cf8",
+  cellDefault: "#1e293b",
+  cellStroke: "#475569",
+  cellLabel: "#f1f5f9",
+  cellSubLabel: "#94a3b8",
+  highlight: "#38bdf8",
+  highlightAlt: "#818cf8",
   rangeHighlight: "rgba(30, 64, 175, 0.2)",
-  dimmed:         "#0f172a",
-  found:          "#22c55e",
-  pointer:        "#f59e0b",
-  pointerLabel:   "#fbbf24",
-  message:        "#cbd5e1",
+  dimmed: "#0f172a",
+  found: "#22c55e",
+  pointer: "#f59e0b",
+  pointerLabel: "#fbbf24",
+  message: "#cbd5e1",
 
   // --- Sorting-specific ---
-  swapArc:        "#f472b6",
-  compareLine:    "#60a5fa",
-  compareResult:  "#fbbf24",
-  pivot:          "#c084fc",
-  pivotLabel:     "#f5f3ff",
-  partition:      "rgba(148, 163, 184, 0.3)",
-  auxCell:        "#1e293b",
-  auxCellActive:  "#0ea5e9",
-  sorted:         "#22c55e",
+  swapArc: "#f472b6",
+  compareLine: "#60a5fa",
+  compareResult: "#fbbf24",
+  pivot: "#c084fc",
+  pivotLabel: "#f5f3ff",
+  partition: "rgba(148, 163, 184, 0.3)",
+  auxCell: "#1e293b",
+  auxCellActive: "#0ea5e9",
+  sorted: "#22c55e",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -141,15 +141,15 @@ const THEME = {
  */
 function resolveColor(colorValue: string): string {
   const themeMap: Record<string, string> = {
-    highlight:      THEME.highlight,
-    highlightAlt:   THEME.highlightAlt,
+    highlight: THEME.highlight,
+    highlightAlt: THEME.highlightAlt,
     rangeHighlight: THEME.rangeHighlight,
-    dimmed:         THEME.dimmed,
-    found:          THEME.found,
-    sorted:         THEME.sorted,
-    swap:           THEME.swapArc,
-    pivot:          THEME.pivot,
-    compare:        THEME.compareLine,
+    dimmed: THEME.dimmed,
+    found: THEME.found,
+    sorted: THEME.sorted,
+    swap: THEME.swapArc,
+    pivot: THEME.pivot,
+    compare: THEME.compareLine,
   };
   return themeMap[colorValue] ?? colorValue;
 }
@@ -193,10 +193,7 @@ function arrayComparisonLayout(
   const usableWidth = canvasSize.width - 2 * LAYOUT_PADDING;
   const usableHeight = canvasSize.height - 2 * LAYOUT_PADDING;
 
-  const cellWidth = Math.max(
-    MIN_CELL_WIDTH,
-    Math.min(MAX_CELL_WIDTH, usableWidth / N),
-  );
+  const cellWidth = Math.max(MIN_CELL_WIDTH, Math.min(MAX_CELL_WIDTH, usableWidth / N));
   const cellHeight = Math.min(MAX_CELL_HEIGHT, usableHeight * CELL_HEIGHT_RATIO);
   const totalArrayWidth = cellWidth * N;
 
@@ -210,8 +207,7 @@ function arrayComparisonLayout(
    * Returns the center X coordinate for the cell at index `i`.
    * Formula: left edge of array + i cells + half a cell.
    */
-  const cellCenterX = (i: number): number =>
-    arrayStartX + i * cellWidth + cellWidth / 2;
+  const cellCenterX = (i: number): number => arrayStartX + i * cellWidth + cellWidth / 2;
 
   /** The center Y coordinate for all main array cells (they share a row). */
   const mainCellCenterY = mainArrayTopY + cellHeight / 2;
@@ -412,9 +408,13 @@ function arrayComparisonLayout(
     const { i, j, result } = compares[c]!;
 
     const resultSymbol =
-      result === "gt" || result === "greater" ? ">" :
-      result === "lt" || result === "less"    ? "<" :
-      result === "eq" || result === "equal"   ? "=" : "?";
+      result === "gt" || result === "greater"
+        ? ">"
+        : result === "lt" || result === "less"
+          ? "<"
+          : result === "eq" || result === "equal"
+            ? "="
+            : "?";
 
     const conn: ConnectionPrimitive = {
       kind: "connection",
@@ -439,9 +439,7 @@ function arrayComparisonLayout(
   }
 
   // --- Emit pointer annotations ---
-  const sortedPointers = [...pointers.entries()].sort((a, b) =>
-    a[0].localeCompare(b[0]),
-  );
+  const sortedPointers = [...pointers.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 
   // Stagger pointers that target the same cell.
   const targetGroups = new Map<number, string[]>();

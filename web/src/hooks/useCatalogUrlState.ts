@@ -24,45 +24,39 @@
  * See Phase7_Implementation.md §7.3 / §19 — URL State Synchronization.
  */
 
-'use client';
+"use client";
 
-import { useRef, useCallback } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useRef, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   type CatalogFilterState,
   type CategoryFilter,
   type SortOption,
   DEFAULT_CATALOG_STATE,
-} from '@/lib/catalog-types';
-import { type DifficultyLevel } from '@/shared/types/step';
+} from "@/lib/catalog-types";
+import { type DifficultyLevel } from "@/shared/types/step";
 
 // ——————————————————————————————————————————————————
 // URL PARSING (URL → State)
 // ——————————————————————————————————————————————————
 
 /** Valid category values (for URL param validation). */
-const VALID_CATEGORIES = new Set([
-  'all',
-  'classical',
-  'deep-learning',
-  'generative-ai',
-  'quantum',
-]);
+const VALID_CATEGORIES = new Set(["all", "classical", "deep-learning", "generative-ai", "quantum"]);
 
 /** Valid difficulty values (for URL param validation). */
 const VALID_DIFFICULTIES = new Set<DifficultyLevel>([
-  'beginner',
-  'intermediate',
-  'advanced',
-  'expert',
+  "beginner",
+  "intermediate",
+  "advanced",
+  "expert",
 ]);
 
 /** Valid sort values (for URL param validation). */
 const VALID_SORTS = new Set<SortOption>([
-  'name-asc',
-  'name-desc',
-  'difficulty-asc',
-  'difficulty-desc',
+  "name-asc",
+  "name-desc",
+  "difficulty-asc",
+  "difficulty-desc",
 ]);
 
 /**
@@ -75,17 +69,17 @@ const VALID_SORTS = new Set<SortOption>([
  */
 export function parseUrlState(params: URLSearchParams): CatalogFilterState {
   // --- Category ---
-  const categoryParam = params.get('category');
+  const categoryParam = params.get("category");
   const category: CategoryFilter =
     categoryParam && VALID_CATEGORIES.has(categoryParam)
       ? (categoryParam as CategoryFilter)
       : DEFAULT_CATALOG_STATE.category;
 
   // --- Difficulties ---
-  const diffParam = params.get('difficulty');
+  const diffParam = params.get("difficulty");
   const difficulties = new Set<DifficultyLevel>();
   if (diffParam) {
-    for (const part of diffParam.split(',')) {
+    for (const part of diffParam.split(",")) {
       const trimmed = part.trim() as DifficultyLevel;
       if (VALID_DIFFICULTIES.has(trimmed)) {
         difficulties.add(trimmed);
@@ -94,10 +88,10 @@ export function parseUrlState(params: URLSearchParams): CatalogFilterState {
   }
 
   // --- Search query ---
-  const searchQuery = (params.get('q') ?? '').trim().toLowerCase();
+  const searchQuery = (params.get("q") ?? "").trim().toLowerCase();
 
   // --- Sort ---
-  const sortParam = params.get('sort');
+  const sortParam = params.get("sort");
   const sortBy: SortOption =
     sortParam && VALID_SORTS.has(sortParam as SortOption)
       ? (sortParam as SortOption)
@@ -122,7 +116,7 @@ export function serializeUrlState(state: CatalogFilterState): string {
   const params = new URLSearchParams();
 
   if (state.category !== DEFAULT_CATALOG_STATE.category) {
-    params.set('category', state.category);
+    params.set("category", state.category);
   }
 
   if (state.difficulties.size > 0) {
@@ -132,15 +126,15 @@ export function serializeUrlState(state: CatalogFilterState): string {
      * different URLs for the same state.
      */
     const sorted = Array.from(state.difficulties).sort();
-    params.set('difficulty', sorted.join(','));
+    params.set("difficulty", sorted.join(","));
   }
 
-  if (state.searchQuery !== '') {
-    params.set('q', state.searchQuery);
+  if (state.searchQuery !== "") {
+    params.set("q", state.searchQuery);
   }
 
   if (state.sortBy !== DEFAULT_CATALOG_STATE.sortBy) {
-    params.set('sort', state.sortBy);
+    params.set("sort", state.sortBy);
   }
 
   return params.toString();
@@ -169,9 +163,7 @@ export function useCatalogUrlState(): {
    * Parse URL on mount. useRef ensures this only computes once —
    * subsequent URL changes from our own writes don't re-trigger parsing.
    */
-  const initialStateRef = useRef<CatalogFilterState>(
-    parseUrlState(searchParams)
-  );
+  const initialStateRef = useRef<CatalogFilterState>(parseUrlState(searchParams));
 
   /**
    * Write state changes to URL. Uses router.replace with shallow: true
@@ -188,7 +180,7 @@ export function useCatalogUrlState(): {
        */
       router.replace(url, { scroll: false });
     },
-    [pathname, router]
+    [pathname, router],
   );
 
   return {

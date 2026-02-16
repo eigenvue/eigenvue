@@ -22,12 +22,12 @@
  * See Phase7_Implementation.md §3 — Data Layer.
  */
 
-import { type AlgorithmMeta, type AlgorithmCategory } from '@/shared/types/step';
-import fs from 'node:fs';
-import path from 'node:path';
+import { type AlgorithmMeta, type AlgorithmCategory } from "@/shared/types/step";
+import fs from "node:fs";
+import path from "node:path";
 
 /** Root directory containing all algorithm category folders. */
-const ALGORITHMS_ROOT = path.resolve(process.cwd(), '../algorithms');
+const ALGORITHMS_ROOT = path.resolve(process.cwd(), "../algorithms");
 
 /**
  * Recursively finds all meta.json files under the algorithms root.
@@ -53,7 +53,7 @@ function discoverMetaFiles(): string[] {
   if (!fs.existsSync(ALGORITHMS_ROOT)) {
     console.warn(
       `[algorithm-registry] Algorithms directory not found at ${ALGORITHMS_ROOT}. ` +
-      `Returning empty registry. This is expected during initial development.`
+        `Returning empty registry. This is expected during initial development.`,
     );
     return metaFiles;
   }
@@ -69,7 +69,7 @@ function discoverMetaFiles(): string[] {
       .filter((entry) => entry.isDirectory());
 
     for (const algoDir of algorithmDirs) {
-      const metaPath = path.join(categoryPath, algoDir.name, 'meta.json');
+      const metaPath = path.join(categoryPath, algoDir.name, "meta.json");
       if (fs.existsSync(metaPath)) {
         metaFiles.push(metaPath);
       }
@@ -94,7 +94,7 @@ function discoverMetaFiles(): string[] {
  * @throws Error with descriptive message if validation fails.
  */
 function loadAndValidateMeta(filePath: string): AlgorithmMeta {
-  const raw = fs.readFileSync(filePath, 'utf-8');
+  const raw = fs.readFileSync(filePath, "utf-8");
 
   let parsed: unknown;
   try {
@@ -103,40 +103,40 @@ function loadAndValidateMeta(filePath: string): AlgorithmMeta {
     throw new Error(
       `[algorithm-registry] Invalid JSON in ${filePath}: ${
         err instanceof Error ? err.message : String(err)
-      }`
+      }`,
     );
   }
 
   const meta = parsed as AlgorithmMeta;
 
   // --- Validation: id ---
-  if (typeof meta.id !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(meta.id)) {
+  if (typeof meta.id !== "string" || !/^[a-z0-9][a-z0-9-]*$/.test(meta.id)) {
     throw new Error(
       `[algorithm-registry] Invalid id "${meta.id}" in ${filePath}. ` +
-      `Must match /^[a-z0-9][a-z0-9-]*$/.`
+        `Must match /^[a-z0-9][a-z0-9-]*$/.`,
     );
   }
 
   // --- Validation: category ---
   const validCategories: AlgorithmCategory[] = [
-    'classical',
-    'deep-learning',
-    'generative-ai',
-    'quantum',
+    "classical",
+    "deep-learning",
+    "generative-ai",
+    "quantum",
   ];
   if (!validCategories.includes(meta.category)) {
     throw new Error(
       `[algorithm-registry] Invalid category "${meta.category}" in ${filePath}. ` +
-      `Must be one of: ${validCategories.join(', ')}.`
+        `Must be one of: ${validCategories.join(", ")}.`,
     );
   }
 
   // --- Validation: difficulty level ---
-  const validLevels = ['beginner', 'intermediate', 'advanced', 'expert'];
+  const validLevels = ["beginner", "intermediate", "advanced", "expert"];
   if (!validLevels.includes(meta.complexity.level)) {
     throw new Error(
       `[algorithm-registry] Invalid difficulty level "${meta.complexity.level}" in ${filePath}. ` +
-      `Must be one of: ${validLevels.join(', ')}.`
+        `Must be one of: ${validLevels.join(", ")}.`,
     );
   }
 
@@ -144,7 +144,7 @@ function loadAndValidateMeta(filePath: string): AlgorithmMeta {
   if (meta.description.short.length > 80) {
     throw new Error(
       `[algorithm-registry] Short description exceeds 80 chars (${meta.description.short.length}) ` +
-      `in ${filePath}: "${meta.description.short}".`
+        `in ${filePath}: "${meta.description.short}".`,
     );
   }
 
@@ -183,7 +183,7 @@ function buildRegistry(): {
     if (byId.has(meta.id)) {
       throw new Error(
         `[algorithm-registry] Duplicate algorithm ID "${meta.id}" found. ` +
-        `Each algorithm must have a globally unique id.`
+          `Each algorithm must have a globally unique id.`,
       );
     }
 
@@ -195,9 +195,7 @@ function buildRegistry(): {
    * Sort alphabetically by display name. Uses localeCompare for correct
    * Unicode ordering (handles accented characters, etc.).
    */
-  algorithms.sort((a, b) =>
-    a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })
-  );
+  algorithms.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
 
   _cachedAlgorithms = Object.freeze(algorithms) as AlgorithmMeta[];
   _cachedById = byId;
@@ -232,9 +230,7 @@ export function getAlgorithmById(id: string): AlgorithmMeta | undefined {
  *
  * @param category — One of "classical", "deep-learning", "generative-ai", "quantum".
  */
-export function getAlgorithmsByCategory(
-  category: AlgorithmCategory
-): readonly AlgorithmMeta[] {
+export function getAlgorithmsByCategory(category: AlgorithmCategory): readonly AlgorithmMeta[] {
   return getAllAlgorithms().filter((algo) => algo.category === category);
 }
 

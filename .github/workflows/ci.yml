@@ -107,8 +107,11 @@ jobs:
           cache: "npm"
           cache-dependency-path: web/package-lock.json
 
-      - name: Install dependencies
+      - name: Install web dependencies
         run: cd web && npm ci
+
+      - name: Install shared dependencies
+        run: cd shared && npm ci
 
       # -----------------------------------------------------------------------
       # Vitest: Runs all unit tests including generator tests, rendering

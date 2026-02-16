@@ -39,11 +39,7 @@ interface CodePanelProps {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function CodePanel({
-  implementations,
-  defaultLanguage,
-  codeHighlight,
-}: CodePanelProps) {
+export function CodePanel({ implementations, defaultLanguage, codeHighlight }: CodePanelProps) {
   const languages = useMemo(() => Object.keys(implementations), [implementations]);
   const [activeLanguage, setActiveLanguage] = useState(defaultLanguage);
 
@@ -76,9 +72,10 @@ export function CodePanel({
             onClick={() => setActiveLanguage(lang)}
             className={`
               px-3 py-1.5 text-xs font-mono rounded-t-md transition-colors
-              ${lang === activeLanguage
-                ? "bg-background-elevated text-text-primary border-b-2 border-classical"
-                : "text-text-tertiary hover:text-text-secondary"
+              ${
+                lang === activeLanguage
+                  ? "bg-background-elevated text-text-primary border-b-2 border-classical"
+                  : "text-text-tertiary hover:text-text-secondary"
               }
             `}
           >
@@ -104,9 +101,10 @@ export function CodePanel({
                   key={lineNum}
                   className={`
                     flex px-4 min-h-[1.5rem]
-                    ${isActive
-                      ? "bg-classical/15 border-l-2 border-classical"
-                      : "border-l-2 border-transparent"
+                    ${
+                      isActive
+                        ? "bg-classical/15 border-l-2 border-classical"
+                        : "border-l-2 border-transparent"
                     }
                   `}
                 >

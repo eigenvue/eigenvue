@@ -116,7 +116,7 @@ function arrayWithPointersLayout(
   const primitives: RenderPrimitive[] = [];
 
   // -- Extract array from state --
-  const array: number[] = (step.state as Record<string, unknown>).array as number[] ?? [];
+  const array: number[] = ((step.state as Record<string, unknown>).array as number[]) ?? [];
   const N = array.length;
 
   if (N === 0) {
@@ -207,7 +207,8 @@ function arrayWithPointersLayout(
 
       case "showMessage": {
         messageText = ((action as Record<string, unknown>).text as string) ?? "";
-        messageType = ((action as Record<string, unknown>).messageType as typeof messageType) ?? "info";
+        messageType =
+          ((action as Record<string, unknown>).messageType as typeof messageType) ?? "info";
         break;
       }
 
@@ -344,9 +345,7 @@ function arrayWithPointersLayout(
   if (messageText !== "") {
     const mt = messageType as "info" | "success" | "error";
     const msgColor: string =
-      mt === "success" ? THEME.found :
-      mt === "error" ? THEME.notFound :
-      THEME.message;
+      mt === "success" ? THEME.found : mt === "error" ? THEME.notFound : THEME.message;
 
     const msgLabel: AnnotationPrimitive = {
       kind: "annotation",

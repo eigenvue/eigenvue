@@ -140,11 +140,7 @@ export const metadata: Metadata = {
 
 // ─── Root Layout Component ────────────────────────────────────────────────────
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
@@ -177,9 +173,7 @@ export default function RootLayout({
           {/* AnalyticsProvider: loads analytics script + registers service worker */}
           <AnalyticsProvider>
             {/* Main content area */}
-            <main id="main-content">
-              {children}
-            </main>
+            <main id="main-content">{children}</main>
           </AnalyticsProvider>
 
           {/* Footer */}

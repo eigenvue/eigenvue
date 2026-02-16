@@ -63,9 +63,7 @@ export function parseUrlState(
   const stepIndex = stepParam !== null ? parseInt(stepParam, 10) : null;
   // Validate: NaN or negative → treat as null.
   const validStepIndex =
-    stepIndex !== null && Number.isFinite(stepIndex) && stepIndex >= 0
-      ? stepIndex
-      : null;
+    stepIndex !== null && Number.isFinite(stepIndex) && stepIndex >= 0 ? stepIndex : null;
 
   // Example preset.
   const exampleName = searchParams.get("example") ?? null;
@@ -96,10 +94,7 @@ export function parseUrlState(
  * @param schema - The field's schema definition.
  * @returns The parsed value.
  */
-function parseParamValue(
-  raw: string,
-  schema: { type: string; items?: { type: string } },
-): unknown {
+function parseParamValue(raw: string, schema: { type: string; items?: { type: string } }): unknown {
   switch (schema.type) {
     case "array": {
       const itemType = schema.items?.type ?? "string";

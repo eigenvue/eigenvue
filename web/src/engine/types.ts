@@ -508,10 +508,7 @@ export interface AnimationConfig {
  * @param ctx  - The 2D rendering context, already scaled for DPI.
  * @param size - The current canvas size in CSS pixels.
  */
-export type RenderCallback = (
-  ctx: CanvasRenderingContext2D,
-  size: CanvasSize,
-) => void;
+export type RenderCallback = (ctx: CanvasRenderingContext2D, size: CanvasSize) => void;
 
 // ---------------------------------------------------------------------------
 // 6. Constants

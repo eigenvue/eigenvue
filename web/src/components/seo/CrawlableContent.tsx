@@ -64,10 +64,7 @@ export function CrawlableContent({ meta }: CrawlableContentProps) {
       aria-labelledby="algorithm-details-heading"
       className="max-w-5xl mx-auto px-6 py-16 text-text-secondary"
     >
-      <h2
-        id="algorithm-details-heading"
-        className="text-2xl font-semibold text-text-primary mb-8"
-      >
+      <h2 id="algorithm-details-heading" className="text-2xl font-semibold text-text-primary mb-8">
         About {meta.name}
       </h2>
 
@@ -80,27 +77,19 @@ export function CrawlableContent({ meta }: CrawlableContentProps) {
 
       {/* ── Complexity Analysis ─────────────────────────────────────── */}
       <div className="mb-12">
-        <h3 className="text-lg font-medium text-text-primary mb-4">
-          Complexity Analysis
-        </h3>
+        <h3 className="text-lg font-medium text-text-primary mb-4">Complexity Analysis</h3>
         <dl className="grid grid-cols-2 gap-4 max-w-md">
           <div>
             <dt className="text-sm text-text-tertiary">Time Complexity</dt>
-            <dd className="text-base font-mono text-text-primary">
-              {meta.complexity.time}
-            </dd>
+            <dd className="text-base font-mono text-text-primary">{meta.complexity.time}</dd>
           </div>
           <div>
             <dt className="text-sm text-text-tertiary">Space Complexity</dt>
-            <dd className="text-base font-mono text-text-primary">
-              {meta.complexity.space}
-            </dd>
+            <dd className="text-base font-mono text-text-primary">{meta.complexity.space}</dd>
           </div>
           <div>
             <dt className="text-sm text-text-tertiary">Difficulty</dt>
-            <dd className="text-base text-text-primary capitalize">
-              {meta.complexity.level}
-            </dd>
+            <dd className="text-base text-text-primary capitalize">{meta.complexity.level}</dd>
           </div>
         </dl>
       </div>
@@ -108,18 +97,12 @@ export function CrawlableContent({ meta }: CrawlableContentProps) {
       {/* ── Key Concepts ────────────────────────────────────────────── */}
       {meta.education?.keyConcepts && meta.education.keyConcepts.length > 0 && (
         <div className="mb-12">
-          <h3 className="text-lg font-medium text-text-primary mb-4">
-            Key Concepts
-          </h3>
+          <h3 className="text-lg font-medium text-text-primary mb-4">Key Concepts</h3>
           <div className="space-y-4">
             {meta.education.keyConcepts.map((concept, index) => (
               <div key={index}>
-                <h4 className="text-base font-medium text-text-primary">
-                  {concept.title}
-                </h4>
-                <p className="text-sm text-text-secondary mt-1">
-                  {concept.description}
-                </p>
+                <h4 className="text-base font-medium text-text-primary">{concept.title}</h4>
+                <p className="text-sm text-text-secondary mt-1">{concept.description}</p>
               </div>
             ))}
           </div>
@@ -129,18 +112,12 @@ export function CrawlableContent({ meta }: CrawlableContentProps) {
       {/* ── Common Pitfalls ─────────────────────────────────────────── */}
       {meta.education?.pitfalls && meta.education.pitfalls.length > 0 && (
         <div className="mb-12">
-          <h3 className="text-lg font-medium text-text-primary mb-4">
-            Common Pitfalls
-          </h3>
+          <h3 className="text-lg font-medium text-text-primary mb-4">Common Pitfalls</h3>
           <div className="space-y-4">
             {meta.education.pitfalls.map((pitfall, index) => (
               <div key={index}>
-                <h4 className="text-base font-medium text-text-primary">
-                  {pitfall.title}
-                </h4>
-                <p className="text-sm text-text-secondary mt-1">
-                  {pitfall.description}
-                </p>
+                <h4 className="text-base font-medium text-text-primary">{pitfall.title}</h4>
+                <p className="text-sm text-text-secondary mt-1">{pitfall.description}</p>
               </div>
             ))}
           </div>
@@ -157,9 +134,7 @@ export function CrawlableContent({ meta }: CrawlableContentProps) {
        */}
       {meta.prerequisites && meta.prerequisites.length > 0 && (
         <div className="mb-8">
-          <h3 className="text-lg font-medium text-text-primary mb-3">
-            Prerequisites
-          </h3>
+          <h3 className="text-lg font-medium text-text-primary mb-3">Prerequisites</h3>
           <p className="text-sm text-text-tertiary mb-2">
             Understanding these algorithms first will help:
           </p>
@@ -182,9 +157,7 @@ export function CrawlableContent({ meta }: CrawlableContentProps) {
       {/* ── Internal Links: Related Algorithms ──────────────────────── */}
       {meta.related && meta.related.length > 0 && (
         <div className="mb-8">
-          <h3 className="text-lg font-medium text-text-primary mb-3">
-            Related Algorithms
-          </h3>
+          <h3 className="text-lg font-medium text-text-primary mb-3">Related Algorithms</h3>
           <div className="flex flex-wrap gap-2">
             {meta.related.map((relatedId) => (
               <Link

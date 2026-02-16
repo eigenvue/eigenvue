@@ -74,13 +74,9 @@ export function CategoryCard({ category, animationDelay }: CategoryCardProps) {
 
       <div className="flex flex-1 flex-col p-6">
         {/* Category name and tagline */}
-        <h3 className="text-xl font-semibold text-text-primary">
-          {category.name}
-        </h3>
+        <h3 className="text-xl font-semibold text-text-primary">{category.name}</h3>
         <p className="mt-1 text-sm text-text-tertiary">{category.tagline}</p>
-        <p className="mt-3 flex-1 text-sm text-text-secondary">
-          {category.description}
-        </p>
+        <p className="mt-3 flex-1 text-sm text-text-secondary">{category.description}</p>
 
         {/* Topic pills */}
         <div className="mt-4 flex flex-wrap gap-1.5">

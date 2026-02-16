@@ -73,9 +73,7 @@ export function useAlgorithm(
   const initialInputs = useMemo(() => {
     if (urlState.inputs) return urlState.inputs;
     if (urlState.exampleName) {
-      const example = meta.inputs.examples.find(
-        (e) => e.name === urlState.exampleName,
-      );
+      const example = meta.inputs.examples.find((e) => e.name === urlState.exampleName);
       if (example) return example.values;
     }
     return meta.inputs.defaults;
@@ -112,9 +110,7 @@ export function useAlgorithm(
         setError(null);
       } catch (err) {
         if (cancelled) return;
-        setError(
-          err instanceof Error ? err.message : "Failed to generate steps.",
-        );
+        setError(err instanceof Error ? err.message : "Failed to generate steps.");
         setStepSequence(null);
       }
     }

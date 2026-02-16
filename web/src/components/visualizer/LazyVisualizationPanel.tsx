@@ -28,11 +28,10 @@ import { lazy, Suspense, type ComponentProps } from "react";
  * React.lazy requires a default export, so we re-export the named export
  * from @/engine/VisualizationPanel as the default in the dynamic import.
  */
-const VisualizationPanel = lazy(
-  () =>
-    import("@/engine/VisualizationPanel").then((mod) => ({
-      default: mod.VisualizationPanel,
-    })),
+const VisualizationPanel = lazy(() =>
+  import("@/engine/VisualizationPanel").then((mod) => ({
+    default: mod.VisualizationPanel,
+  })),
 );
 
 /**
@@ -52,8 +51,14 @@ function VisualizationSkeleton() {
         {/* Pulsing dot animation */}
         <div className="flex gap-1.5">
           <div className="w-2 h-2 rounded-full bg-text-tertiary animate-pulse" />
-          <div className="w-2 h-2 rounded-full bg-text-tertiary animate-pulse" style={{ animationDelay: "150ms" }} />
-          <div className="w-2 h-2 rounded-full bg-text-tertiary animate-pulse" style={{ animationDelay: "300ms" }} />
+          <div
+            className="w-2 h-2 rounded-full bg-text-tertiary animate-pulse"
+            style={{ animationDelay: "150ms" }}
+          />
+          <div
+            className="w-2 h-2 rounded-full bg-text-tertiary animate-pulse"
+            style={{ animationDelay: "300ms" }}
+          />
         </div>
         <span className="text-xs text-text-tertiary">Loading visualization</span>
       </div>
@@ -65,9 +70,7 @@ function VisualizationSkeleton() {
  * Props are passed through to the underlying VisualizationPanel.
  * This wrapper adds ONLY the lazy-loading behavior.
  */
-export function LazyVisualizationPanel(
-  props: ComponentProps<typeof VisualizationPanel>,
-) {
+export function LazyVisualizationPanel(props: ComponentProps<typeof VisualizationPanel>) {
   return (
     <Suspense fallback={<VisualizationSkeleton />}>
       <VisualizationPanel {...props} />

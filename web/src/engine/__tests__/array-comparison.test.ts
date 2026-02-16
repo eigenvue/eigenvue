@@ -274,7 +274,9 @@ describe("array-comparison layout", () => {
       });
       const scene = layout(step, mockCanvasSize, {});
 
-      const partLine = scene.primitives.find((p) => p.id === "partition-line") as ConnectionPrimitive;
+      const partLine = scene.primitives.find(
+        (p) => p.id === "partition-line",
+      ) as ConnectionPrimitive;
       expect(partLine).toBeDefined();
       expect(partLine.kind).toBe("connection");
       // Vertical line: same x for both endpoints.
@@ -358,9 +360,7 @@ describe("array-comparison layout", () => {
     it("creates showMessage annotation at canvas bottom", () => {
       const step = makeStep({
         state: { array: [1, 2, 3] },
-        visualActions: [
-          { type: "showMessage", text: "Sorted!", messageType: "success" },
-        ],
+        visualActions: [{ type: "showMessage", text: "Sorted!", messageType: "success" }],
       });
       const scene = layout(step, mockCanvasSize, {});
 
@@ -405,9 +405,7 @@ describe("array-comparison layout", () => {
     it("renders auxiliary row from setAuxiliary visual action", () => {
       const step = makeStep({
         state: { array: [1, 2, 3] },
-        visualActions: [
-          { type: "setAuxiliary", array: [1, null, null] },
-        ],
+        visualActions: [{ type: "setAuxiliary", array: [1, null, null] }],
       });
       const scene = layout(step, mockCanvasSize, {});
 
@@ -423,9 +421,7 @@ describe("array-comparison layout", () => {
           array: [1, 2, 3],
           auxiliary: [1, null, null],
         },
-        visualActions: [
-          { type: "highlightAuxiliary", index: 0, color: "highlight" },
-        ],
+        visualActions: [{ type: "highlightAuxiliary", index: 0, color: "highlight" }],
       });
       const scene = layout(step, mockCanvasSize, {});
 

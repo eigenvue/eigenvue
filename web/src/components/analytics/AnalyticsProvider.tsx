@@ -30,11 +30,7 @@ const PLAUSIBLE_DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 const UMAMI_WEBSITE_ID = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
 const UMAMI_SCRIPT_URL = process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL;
 
-export function AnalyticsProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   // Register service worker on mount (client-side only).
   useEffect(() => {
     registerServiceWorker();

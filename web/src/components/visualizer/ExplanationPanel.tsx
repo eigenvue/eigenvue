@@ -26,11 +26,7 @@ interface ExplanationPanelProps {
   readonly meta: AlgorithmMeta;
 }
 
-export function ExplanationPanel({
-  currentStep,
-  totalSteps,
-  meta,
-}: ExplanationPanelProps) {
+export function ExplanationPanel({ currentStep, totalSteps, meta }: ExplanationPanelProps) {
   return (
     <div className="flex flex-col h-full bg-background-surface rounded-lg border border-border overflow-hidden min-h-0">
       {/* ── Step Header ─────────────────────────────────────────── */}
@@ -49,18 +45,12 @@ export function ExplanationPanel({
               )}
             </div>
             {/* Step title */}
-            <h2 className="text-lg font-semibold text-text-primary mb-2">
-              {currentStep.title}
-            </h2>
+            <h2 className="text-lg font-semibold text-text-primary mb-2">{currentStep.title}</h2>
             {/* Step explanation */}
-            <p className="text-sm text-text-secondary leading-relaxed">
-              {currentStep.explanation}
-            </p>
+            <p className="text-sm text-text-secondary leading-relaxed">{currentStep.explanation}</p>
           </>
         ) : (
-          <p className="text-sm text-text-tertiary italic">
-            Loading algorithm...
-          </p>
+          <p className="text-sm text-text-tertiary italic">Loading algorithm...</p>
         )}
       </div>
 

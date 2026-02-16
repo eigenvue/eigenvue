@@ -53,12 +53,12 @@ interface SublayerDef {
 
 /** The fixed set of sublayers in a transformer encoder block. */
 const TRANSFORMER_SUBLAYERS: readonly SublayerDef[] = [
-  { id: "input",          label: "Input Embeddings",          type: "input" },
-  { id: "self-attention",  label: "Multi-Head Self-Attention", type: "sublayer" },
-  { id: "add-norm-1",     label: "Add & Layer Norm",          type: "operation" },
-  { id: "ffn",            label: "Feed-Forward Network",      type: "sublayer" },
-  { id: "add-norm-2",     label: "Add & Layer Norm",          type: "operation" },
-  { id: "output",         label: "Output",                    type: "output" },
+  { id: "input", label: "Input Embeddings", type: "input" },
+  { id: "self-attention", label: "Multi-Head Self-Attention", type: "sublayer" },
+  { id: "add-norm-1", label: "Add & Layer Norm", type: "operation" },
+  { id: "ffn", label: "Feed-Forward Network", type: "sublayer" },
+  { id: "add-norm-2", label: "Add & Layer Norm", type: "operation" },
+  { id: "output", label: "Output", type: "output" },
 ] as const;
 
 /** Residual connections: [fromSublayerIdx, toSublayerIdx] */
@@ -69,27 +69,27 @@ const RESIDUAL_CONNECTIONS: readonly [number, number][] = [
 
 const THEME = {
   /** Input/output block fill. */
-  inputBlock:      "#1e293b",
+  inputBlock: "#1e293b",
   /** Computation sublayer block fill. */
-  sublayerBlock:   "#2d1b4e",
+  sublayerBlock: "#2d1b4e",
   /** Operation (add & norm) block fill. */
-  operationBlock:  "#1a3a2a",
+  operationBlock: "#1a3a2a",
   /** Output block fill. */
-  outputBlock:     "#1e293b",
+  outputBlock: "#1e293b",
   /** Default block border. */
-  blockStroke:     "#6b21a8",
+  blockStroke: "#6b21a8",
   /** Active block fill. */
-  activeBlock:     "#7c3aed",
+  activeBlock: "#7c3aed",
   /** Active block border. */
-  activeStroke:    "#f472b6",
+  activeStroke: "#f472b6",
   /** Block label text. */
-  blockText:       "#f5f3ff",
+  blockText: "#f5f3ff",
   /** Sequential flow arrow color. */
-  arrow:           "#a78bfa",
+  arrow: "#a78bfa",
   /** Residual skip connection color. */
-  residualArrow:   "#f472b6",
+  residualArrow: "#f472b6",
   /** Add symbol color. */
-  addSymbol:       "#22c55e",
+  addSymbol: "#22c55e",
 } as const;
 
 /**
@@ -97,10 +97,14 @@ const THEME = {
  */
 function blockColorForType(type: SublayerDef["type"]): string {
   switch (type) {
-    case "input":     return THEME.inputBlock;
-    case "sublayer":  return THEME.sublayerBlock;
-    case "operation": return THEME.operationBlock;
-    case "output":    return THEME.outputBlock;
+    case "input":
+      return THEME.inputBlock;
+    case "sublayer":
+      return THEME.sublayerBlock;
+    case "operation":
+      return THEME.operationBlock;
+    case "output":
+      return THEME.outputBlock;
   }
 }
 
@@ -134,8 +138,7 @@ function layerDiagramLayout(
   const blockWidth = usableWidth * BLOCK_WIDTH_RATIO;
   const centerX = LAYOUT_PADDING + usableWidth / 2;
 
-  const totalStackHeight =
-    sublayers.length * BLOCK_HEIGHT + (sublayers.length - 1) * BLOCK_GAP;
+  const totalStackHeight = sublayers.length * BLOCK_HEIGHT + (sublayers.length - 1) * BLOCK_GAP;
   const stackStartY = LAYOUT_PADDING + (usableHeight - totalStackHeight) / 2;
 
   const blockCenterY = (i: number): number =>
@@ -293,9 +296,12 @@ function layerDiagramLayout(
       fontSize: 14,
       textColor: THEME.addSymbol,
       color: "rgba(34, 197, 94, 0.15)",
-      pointerHeight: 0, pointerWidth: 0,
-      bracketWidth: 0, bracketTickHeight: 0,
-      badgePaddingX: 6, badgePaddingY: 3,
+      pointerHeight: 0,
+      pointerWidth: 0,
+      bracketWidth: 0,
+      bracketTickHeight: 0,
+      badgePaddingX: 6,
+      badgePaddingY: 3,
       opacity: 0.9,
       zIndex: Z_INDEX.ANNOTATION,
     };

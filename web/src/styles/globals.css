@@ -45,8 +45,8 @@
     --text-disabled: #3d4460;
 
     /* ── Borders ── */
-    --border-default: rgba(160, 168, 192, 0.10);
-    --border-hover: rgba(160, 168, 192, 0.20);
+    --border-default: rgba(160, 168, 192, 0.1);
+    --border-hover: rgba(160, 168, 192, 0.2);
 
     /* ── Category accents ── */
     --classical: #38bdf8;
@@ -84,13 +84,13 @@
 
     /* ── Difficulty levels ── */
     --difficulty-beginner: #34d399;
-    --difficulty-beginner-bg: rgba(52, 211, 153, 0.10);
+    --difficulty-beginner-bg: rgba(52, 211, 153, 0.1);
     --difficulty-intermediate: #fbbf24;
-    --difficulty-intermediate-bg: rgba(251, 191, 36, 0.10);
+    --difficulty-intermediate-bg: rgba(251, 191, 36, 0.1);
     --difficulty-advanced: #fb923c;
-    --difficulty-advanced-bg: rgba(251, 146, 60, 0.10);
+    --difficulty-advanced-bg: rgba(251, 146, 60, 0.1);
     --difficulty-expert: #f87171;
-    --difficulty-expert-bg: rgba(248, 113, 113, 0.10);
+    --difficulty-expert-bg: rgba(248, 113, 113, 0.1);
 
     /* ── Starfield ── */
     --starfield-opacity: 1;
@@ -112,7 +112,7 @@
     --text-tertiary: #6b7280;
     --text-disabled: #d1d5db;
 
-    --border-default: rgba(0, 0, 0, 0.10);
+    --border-default: rgba(0, 0, 0, 0.1);
     --border-hover: rgba(0, 0, 0, 0.18);
 
     --classical: #0369a1;
@@ -146,13 +146,13 @@
     --selection-color: #111827;
 
     --difficulty-beginner: #059669;
-    --difficulty-beginner-bg: rgba(5, 150, 105, 0.10);
+    --difficulty-beginner-bg: rgba(5, 150, 105, 0.1);
     --difficulty-intermediate: #d97706;
-    --difficulty-intermediate-bg: rgba(217, 119, 6, 0.10);
+    --difficulty-intermediate-bg: rgba(217, 119, 6, 0.1);
     --difficulty-advanced: #ea580c;
-    --difficulty-advanced-bg: rgba(234, 88, 12, 0.10);
+    --difficulty-advanced-bg: rgba(234, 88, 12, 0.1);
     --difficulty-expert: #dc2626;
-    --difficulty-expert-bg: rgba(220, 38, 38, 0.10);
+    --difficulty-expert-bg: rgba(220, 38, 38, 0.1);
 
     --starfield-opacity: 0.15;
     --starfield-color: 80, 90, 130;
@@ -170,7 +170,9 @@
     /* Smooth scrolling for anchor links */
     scroll-behavior: smooth;
     /* Smooth theme transitions */
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   body {
@@ -274,11 +276,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(
-      135deg,
-      #8b5cf6,
-      #06b6d4
-    );
+    background: linear-gradient(135deg, #8b5cf6, #06b6d4);
     mask:
       linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
@@ -337,8 +335,12 @@
 /* ─── 6. Light Mode Shadow Overrides ─── */
 /* Card shadows are lighter in light mode to match the aesthetic. */
 html.light .shadow-card {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.05);
 }
 html.light .shadow-card-hover {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.07);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.07);
 }

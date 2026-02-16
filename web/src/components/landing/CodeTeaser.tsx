@@ -20,16 +20,38 @@ import { Button } from "@/components/ui/Button";
  * Color classes reference Tailwind text colors.
  */
 const CODE_LINES: Array<Array<[string, string]>> = [
-  [["import", "text-genai"], [" eigenvue", "text-text-primary"]],
+  [
+    ["import", "text-genai"],
+    [" eigenvue", "text-text-primary"],
+  ],
   [["", "text-text-primary"]],
   [["# List all available algorithms", "text-text-disabled"]],
-  [["eigenvue", "text-text-primary"], [".", "text-text-tertiary"], ["list", "text-classical"], ["()", "text-text-tertiary"]],
+  [
+    ["eigenvue", "text-text-primary"],
+    [".", "text-text-tertiary"],
+    ["list", "text-classical"],
+    ["()", "text-text-tertiary"],
+  ],
   [["", "text-text-primary"]],
   [["# Visualize self-attention interactively", "text-text-disabled"]],
-  [["eigenvue", "text-text-primary"], [".", "text-text-tertiary"], ["show", "text-classical"], ["(", "text-text-tertiary"], ['"self-attention"', "text-genai"], [")", "text-text-tertiary"]],
+  [
+    ["eigenvue", "text-text-primary"],
+    [".", "text-text-tertiary"],
+    ["show", "text-classical"],
+    ["(", "text-text-tertiary"],
+    ['"self-attention"', "text-genai"],
+    [")", "text-text-tertiary"],
+  ],
   [["", "text-text-primary"]],
   [["# Use in Jupyter notebooks", "text-text-disabled"]],
-  [["eigenvue", "text-text-primary"], [".", "text-text-tertiary"], ["jupyter", "text-classical"], ["(", "text-text-tertiary"], ['"transformer-block"', "text-genai"], [")", "text-text-tertiary"]],
+  [
+    ["eigenvue", "text-text-primary"],
+    [".", "text-text-tertiary"],
+    ["jupyter", "text-classical"],
+    ["(", "text-text-tertiary"],
+    ['"transformer-block"', "text-genai"],
+    [")", "text-text-tertiary"],
+  ],
 ];
 
 export function CodeTeaser() {
@@ -46,8 +68,8 @@ export function CodeTeaser() {
               Works Where <span className="gradient-text">You Work</span>
             </h2>
             <p className="mt-4 text-lg text-text-secondary">
-              Install the Python package and use the same visualizations
-              in Jupyter notebooks, scripts, and research workflows.
+              Install the Python package and use the same visualizations in Jupyter notebooks,
+              scripts, and research workflows.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
               <code className="rounded-lg bg-background-elevated px-4 py-2 font-mono text-sm text-text-primary">
@@ -60,7 +82,9 @@ export function CodeTeaser() {
             <div className="mt-8">
               <Button variant="secondary" href="/docs">
                 Read the Docs
-                <span aria-hidden="true" className="ml-1">→</span>
+                <span aria-hidden="true" className="ml-1">
+                  →
+                </span>
               </Button>
             </div>
           </div>
@@ -76,9 +100,7 @@ export function CodeTeaser() {
               <div className="h-3 w-3 rounded-full bg-red-500/50" aria-hidden="true" />
               <div className="h-3 w-3 rounded-full bg-yellow-500/50" aria-hidden="true" />
               <div className="h-3 w-3 rounded-full bg-green-500/50" aria-hidden="true" />
-              <span className="ml-2 font-mono text-xs text-text-tertiary">
-                example.py
-              </span>
+              <span className="ml-2 font-mono text-xs text-text-tertiary">example.py</span>
             </div>
 
             {/* Code content */}

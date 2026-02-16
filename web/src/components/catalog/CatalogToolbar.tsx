@@ -13,13 +13,13 @@
  * See Phase7_Implementation.md §13 — Component: CatalogToolbar.
  */
 
-'use client';
+"use client";
 
-import { type DifficultyLevel } from '@/shared/types/step';
-import { type SortOption } from '@/lib/catalog-types';
-import { SearchInput } from './SearchInput';
-import { DifficultyFilter } from './DifficultyFilter';
-import { SortSelector } from './SortSelector';
+import { type DifficultyLevel } from "@/shared/types/step";
+import { type SortOption } from "@/lib/catalog-types";
+import { SearchInput } from "./SearchInput";
+import { DifficultyFilter } from "./DifficultyFilter";
+import { SortSelector } from "./SortSelector";
 
 interface CatalogToolbarProps {
   /* Search */
@@ -56,11 +56,7 @@ export function CatalogToolbar({
     <div className="flex flex-col gap-4">
       {/* Row 1: Search + Sort */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        <SearchInput
-          value={searchValue}
-          onChange={onSearchChange}
-          onClear={onSearchClear}
-        />
+        <SearchInput value={searchValue} onChange={onSearchChange} onClear={onSearchClear} />
         <div className="flex items-center gap-3 ml-auto">
           <SortSelector value={sortBy} onChange={onSortChange} />
           <span
@@ -70,17 +66,13 @@ export function CatalogToolbar({
           >
             {isFiltered ? (
               <>
-                <span className="text-text-secondary font-medium">
-                  {resultCount}
-                </span>{' '}
-                of {totalCount}
+                <span className="text-text-secondary font-medium">{resultCount}</span> of{" "}
+                {totalCount}
               </>
             ) : (
               <>
-                <span className="text-text-secondary font-medium">
-                  {totalCount}
-                </span>{' '}
-                algorithm{totalCount !== 1 ? 's' : ''}
+                <span className="text-text-secondary font-medium">{totalCount}</span> algorithm
+                {totalCount !== 1 ? "s" : ""}
               </>
             )}
           </span>

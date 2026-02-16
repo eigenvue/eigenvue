@@ -49,15 +49,11 @@ describe("rgbaToString", () => {
   });
 
   it("rounds RGB components", () => {
-    expect(rgbaToString([127.6, 64.3, 200.9, 0.5])).toBe(
-      "rgba(128, 64, 201, 0.500)",
-    );
+    expect(rgbaToString([127.6, 64.3, 200.9, 0.5])).toBe("rgba(128, 64, 201, 0.500)");
   });
 
   it("formats alpha with 3 decimal places", () => {
-    expect(rgbaToString([100, 150, 200, 0.123456])).toBe(
-      "rgba(100, 150, 200, 0.123)",
-    );
+    expect(rgbaToString([100, 150, 200, 0.123456])).toBe("rgba(100, 150, 200, 0.123)");
   });
 });
 

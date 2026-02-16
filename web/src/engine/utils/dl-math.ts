@@ -228,9 +228,7 @@ export function bceLoss(predictions: readonly number[], targets: readonly number
 export function dotProduct(a: readonly number[], b: readonly number[]): number {
   // dot(a, b) = Σ a_i * b_i — Section 4.1
   if (a.length !== b.length) {
-    throw new Error(
-      `dotProduct: vectors must have same length. Got ${a.length} and ${b.length}.`,
-    );
+    throw new Error(`dotProduct: vectors must have same length. Got ${a.length} and ${b.length}.`);
   }
   let sum = 0;
   for (let i = 0; i < a.length; i++) {
@@ -257,9 +255,7 @@ export function matVecMul(M: readonly (readonly number[])[], v: readonly number[
   if (rows === 0) return [];
   const cols = M[0]!.length;
   if (cols !== v.length) {
-    throw new Error(
-      `matVecMul: M has ${cols} columns but v has length ${v.length}.`,
-    );
+    throw new Error(`matVecMul: M has ${cols} columns but v has length ${v.length}.`);
   }
   const result: number[] = new Array(rows);
   for (let j = 0; j < rows; j++) {
@@ -285,9 +281,7 @@ export function matVecMul(M: readonly (readonly number[])[], v: readonly number[
 export function vecAdd(a: readonly number[], b: readonly number[]): number[] {
   // result[i] = a[i] + b[i]
   if (a.length !== b.length) {
-    throw new Error(
-      `vecAdd: vectors must have same length. Got ${a.length} and ${b.length}.`,
-    );
+    throw new Error(`vecAdd: vectors must have same length. Got ${a.length} and ${b.length}.`);
   }
   return a.map((val, i) => val + b[i]!);
 }
@@ -419,7 +413,7 @@ export function adamStep(
   if (t < 1) {
     throw new Error(
       `adamStep: step counter t must be >= 1, got ${t}. ` +
-      `Using t=0 causes 1 - β^0 = 0 → division by zero → NaN.`,
+        `Using t=0 causes 1 - β^0 = 0 → division by zero → NaN.`,
     );
   }
 
@@ -449,7 +443,7 @@ export function adamStep(
     const vHat = newV[i]! / bc2;
 
     // θ_{t+1} = θ_t - η * m̂_t / (√v̂_t + ε)
-    newParams[i] = params[i]! - lr * mHat / (Math.sqrt(vHat) + eps);
+    newParams[i] = params[i]! - (lr * mHat) / (Math.sqrt(vHat) + eps);
   }
 
   return { params: newParams, m: newM, v: newV };

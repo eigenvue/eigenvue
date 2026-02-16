@@ -13,64 +13,59 @@
  * See Phase7_Implementation.md §25.1 — Unit Tests: Algorithm Registry.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 import {
   getAllAlgorithms,
   getAlgorithmById,
   getAlgorithmsByCategory,
   getAlgorithmCount,
-} from '@/lib/algorithm-registry';
+} from "@/lib/algorithm-registry";
 
-describe('algorithm-registry', () => {
+describe("algorithm-registry", () => {
   const all = getAllAlgorithms();
 
-  it('loads at least one algorithm', () => {
+  it("loads at least one algorithm", () => {
     expect(all.length).toBeGreaterThan(0);
   });
 
-  it('returns a frozen array (no mutation possible)', () => {
+  it("returns a frozen array (no mutation possible)", () => {
     expect(Object.isFrozen(all)).toBe(true);
   });
 
-  it('is sorted alphabetically by name', () => {
+  it("is sorted alphabetically by name", () => {
     for (let i = 1; i < all.length; i++) {
-      const cmp = all[i - 1].name.localeCompare(all[i].name, 'en', {
-        sensitivity: 'base',
+      const cmp = all[i - 1].name.localeCompare(all[i].name, "en", {
+        sensitivity: "base",
       });
       expect(cmp).toBeLessThanOrEqual(0);
     }
   });
 
-  it('has no duplicate IDs', () => {
+  it("has no duplicate IDs", () => {
     const ids = all.map((a) => a.id);
     const unique = new Set(ids);
     expect(unique.size).toBe(ids.length);
   });
 
-  it('every algorithm has a valid category', () => {
-    const validCategories = new Set([
-      'classical',
-      'deep-learning',
-      'generative-ai',
-      'quantum',
-    ]);
+  it("every algorithm has a valid category", () => {
+    const validCategories = new Set(["classical", "deep-learning", "generative-ai", "quantum"]);
     for (const algo of all) {
       expect(validCategories.has(algo.category)).toBe(true);
     }
   });
 
-  it('getAlgorithmById returns correct algorithm', () => {
+  it("getAlgorithmById returns correct algorithm", () => {
     for (const algo of all) {
       expect(getAlgorithmById(algo.id)).toBe(algo);
     }
   });
 
-  it('getAlgorithmById returns undefined for non-existent ID', () => {
-    expect(getAlgorithmById('nonexistent-algorithm-xyz')).toBeUndefined();
+  it("getAlgorithmById returns undefined for non-existent ID", () => {
+    expect(getAlgorithmById("nonexistent-algorithm-xyz")).toBeUndefined();
   });
 
-  it('category counts sum to total count', () => {
-    const categories = ['classical', 'deep-learning', 'generative-ai', 'quantum'] as const;
+  it("category counts sum to total count", () => {
+    const categories = ["classical", "deep-learning", "generative-ai", "quantum"] as const;
     let sum = 0;
     for (const cat of categories) {
       sum += getAlgorithmsByCategory(cat).length;

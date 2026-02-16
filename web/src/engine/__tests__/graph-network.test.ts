@@ -335,8 +335,8 @@ describe("graph-network layout", () => {
       expect(dsLabel.text).toBe("Queue:");
 
       // Item badges.
-      const items = scene.primitives.filter(
-        (p) => p.id.startsWith("ds-item-"),
+      const items = scene.primitives.filter((p) =>
+        p.id.startsWith("ds-item-"),
       ) as AnnotationPrimitive[];
       expect(items).toHaveLength(2);
       expect(items[0]!.text).toBe("A");
@@ -357,8 +357,8 @@ describe("graph-network layout", () => {
       expect(distLabel).toBeDefined();
       expect(distLabel.text).toBe("Distances:");
 
-      const entries = scene.primitives.filter(
-        (p) => p.id.startsWith("dist-entry-"),
+      const entries = scene.primitives.filter((p) =>
+        p.id.startsWith("dist-entry-"),
       ) as AnnotationPrimitive[];
       expect(entries).toHaveLength(3);
     });

@@ -20,9 +20,9 @@ import { useState, useCallback, useRef, useEffect } from "react";
 /** Available playback speed multipliers and their interval in ms. */
 export const SPEED_OPTIONS = [
   { label: "0.5×", multiplier: 0.5, intervalMs: 1200 },
-  { label: "1×",   multiplier: 1,   intervalMs: 600  },
-  { label: "2×",   multiplier: 2,   intervalMs: 300  },
-  { label: "4×",   multiplier: 4,   intervalMs: 150  },
+  { label: "1×", multiplier: 1, intervalMs: 600 },
+  { label: "2×", multiplier: 2, intervalMs: 300 },
+  { label: "4×", multiplier: 4, intervalMs: 150 },
 ] as const;
 
 export interface PlaybackState {
@@ -172,8 +172,14 @@ export function usePlayback(
 
   const state: PlaybackState = { currentIndex, isPlaying, speedIndex };
   const controls: PlaybackControls = {
-    goToStep, stepForward, stepBackward,
-    togglePlay, play, pause, reset, cycleSpeed,
+    goToStep,
+    stepForward,
+    stepBackward,
+    togglePlay,
+    play,
+    pause,
+    reset,
+    cycleSpeed,
   };
 
   return [state, controls];

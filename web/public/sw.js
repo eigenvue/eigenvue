@@ -48,20 +48,17 @@ const PAGES_CACHE = `eigenvue-pages-${CACHE_VERSION}`;
  * URLs to pre-cache during the install event.
  * These are available offline immediately after first visit.
  */
-const PRECACHE_URLS = [
-  "/",
-  "/algorithms",
-];
+const PRECACHE_URLS = ["/", "/algorithms"];
 
 /**
  * URL patterns that should NOT be cached.
  */
 const NO_CACHE_PATTERNS = [
-  /\/og\//,         // OG image generation
-  /\/api\//,        // API routes
-  /analytics/,      // Analytics scripts
-  /plausible/,      // Plausible analytics
-  /umami/,          // Umami analytics
+  /\/og\//, // OG image generation
+  /\/api\//, // API routes
+  /analytics/, // Analytics scripts
+  /plausible/, // Plausible analytics
+  /umami/, // Umami analytics
 ];
 
 // ─── Install Event ────────────────────────────────────────────────────────────

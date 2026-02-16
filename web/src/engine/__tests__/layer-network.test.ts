@@ -9,7 +9,14 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { getLayout } from "../layouts/registry";
-import type { Step, CanvasSize, LayoutFunction, ElementPrimitive, ConnectionPrimitive, AnnotationPrimitive } from "../types";
+import type {
+  Step,
+  CanvasSize,
+  LayoutFunction,
+  ElementPrimitive,
+  ConnectionPrimitive,
+  AnnotationPrimitive,
+} from "../types";
 
 // Import the layout module to trigger self-registration.
 import "../layouts/layer-network";
@@ -28,21 +35,17 @@ function makeStep(overrides: Partial<Step> = {}): Step {
     explanation: "Testing layout.",
     state: {
       layerSizes: [2, 3, 1],
-      activations: [
-        [0.5, 0.8],
-        [0.3, 0.6, 0.9],
-        [0.7],
-      ],
+      activations: [[0.5, 0.8], [0.3, 0.6, 0.9], [0.7]],
       weights: [
-        [],                                          // layer 0 has no incoming weights
-        [[0.2, -0.1], [0.5, 0.3], [-0.4, 0.7]],    // layer 1: 3 neurons, each 2 inputs
-        [[0.6, -0.2, 0.4]],                         // layer 2: 1 neuron, 3 inputs
+        [], // layer 0 has no incoming weights
+        [
+          [0.2, -0.1],
+          [0.5, 0.3],
+          [-0.4, 0.7],
+        ], // layer 1: 3 neurons, each 2 inputs
+        [[0.6, -0.2, 0.4]], // layer 2: 1 neuron, 3 inputs
       ],
-      gradients: [
-        [0.01, 0.02],
-        [0.1, -0.05, 0.08],
-        [0.5],
-      ],
+      gradients: [[0.01, 0.02], [0.1, -0.05, 0.08], [0.5]],
     },
     visualActions: [],
     codeHighlight: { language: "pseudocode", lines: [] },
@@ -73,18 +76,18 @@ describe("layer-network layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const neurons = scene.primitives.filter(
-        p => p.kind === "element" && p.id.startsWith("neuron-")
+        (p) => p.kind === "element" && p.id.startsWith("neuron-"),
       );
       // 2 + 3 + 1 = 6 neurons
       expect(neurons.length).toBe(6);
 
       // Verify specific neuron IDs exist.
-      expect(scene.primitives.find(p => p.id === "neuron-0-0")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "neuron-0-1")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "neuron-1-0")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "neuron-1-1")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "neuron-1-2")).toBeDefined();
-      expect(scene.primitives.find(p => p.id === "neuron-2-0")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "neuron-0-0")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "neuron-0-1")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "neuron-1-0")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "neuron-1-1")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "neuron-1-2")).toBeDefined();
+      expect(scene.primitives.find((p) => p.id === "neuron-2-0")).toBeDefined();
     });
 
     it("renders 9 connections (2*3 + 3*1)", () => {
@@ -92,7 +95,7 @@ describe("layer-network layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       const connections = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("conn-")
+        (p) => p.kind === "connection" && p.id.startsWith("conn-"),
       );
       // Layer 1 receives from layer 0: 3 neurons * 2 inputs = 6 connections
       // Layer 2 receives from layer 1: 1 neuron * 3 inputs = 3 connections
@@ -105,7 +108,7 @@ describe("layer-network layout", () => {
       const scene = layout(step, mockCanvasSize, {});
 
       for (let l = 0; l < 3; l++) {
-        const lbl = scene.primitives.find(p => p.id === `layer-label-${l}`);
+        const lbl = scene.primitives.find((p) => p.id === `layer-label-${l}`);
         expect(lbl).toBeDefined();
         expect(lbl?.kind).toBe("annotation");
       }
@@ -116,14 +119,22 @@ describe("layer-network layout", () => {
         state: {
           layerSizes: [2, 3, 1],
           activations: [[0.5, 0.8], [0.3, 0.6, 0.9], [0.7]],
-          weights: [[], [[0.2, -0.1], [0.5, 0.3], [-0.4, 0.7]], [[0.6, -0.2, 0.4]]],
+          weights: [
+            [],
+            [
+              [0.2, -0.1],
+              [0.5, 0.3],
+              [-0.4, 0.7],
+            ],
+            [[0.6, -0.2, 0.4]],
+          ],
           gradients: [[0.01, 0.02], [0.1, -0.05, 0.08], [0.5]],
           loss: 0.3456,
         },
       });
       const scene = layout(stepWithLoss, mockCanvasSize, {});
 
-      const lossBadge = scene.primitives.find(p => p.id === "loss-badge");
+      const lossBadge = scene.primitives.find((p) => p.id === "loss-badge");
       expect(lossBadge).toBeDefined();
       expect(lossBadge?.kind).toBe("annotation");
       expect((lossBadge as AnnotationPrimitive).form).toBe("badge");
@@ -134,7 +145,7 @@ describe("layer-network layout", () => {
       const step = makeStep();
       const scene = layout(step, mockCanvasSize, {});
 
-      const lossBadge = scene.primitives.find(p => p.id === "loss-badge");
+      const lossBadge = scene.primitives.find((p) => p.id === "loss-badge");
       expect(lossBadge).toBeUndefined();
     });
   });
@@ -142,15 +153,15 @@ describe("layer-network layout", () => {
   describe("visual actions", () => {
     it("activateNeuron action changes node appearance", () => {
       const step = makeStep({
-        visualActions: [
-          { type: "activateNeuron", layer: 1, index: 1 },
-        ],
+        visualActions: [{ type: "activateNeuron", layer: 1, index: 1 }],
       });
 
       const scene = layout(step, mockCanvasSize, {});
 
-      const activeNeuron = scene.primitives.find(p => p.id === "neuron-1-1") as ElementPrimitive;
-      const inactiveNeuron = scene.primitives.find(p => p.id === "neuron-1-0") as ElementPrimitive;
+      const activeNeuron = scene.primitives.find((p) => p.id === "neuron-1-1") as ElementPrimitive;
+      const inactiveNeuron = scene.primitives.find(
+        (p) => p.id === "neuron-1-0",
+      ) as ElementPrimitive;
 
       expect(activeNeuron).toBeDefined();
       expect(inactiveNeuron).toBeDefined();
@@ -163,16 +174,14 @@ describe("layer-network layout", () => {
 
     it("propagateSignal action changes connection colors to blue (#38bdf8)", () => {
       const step = makeStep({
-        visualActions: [
-          { type: "propagateSignal", fromLayer: 0, toLayer: 1 },
-        ],
+        visualActions: [{ type: "propagateSignal", fromLayer: 0, toLayer: 1 }],
       });
 
       const scene = layout(step, mockCanvasSize, {});
 
       // Connections from layer 0 to layer 1 should have the signal color.
       const forwardConns = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("conn-1-")
+        (p) => p.kind === "connection" && p.id.startsWith("conn-1-"),
       ) as ConnectionPrimitive[];
 
       expect(forwardConns.length).toBe(6); // 3 neurons * 2 inputs
@@ -183,7 +192,7 @@ describe("layer-network layout", () => {
 
       // Connections from layer 1 to layer 2 should NOT have the signal color.
       const otherConns = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("conn-2-")
+        (p) => p.kind === "connection" && p.id.startsWith("conn-2-"),
       ) as ConnectionPrimitive[];
 
       for (const conn of otherConns) {
@@ -193,16 +202,14 @@ describe("layer-network layout", () => {
 
     it("showGradient action changes connections to dashed pattern", () => {
       const step = makeStep({
-        visualActions: [
-          { type: "showGradient", layer: 1 },
-        ],
+        visualActions: [{ type: "showGradient", layer: 1 }],
       });
 
       const scene = layout(step, mockCanvasSize, {});
 
       // Connections at gradient layer (l=1) should have dashed pattern.
       const gradientConns = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("conn-1-")
+        (p) => p.kind === "connection" && p.id.startsWith("conn-1-"),
       ) as ConnectionPrimitive[];
 
       expect(gradientConns.length).toBe(6);
@@ -213,7 +220,7 @@ describe("layer-network layout", () => {
 
       // Connections not at the gradient layer should remain solid.
       const otherConns = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("conn-2-")
+        (p) => p.kind === "connection" && p.id.startsWith("conn-2-"),
       ) as ConnectionPrimitive[];
 
       for (const conn of otherConns) {
@@ -225,9 +232,7 @@ describe("layer-network layout", () => {
   describe("purity", () => {
     it("calling twice with same args produces identical output", () => {
       const step = makeStep({
-        visualActions: [
-          { type: "activateNeuron", layer: 1, index: 2 },
-        ],
+        visualActions: [{ type: "activateNeuron", layer: 1, index: 2 }],
       });
 
       const scene1 = layout(step, mockCanvasSize, {});
@@ -248,17 +253,23 @@ describe("layer-network layout", () => {
         state: {
           layerSizes: [2, 3, 1],
           activations: [[0.5, 0.8], [0.3, 0.6, 0.9], [0.7]],
-          weights: [[], [[0.2, -0.1], [0.5, 0.3], [-0.4, 0.7]], [[0.6, -0.2, 0.4]]],
+          weights: [
+            [],
+            [
+              [0.2, -0.1],
+              [0.5, 0.3],
+              [-0.4, 0.7],
+            ],
+            [[0.6, -0.2, 0.4]],
+          ],
           gradients: [[0.01, 0.02], [0.1, -0.05, 0.08], [0.5]],
           loss: 0.25,
         },
-        visualActions: [
-          { type: "activateNeuron", layer: 0, index: 1 },
-        ],
+        visualActions: [{ type: "activateNeuron", layer: 0, index: 1 }],
       });
 
       const scene = layout(step, mockCanvasSize, {});
-      const ids = scene.primitives.map(p => p.id);
+      const ids = scene.primitives.map((p) => p.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);
     });

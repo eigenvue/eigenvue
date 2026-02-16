@@ -8,7 +8,14 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { getLayout } from "../layouts/registry";
-import type { Step, CanvasSize, LayoutFunction, ElementPrimitive, ConnectionPrimitive, AnnotationPrimitive } from "../types";
+import type {
+  Step,
+  CanvasSize,
+  LayoutFunction,
+  ElementPrimitive,
+  ConnectionPrimitive,
+  AnnotationPrimitive,
+} from "../types";
 
 // Import the layout module to trigger self-registration.
 import "../layouts/token-sequence";
@@ -45,7 +52,7 @@ describe("token-sequence layout", () => {
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const elements = scene.primitives.filter(p => p.kind === "element");
+      const elements = scene.primitives.filter((p) => p.kind === "element");
       expect(elements.length).toBe(3);
     });
 
@@ -63,7 +70,7 @@ describe("token-sequence layout", () => {
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const elements = scene.primitives.filter(p => p.kind === "element") as ElementPrimitive[];
+      const elements = scene.primitives.filter((p) => p.kind === "element") as ElementPrimitive[];
 
       for (let i = 0; i < tokens.length; i++) {
         expect(elements[i]?.id).toBe(`token-chip-${i}`);
@@ -96,16 +103,14 @@ describe("token-sequence layout", () => {
         title: "Highlight Token",
         explanation: "Highlighting token at index 1.",
         state: { tokens: ["The", "cat", "sat"] },
-        visualActions: [
-          { type: "highlightToken", index: 1 },
-        ],
+        visualActions: [{ type: "highlightToken", index: 1 }],
         codeHighlight: { language: "pseudocode", lines: [] },
         isTerminal: false,
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const chip0 = scene.primitives.find(p => p.id === "token-chip-0") as ElementPrimitive;
-      const chip1 = scene.primitives.find(p => p.id === "token-chip-1") as ElementPrimitive;
+      const chip0 = scene.primitives.find((p) => p.id === "token-chip-0") as ElementPrimitive;
+      const chip1 = scene.primitives.find((p) => p.id === "token-chip-1") as ElementPrimitive;
 
       expect(chip1).toBeDefined();
       // Highlighted token should have a different fill than the default.
@@ -119,16 +124,14 @@ describe("token-sequence layout", () => {
         title: "Merge Tokens",
         explanation: "Merging tokens 0 and 1.",
         state: { tokens: ["H", "ello", "world"] },
-        visualActions: [
-          { type: "mergeTokens", leftIndex: 0, rightIndex: 1, result: "Hello" },
-        ],
+        visualActions: [{ type: "mergeTokens", leftIndex: 0, rightIndex: 1, result: "Hello" }],
         codeHighlight: { language: "pseudocode", lines: [] },
         isTerminal: false,
       };
 
       const scene = layout(step, mockCanvasSize, {});
       const bracket = scene.primitives.find(
-        p => p.kind === "annotation" && p.id === "merge-bracket-0-1"
+        (p) => p.kind === "annotation" && p.id === "merge-bracket-0-1",
       ) as AnnotationPrimitive;
 
       expect(bracket).toBeDefined();
@@ -143,9 +146,7 @@ describe("token-sequence layout", () => {
         title: "Show Embedding",
         explanation: "Displaying embedding for token 0.",
         state: { tokens: ["The", "cat"] },
-        visualActions: [
-          { type: "showEmbedding", tokenIndex: 0, values: [0.5, -0.3, 0.8, -0.1] },
-        ],
+        visualActions: [{ type: "showEmbedding", tokenIndex: 0, values: [0.5, -0.3, 0.8, -0.1] }],
         codeHighlight: { language: "pseudocode", lines: [] },
         isTerminal: false,
       };
@@ -154,13 +155,13 @@ describe("token-sequence layout", () => {
 
       // Should create bar elements for each embedding dimension.
       const bars = scene.primitives.filter(
-        p => p.kind === "element" && p.id.startsWith("emb-bar-0-")
+        (p) => p.kind === "element" && p.id.startsWith("emb-bar-0-"),
       );
       expect(bars.length).toBe(4);
 
       // Verify individual bar IDs.
       for (let d = 0; d < 4; d++) {
-        const bar = scene.primitives.find(p => p.id === `emb-bar-0-${d}`);
+        const bar = scene.primitives.find((p) => p.id === `emb-bar-0-${d}`);
         expect(bar).toBeDefined();
         expect(bar?.kind).toBe("element");
       }
@@ -173,23 +174,21 @@ describe("token-sequence layout", () => {
         title: "Show Attention",
         explanation: "Attention weights from token 0.",
         state: { tokens: ["The", "cat", "sat"] },
-        visualActions: [
-          { type: "showAttentionWeights", queryIdx: 0, weights: [0.1, 0.7, 0.2] },
-        ],
+        visualActions: [{ type: "showAttentionWeights", queryIdx: 0, weights: [0.1, 0.7, 0.2] }],
         codeHighlight: { language: "pseudocode", lines: [] },
         isTerminal: false,
       };
 
       const scene = layout(step, mockCanvasSize, {});
       const arcs = scene.primitives.filter(
-        p => p.kind === "connection" && p.id.startsWith("attn-arc-")
+        (p) => p.kind === "connection" && p.id.startsWith("attn-arc-"),
       );
 
       // Should have arcs for non-negligible weights (all three are >= 0.01).
       expect(arcs.length).toBeGreaterThanOrEqual(2);
 
       // Verify the strongest arc exists.
-      const arc01 = scene.primitives.find(p => p.id === "attn-arc-0-1") as ConnectionPrimitive;
+      const arc01 = scene.primitives.find((p) => p.id === "attn-arc-0-1") as ConnectionPrimitive;
       expect(arc01).toBeDefined();
       expect(arc01.kind).toBe("connection");
     });
@@ -201,16 +200,14 @@ describe("token-sequence layout", () => {
         title: "Unknown Action",
         explanation: "Step with unknown action.",
         state: { tokens: ["The", "cat"] },
-        visualActions: [
-          { type: "someUnknownFutureAction", data: 42 },
-        ],
+        visualActions: [{ type: "someUnknownFutureAction", data: 42 }],
         codeHighlight: { language: "pseudocode", lines: [] },
         isTerminal: false,
       };
 
       // Should not throw, and should produce normal token chips.
       const scene = layout(step, mockCanvasSize, {});
-      const elements = scene.primitives.filter(p => p.kind === "element");
+      const elements = scene.primitives.filter((p) => p.kind === "element");
       expect(elements.length).toBe(2);
     });
   });
@@ -233,7 +230,7 @@ describe("token-sequence layout", () => {
       };
 
       const scene = layout(step, mockCanvasSize, {});
-      const ids = scene.primitives.map(p => p.id);
+      const ids = scene.primitives.map((p) => p.id);
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).toBe(ids.length);
     });
