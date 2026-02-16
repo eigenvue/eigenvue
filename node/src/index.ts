@@ -37,4 +37,4 @@ export type {
 } from "@/shared/types/step";
 
 /** Package version. */
-export const version = "1.0.1";
+export const version = "1.0.2";
