@@ -144,7 +144,8 @@
   },
   "code": {
     "implementations": {
-      "pseudocode": "function backpropagation(network, input, target, learningRate):\n  // Forward pass\n  activations = forwardPass(network, input)\n  loss = computeLoss(activations[-1], target)\n\n  // Backward pass — compute gradients\n  delta = lossDeriv(activations[-1], target)\n  for layer in reversed(range(num_layers - 1)):\n    weightGrad = delta × activations[layer].T\n    biasGrad = delta\n    delta = (weights[layer].T × delta) * activDeriv(z[layer])\n\n    // Update weights\n    weights[layer] -= learningRate * weightGrad\n    biases[layer] -= learningRate * biasGrad"
+      "pseudocode": "function backpropagation(network, input, target, learningRate):\n  // Forward pass\n  activations = forwardPass(network, input)\n  loss = computeLoss(activations[-1], target)\n\n  // Backward pass — compute gradients\n  delta = lossDeriv(activations[-1], target)\n  for layer in reversed(range(num_layers - 1)):\n    weightGrad = delta × activations[layer].T\n    biasGrad = delta\n    delta = (weights[layer].T × delta) * activDeriv(z[layer])\n\n    // Update weights\n    weights[layer] -= learningRate * weightGrad\n    biases[layer] -= learningRate * biasGrad",
+      "python": "import numpy as np\n\ndef backprop(weights, biases, x, target, lr=0.1):\n    # Forward pass\n    a = [x]\n    for W, b in zip(weights, biases):\n        z = a[-1] @ W + b\n        a.append(1 / (1 + np.exp(-z)))  # sigmoid\n    # Backward pass\n    delta = (a[-1] - target) * a[-1] * (1 - a[-1])\n    for i in reversed(range(len(weights))):\n        weights[i] -= lr * np.outer(a[i], delta)\n        biases[i] -= lr * delta\n        delta = (delta @ weights[i].T) * a[i] * (1 - a[i])"
     },
     "defaultLanguage": "pseudocode"
   },

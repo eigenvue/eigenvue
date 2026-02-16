@@ -106,7 +106,8 @@
   },
   "code": {
     "implementations": {
-      "pseudocode": "function gradientDescent(f, startParams, learningRate, numSteps):\n  params = startParams\n  trajectory = [params]\n\n  for step in range(numSteps):\n    grad = computeGradient(f, params)  // ∂f/∂params\n    params = params - learningRate * grad  // step downhill\n    trajectory.append(params)\n\n  return trajectory"
+      "pseudocode": "function gradientDescent(f, startParams, learningRate, numSteps):\n  params = startParams\n  trajectory = [params]\n\n  for step in range(numSteps):\n    grad = computeGradient(f, params)  // ∂f/∂params\n    params = params - learningRate * grad  // step downhill\n    trajectory.append(params)\n\n  return trajectory",
+      "python": "import numpy as np\n\ndef gradient_descent(grad_fn, x0, lr=0.01, steps=100):\n    x = np.array(x0, dtype=float)\n    path = [x.copy()]\n    for _ in range(steps):\n        x -= lr * grad_fn(x)\n        path.append(x.copy())\n    return path"
     },
     "defaultLanguage": "pseudocode"
   },

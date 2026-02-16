@@ -74,7 +74,8 @@
 
   "code": {
     "implementations": {
-      "pseudocode": "function SelfAttention(X, W_Q, W_K, W_V):\n  Q = X × W_Q            // Query projection\n  K = X × W_K            // Key projection\n  V = X × W_V            // Value projection\n  scores = Q × Kᵀ        // Raw attention scores\n  scaled = scores / √d_k  // Scale to stabilize gradients\n  weights = softmax(scaled, dim=row)  // Normalize each row\n  for each query token q:\n    output[q] = Σ weights[q][j] × V[j]  // Weighted sum\n  return output"
+      "pseudocode": "function SelfAttention(X, W_Q, W_K, W_V):\n  Q = X × W_Q            // Query projection\n  K = X × W_K            // Key projection\n  V = X × W_V            // Value projection\n  scores = Q × Kᵀ        // Raw attention scores\n  scaled = scores / √d_k  // Scale to stabilize gradients\n  weights = softmax(scaled, dim=row)  // Normalize each row\n  for each query token q:\n    output[q] = Σ weights[q][j] × V[j]  // Weighted sum\n  return output",
+      "python": "import numpy as np\n\ndef self_attention(X, W_Q, W_K, W_V):\n    Q, K, V = X @ W_Q, X @ W_K, X @ W_V\n    d_k = K.shape[-1]\n    scores = Q @ K.T / np.sqrt(d_k)\n    weights = np.exp(scores) / np.exp(scores).sum(axis=-1, keepdims=True)\n    return weights @ V"
     },
     "defaultLanguage": "pseudocode"
   },

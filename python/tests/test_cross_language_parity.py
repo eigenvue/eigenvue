@@ -165,7 +165,7 @@ def assert_values_close(
         assert len(actual) == len(expected), (
             f"Length mismatch at {path}: actual={len(actual)}, expected={len(expected)}"
         )
-        for i, (a, e) in enumerate(zip(actual, expected)):
+        for i, (a, e) in enumerate(zip(actual, expected, strict=True)):
             assert_values_close(a, e, tolerance, f"{path}[{i}]")
 
     elif isinstance(expected, float):
@@ -543,8 +543,7 @@ class TestCrossLanguageParity:
                     tol = checks.get("tolerance", 1e-6)
                     if "attentionWeightsRowSum" in checks:
                         weights = state.get("attentionWeights")
-                        if weights and isinstance(weights, list):
-                            if isinstance(weights[0], list):
+                        if weights and isinstance(weights, list) and isinstance(weights[0], list):
                                 for row_idx, row in enumerate(weights):
                                     row_sum = sum(row)
                                     assert abs(row_sum - checks["attentionWeightsRowSum"]) <= tol, (
@@ -606,7 +605,7 @@ class TestStructuralParity:
             f"{algo_id}: non-deterministic step count "
             f"({len(steps1)} vs {len(steps2)})"
         )
-        for i, (s1, s2) in enumerate(zip(steps1, steps2)):
+        for i, (s1, s2) in enumerate(zip(steps1, steps2, strict=True)):
             assert s1["id"] == s2["id"], (
                 f"{algo_id}: step {i} ID differs ({s1['id']} vs {s2['id']})"
             )

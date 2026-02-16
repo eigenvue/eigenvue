@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { execSync } from "child_process";
 import path from "path";
+import { readFileSync } from "fs";
 
 const CLI_PATH = path.resolve(__dirname, "../../node/dist/cli.js");
+const PKG = JSON.parse(
+  readFileSync(path.resolve(__dirname, "../../node/package.json"), "utf-8"),
+) as { version: string };
 
 /**
  * Execute the CLI and return stdout.
@@ -28,12 +32,12 @@ function runCli(args: string, expectError = false): string {
 describe("CLI", () => {
   it("prints version with --version", () => {
     const output = runCli("--version");
-    expect(output.trim()).toBe("1.0.0");
+    expect(output.trim()).toBe(PKG.version);
   });
 
   it("prints version with -v", () => {
     const output = runCli("-v");
-    expect(output.trim()).toBe("1.0.0");
+    expect(output.trim()).toBe(PKG.version);
   });
 
   it("prints usage with --help", () => {
