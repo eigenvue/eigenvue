@@ -132,7 +132,7 @@ def run_ts_generator(algorithm_id: str, inputs: dict[str, Any]) -> list[dict]:
 
     with tempfile.NamedTemporaryFile(
         mode="w",
-        suffix=".mjs",
+        suffix=".ts",
         dir=str(PROJECT_ROOT / "web"),
         delete=False,
         encoding="utf-8",

@@ -33,14 +33,7 @@ const nextConfig: NextConfig = {
   /**
    * Experimental features for bundle optimization.
    */
-  experimental: {
-    /**
-     * optimizePackageImports: tells Next.js to tree-shake barrel exports
-     * for listed packages. This prevents importing the entire package
-     * when only a single component/function is used.
-     */
-    optimizePackageImports: ["framer-motion", "lucide-react"],
-  },
+  experimental: {},
 
   /**
    * Webpack customization for bundle size optimization.

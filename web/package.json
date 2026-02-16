@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@vercel/og": "^0.8.6",
-    "framer-motion": "^12.34.0",
     "next": "15.5.12",
     "react": "19.1.0",
     "react-dom": "19.1.0"
@@ -41,6 +40,7 @@
     "prettier": "^3.8.1",
     "satori": "^0.19.2",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.0.18"
   }
