@@ -32,7 +32,15 @@ DL_IDS = [
     "gradient-descent",
 ]
 
-ALL_ALGORITHM_IDS = CLASSICAL_IDS + GENAI_IDS + DL_IDS
+QUANTUM_IDS = [
+    "qubit-bloch-sphere",
+    "quantum-gates",
+    "superposition-measurement",
+    "grovers-search",
+    "quantum-teleportation",
+]
+
+ALL_ALGORITHM_IDS = CLASSICAL_IDS + GENAI_IDS + DL_IDS + QUANTUM_IDS
 
 
 @pytest.fixture(params=ALL_ALGORITHM_IDS)
@@ -56,4 +64,10 @@ def genai_id(request: pytest.FixtureRequest) -> str:
 @pytest.fixture(params=DL_IDS)
 def dl_id(request: pytest.FixtureRequest) -> str:
     """Parametrized fixture for deep learning algorithm IDs."""
+    return request.param
+
+
+@pytest.fixture(params=QUANTUM_IDS)
+def quantum_id(request: pytest.FixtureRequest) -> str:
+    """Parametrized fixture for quantum algorithm IDs."""
     return request.param

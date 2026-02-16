@@ -1,0 +1,256 @@
+{
+  "id": "quantum-gates",
+  "name": "Quantum Gates & Circuits",
+  "category": "quantum",
+
+  "description": {
+    "short": "Build quantum circuits gate by gate and watch state vectors evolve.",
+    "long": "Quantum gates are unitary operators that transform qubit states. Just as classical logic gates (AND, OR, NOT) manipulate bits, quantum gates manipulate qubits — but with the full power of superposition and entanglement. Each gate corresponds to a unitary matrix U satisfying U\u2020U = I, which guarantees that probabilities are preserved. A quantum circuit composes gates sequentially: the state vector |psi> is updated by matrix multiplication at each step. Single-qubit gates (H, X, Y, Z, S, T) act on individual qubits, while multi-qubit gates (CNOT, CZ, SWAP) create correlations between qubits, including entanglement. This visualization lets you build a circuit gate by gate, observe how the full 2^n-dimensional state vector evolves, and see measurement probabilities update in real time."
+  },
+
+  "complexity": {
+    "time": "O(2^n * g)",
+    "space": "O(2^n)",
+    "level": "intermediate"
+  },
+
+  "visual": {
+    "layout": "circuit-wires",
+    "theme": {
+      "primary": "#00ffc8",
+      "secondary": "#0e7c6b"
+    },
+    "components": {
+      "showAmplitudeBars": true,
+      "showGateLabels": true,
+      "showWireLabels": true
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "numQubits": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 4,
+        "description": "Number of qubits in the quantum register (1-4)."
+      },
+      "gates": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "gate": {
+              "type": "string",
+              "description": "Gate name: H, X, Y, Z, S, T, CNOT, CZ, SWAP, Rx, Ry, Rz"
+            },
+            "qubits": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 1,
+              "maxItems": 2,
+              "description": "Qubit indices this gate acts on. Single-qubit gates take [target], two-qubit gates take [control, target]."
+            },
+            "angle": {
+              "type": "number",
+              "description": "Optional rotation angle in radians (for Rx, Ry, Rz gates)."
+            }
+          },
+          "required": ["gate", "qubits"]
+        },
+        "minItems": 1,
+        "maxItems": 20,
+        "description": "Ordered sequence of gates to apply to the quantum register."
+      }
+    },
+    "defaults": {
+      "numQubits": 2,
+      "gates": [
+        { "gate": "H", "qubits": [0] },
+        { "gate": "CNOT", "qubits": [0, 1] },
+        { "gate": "X", "qubits": [1] },
+        { "gate": "H", "qubits": [0] },
+        { "gate": "Z", "qubits": [1] }
+      ]
+    },
+    "examples": [
+      {
+        "name": "Bell state creation",
+        "values": {
+          "numQubits": 2,
+          "gates": [
+            { "gate": "H", "qubits": [0] },
+            { "gate": "CNOT", "qubits": [0, 1] }
+          ]
+        }
+      },
+      {
+        "name": "GHZ state (3 qubits)",
+        "values": {
+          "numQubits": 3,
+          "gates": [
+            { "gate": "H", "qubits": [0] },
+            { "gate": "CNOT", "qubits": [0, 1] },
+            { "gate": "CNOT", "qubits": [0, 2] }
+          ]
+        }
+      },
+      {
+        "name": "Rotation sequence",
+        "values": {
+          "numQubits": 1,
+          "gates": [
+            { "gate": "H", "qubits": [0] },
+            { "gate": "T", "qubits": [0] },
+            { "gate": "H", "qubits": [0] },
+            { "gate": "T", "qubits": [0] },
+            { "gate": "H", "qubits": [0] }
+          ]
+        }
+      },
+      {
+        "name": "Quantum teleportation circuit",
+        "values": {
+          "numQubits": 3,
+          "gates": [
+            { "gate": "H", "qubits": [1] },
+            { "gate": "CNOT", "qubits": [1, 2] },
+            { "gate": "CNOT", "qubits": [0, 1] },
+            { "gate": "H", "qubits": [0] }
+          ]
+        }
+      },
+      {
+        "name": "SWAP via CNOTs",
+        "values": {
+          "numQubits": 2,
+          "gates": [
+            { "gate": "X", "qubits": [0] },
+            { "gate": "CNOT", "qubits": [0, 1] },
+            { "gate": "CNOT", "qubits": [1, 0] },
+            { "gate": "CNOT", "qubits": [0, 1] }
+          ]
+        }
+      },
+      {
+        "name": "Phase kickback",
+        "values": {
+          "numQubits": 2,
+          "gates": [
+            { "gate": "X", "qubits": [1] },
+            { "gate": "H", "qubits": [0] },
+            { "gate": "CNOT", "qubits": [0, 1] },
+            { "gate": "H", "qubits": [0] }
+          ]
+        }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "function applyQuantumCircuit(numQubits, gates):\n  // 1. Initialize state vector to |0...0>\n  stateVector = [0] * 2^numQubits\n  stateVector[0] = 1          // all amplitude on |00...0>\n\n  // 2. Apply each gate sequentially\n  for each gate in gates:\n    if gate is single-qubit:\n      U = gateMatrix(gate.name, gate.angle)\n      for each pair of amplitudes separated by 2^target:\n        [a, b] = [stateVector[i], stateVector[j]]\n        stateVector[i] = U[0][0]*a + U[0][1]*b\n        stateVector[j] = U[1][0]*a + U[1][1]*b\n\n    if gate is two-qubit (e.g., CNOT):\n      U = gateMatrix4x4(gate.name)\n      for each group of 4 amplitudes:\n        apply 4x4 unitary to the subspace\n\n    // 3. Verify normalization\n    assert sum(|stateVector[k]|^2) == 1\n\n  // 4. Compute measurement probabilities\n  probabilities[k] = |stateVector[k]|^2 for each k\n  return stateVector, probabilities",
+      "python": "import numpy as np\n\n# Standard gate matrices\nH = np.array([[1, 1], [1, -1]]) / np.sqrt(2)\nX = np.array([[0, 1], [1, 0]])\nY = np.array([[0, -1j], [1j, 0]])\nZ = np.array([[1, 0], [0, -1]])\nS = np.array([[1, 0], [0, 1j]])\nT = np.array([[1, 0], [0, np.exp(1j * np.pi / 4)]])\nCNOT = np.array([[1,0,0,0],[0,1,0,0],[0,0,0,1],[0,0,1,0]])\n\ndef apply_single_qubit_gate(state, gate, target, n_qubits):\n    \"\"\"Apply a 2x2 gate to target qubit in an n-qubit state.\"\"\"\n    n = len(state)\n    result = state.copy()\n    step = 1 << target\n    for i in range(n):\n        if i & step == 0:\n            j = i | step\n            a, b = state[i], state[j]\n            result[i] = gate[0,0]*a + gate[0,1]*b\n            result[j] = gate[1,0]*a + gate[1,1]*b\n    return result\n\ndef apply_cnot(state, control, target, n_qubits):\n    \"\"\"Apply CNOT: flip target when control is |1>.\"\"\"\n    result = state.copy()\n    for i in range(len(state)):\n        if (i >> control) & 1:  # control is |1>\n            j = i ^ (1 << target)  # flip target\n            result[i], result[j] = state[j], state[i]\n    return result\n\ndef run_circuit(n_qubits, gates):\n    state = np.zeros(2**n_qubits, dtype=complex)\n    state[0] = 1.0  # |00...0>\n\n    for g in gates:\n        if g['gate'] in ('H','X','Y','Z','S','T'):\n            mat = {'H':H,'X':X,'Y':Y,'Z':Z,'S':S,'T':T}[g['gate']]\n            state = apply_single_qubit_gate(state, mat, g['qubits'][0], n_qubits)\n        elif g['gate'] == 'CNOT':\n            state = apply_cnot(state, g['qubits'][0], g['qubits'][1], n_qubits)\n\n    probs = np.abs(state)**2\n    assert abs(sum(probs) - 1.0) < 1e-9\n    return state, probs",
+      "javascript": "// Standard gate matrices (row-major, complex as [re, im])\nconst H = [[[0.7071,0],[0.7071,0]],[[0.7071,0],[-0.7071,0]]];\nconst X = [[[0,0],[1,0]],[[1,0],[0,0]]];\nconst Z = [[[1,0],[0,0]],[[0,0],[-1,0]]];\n\nfunction applySingleQubitGate(state, gate, target, nQubits) {\n  const result = state.map(([re, im]) => [re, im]);\n  const step = 1 << target;\n  for (let i = 0; i < state.length; i++) {\n    if ((i & step) === 0) {\n      const j = i | step;\n      const [aRe, aIm] = state[i];\n      const [bRe, bIm] = state[j];\n      // result[i] = gate[0][0]*a + gate[0][1]*b\n      result[i] = cAdd(cMul(gate[0][0], [aRe,aIm]), cMul(gate[0][1], [bRe,bIm]));\n      // result[j] = gate[1][0]*a + gate[1][1]*b\n      result[j] = cAdd(cMul(gate[1][0], [aRe,aIm]), cMul(gate[1][1], [bRe,bIm]));\n    }\n  }\n  return result;\n}\n\nfunction applyCNOT(state, control, target) {\n  const result = state.map(([re, im]) => [re, im]);\n  for (let i = 0; i < state.length; i++) {\n    if ((i >> control) & 1) {\n      const j = i ^ (1 << target);\n      result[i] = [state[j][0], state[j][1]];\n      result[j] = [state[i][0], state[i][1]];\n    }\n  }\n  return result;\n}\n\nfunction runCircuit(nQubits, gates) {\n  let state = Array.from({ length: 1 << nQubits }, (_, i) =>\n    i === 0 ? [1, 0] : [0, 0]\n  );\n  for (const g of gates) {\n    if (['H','X','Y','Z','S','T'].includes(g.gate)) {\n      const mat = { H, X, Z }[g.gate];\n      state = applySingleQubitGate(state, mat, g.qubits[0], nQubits);\n    } else if (g.gate === 'CNOT') {\n      state = applyCNOT(state, g.qubits[0], g.qubits[1]);\n    }\n  }\n  const probs = state.map(([re, im]) => re*re + im*im);\n  return { state, probs };\n}\n\n// Complex arithmetic helpers\nfunction cMul([aR,aI], [bR,bI]) { return [aR*bR-aI*bI, aR*bI+aI*bR]; }\nfunction cAdd([aR,aI], [bR,bI]) { return [aR+bR, aI+bI]; }"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Quantum Gates",
+        "description": "Quantum gates are the building blocks of quantum computation. Each gate is a unitary transformation that acts on one or more qubits. Common single-qubit gates include Hadamard (H), Pauli-X (bit flip), Pauli-Z (phase flip), and rotation gates (Rx, Ry, Rz)."
+      },
+      {
+        "title": "Unitary Matrices",
+        "description": "Every quantum gate is represented by a unitary matrix U satisfying U\u2020U = UU\u2020 = I. This ensures that the total probability of all measurement outcomes always sums to 1. Unitarity also means every quantum operation is reversible."
+      },
+      {
+        "title": "Circuit Model",
+        "description": "The quantum circuit model represents computation as a sequence of gates applied to qubits, drawn as horizontal wires. Gates are applied left to right. The circuit model is the most common framework for designing quantum algorithms, analogous to logic circuits in classical computing."
+      },
+      {
+        "title": "Multi-Qubit Gates",
+        "description": "Multi-qubit gates act on two or more qubits simultaneously. The CNOT (controlled-NOT) gate is the most important: it flips a target qubit only when the control qubit is |1>. CNOT is essential for creating entanglement and is, together with single-qubit gates, universal for quantum computation."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Gate ordering matters",
+        "description": "Unlike some classical operations, quantum gate order is critical. Applying H then Z produces a different result from Z then H, because matrix multiplication is not commutative. Always read circuits from left to right."
+      },
+      {
+        "title": "Global phase irrelevance",
+        "description": "Two state vectors that differ only by a global phase factor e^{i\u03b3} (e.g., |psi> and -|psi>) are physically indistinguishable. However, relative phase between amplitudes is observable and crucial for interference effects."
+      },
+      {
+        "title": "Measurement destroys superposition",
+        "description": "Measuring a qubit collapses its state to |0> or |1> probabilistically. After measurement, the superposition is lost and the qubit is in a definite classical state. This is irreversible, unlike gate operations."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "What state does applying a Hadamard gate to |0> produce?",
+        "options": ["|1>", "(|0> + |1>) / sqrt(2)", "(|0> - |1>) / sqrt(2)", "i|1>"],
+        "correctIndex": 1,
+        "explanation": "The Hadamard gate maps |0> to (|0> + |1>)/sqrt(2), which is the |+> state. This creates an equal superposition with a 50/50 probability of measuring 0 or 1."
+      },
+      {
+        "question": "Which gate pair, when applied to |00>, creates a Bell state (maximally entangled pair)?",
+        "options": ["X then Z", "H on qubit 0, then CNOT(0,1)", "H on both qubits", "SWAP then H"],
+        "correctIndex": 1,
+        "explanation": "Applying H to the first qubit creates (|0> + |1>)/sqrt(2) on qubit 0. Then CNOT entangles the qubits: |00> + |11>) / sqrt(2). This is the Bell state |Phi+>, a maximally entangled state."
+      },
+      {
+        "question": "Why must quantum gates be represented by unitary matrices?",
+        "options": [
+          "To make computation faster",
+          "To preserve the normalization of the state vector (total probability = 1)",
+          "To ensure gates can be manufactured physically",
+          "To allow classical simulation"
+        ],
+        "correctIndex": 1,
+        "explanation": "Unitarity (U\u2020U = I) guarantees that the norm of the state vector is preserved. Since measurement probabilities are the squared amplitudes, this ensures probabilities always sum to 1 after any gate operation."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Quantum Gates \u2014 Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Quantum_logic_gate",
+        "type": "reference"
+      },
+      {
+        "title": "Qiskit Textbook: Single Qubit Gates",
+        "url": "https://qiskit.org/textbook/ch-states/single-qubit-gates.html",
+        "type": "tutorial"
+      },
+      {
+        "title": "Qiskit Textbook: Multiple Qubits and Entanglement",
+        "url": "https://qiskit.org/textbook/ch-gates/multiple-qubits-entangled-states.html",
+        "type": "tutorial"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "quantum gates visualization",
+      "quantum circuit builder",
+      "quantum gate simulator",
+      "quantum computing visualization",
+      "hadamard gate",
+      "CNOT gate",
+      "quantum circuit step by step",
+      "quantum state vector",
+      "bell state circuit",
+      "quantum gate matrices"
+    ],
+    "ogDescription": "Interactive quantum circuit builder: apply gates step by step and watch the state vector transform in real time. Explore Hadamard, CNOT, Pauli gates and more with amplitude and probability visualizations."
+  },
+
+  "prerequisites": ["qubit-bloch-sphere"],
+  "related": ["qubit-bloch-sphere", "superposition-measurement"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

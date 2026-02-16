@@ -1,0 +1,35 @@
+{
+  "description": "Basis states |0⟩ and |1⟩ — simplest Bloch sphere positions (poles)",
+  "inputs": {
+    "stateSequence": [
+      { "label": "|0⟩", "amplitudes": [1, 0, 0, 0] },
+      { "label": "|1⟩", "amplitudes": [0, 0, 1, 0], "gate": "X" }
+    ]
+  },
+  "expected": {
+    "stepCount": 3,
+    "terminalStepId": "show_state_1",
+    "keyStates": [
+      {
+        "stepId": "show_state_0",
+        "theta": 0,
+        "phi": 0,
+        "blochX": 0,
+        "blochY": 0,
+        "blochZ": 1,
+        "probZero": 1.0,
+        "probOne": 0.0
+      },
+      {
+        "stepId": "show_state_1",
+        "theta": 3.141592653589793,
+        "phi": 0,
+        "blochX": 0,
+        "blochY": 0,
+        "blochZ": -1,
+        "probZero": 0.0,
+        "probOne": 1.0
+      }
+    ]
+  }
+}

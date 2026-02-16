@@ -21,9 +21,9 @@ const FOOTER_LINKS = {
     { label: "API Reference", href: "/docs/api-reference/python-api" },
   ],
   Community: [
-    { label: "GitHub", href: "https://github.com/ashutoshm1771/eigenvue" },
-    { label: "Discussions", href: "https://github.com/ashutoshm1771/eigenvue/discussions" },
-    { label: "Issues", href: "https://github.com/ashutoshm1771/eigenvue/issues" },
+    { label: "GitHub", href: "https://github.com/eigenvue/eigenvue" },
+    { label: "Discussions", href: "https://github.com/eigenvue/eigenvue/discussions" },
+    { label: "Issues", href: "https://github.com/eigenvue/eigenvue/issues" },
   ],
 } as const;
 

@@ -1,0 +1,28 @@
+{
+  "description": "2-qubit Grover's search for target |11⟩ — 1 iteration gives 100% success",
+  "inputs": {
+    "numQubits": 2,
+    "targets": [3]
+  },
+  "expected": {
+    "optimalIterations": 1,
+    "terminalStepId": "result",
+    "keyStates": [
+      {
+        "stepId": "superposition",
+        "amplitudes": [[0.5, 0], [0.5, 0], [0.5, 0], [0.5, 0]],
+        "comment": "Uniform superposition: all amplitudes = 1/√4 = 0.5"
+      },
+      {
+        "stepId": "after_oracle_0",
+        "amplitudes": [[0.5, 0], [0.5, 0], [0.5, 0], [-0.5, 0]],
+        "comment": "Oracle negates target |11⟩ amplitude"
+      },
+      {
+        "stepId": "after_diffusion_0",
+        "amplitudes": [[0, 0], [0, 0], [0, 0], [1, 0]],
+        "comment": "After diffusion: target |11⟩ has probability 1.0 (100%)"
+      }
+    ]
+  }
+}

@@ -2,7 +2,7 @@
 Tests for the pre-computation pipeline (scripts/precompute-steps.py).
 
 These tests verify that:
-1. The pipeline runs successfully for all 17 algorithms.
+1. The pipeline runs successfully for all 22 algorithms.
 2. Output files are valid JSON conforming to the step format schema.
 3. Output is deterministic (two runs produce identical files).
 4. The --validate flag catches invalid step sequences.
@@ -49,8 +49,8 @@ class TestPrecomputePipeline:
         assert "binary-search" in output_dirs
         assert "self-attention" in output_dirs
         assert "backpropagation" in output_dirs
-        assert len(output_dirs) == 17, (
-            f"Expected 17 algorithm directories, got {len(output_dirs)}: {output_dirs}"
+        assert len(output_dirs) == 22, (
+            f"Expected 22 algorithm directories, got {len(output_dirs)}: {output_dirs}"
         )
 
     def test_each_algorithm_has_default_steps(self, tmp_path: Path) -> None:

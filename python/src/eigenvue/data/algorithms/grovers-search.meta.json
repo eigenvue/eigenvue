@@ -1,0 +1,189 @@
+{
+  "id": "grovers-search",
+  "name": "Grover's Search Algorithm",
+  "category": "quantum",
+
+  "description": {
+    "short": "Find a needle in a haystack with quantum speedup — O(√N) instead of O(N).",
+    "long": "Grover's algorithm (1996) is a quantum search algorithm that finds a marked item in an unsorted database of N items using only O(√N) queries, achieving a quadratic speedup over classical linear search. The algorithm works by repeatedly applying two operators: (1) an Oracle that marks the target state by flipping its phase, and (2) a Diffusion operator (also called the Grover operator or 'inversion about the mean') that amplifies the probability amplitude of the marked state through constructive interference. Starting from a uniform superposition of all N = 2^n basis states, the algorithm applies R = ⌊π/4 × √(N/M)⌋ iterations (where M is the number of marked items) to rotate the state vector toward the target subspace. For the special case of 2 qubits and 1 target, a single iteration achieves P(target) = 1.0 exactly. Grover's algorithm is provably optimal — no quantum algorithm can search an unstructured database faster than O(√N)."
+  },
+
+  "complexity": {
+    "time": "O(√N)",
+    "space": "O(N) where N = 2^n",
+    "level": "advanced"
+  },
+
+  "visual": {
+    "layout": "amplitude-bars",
+    "theme": {
+      "primary": "#00ffc8",
+      "secondary": "#0e7c6b"
+    },
+    "components": {
+      "showAmplitudeBars": true,
+      "showProbabilityBars": true,
+      "highlightTargetStates": true,
+      "showIterationCounter": true
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "numQubits": {
+        "type": "integer",
+        "minimum": 2,
+        "maximum": 4,
+        "description": "Number of qubits (n). The search space has N = 2^n items."
+      },
+      "targets": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "A target state index (0 to 2^n − 1)."
+        },
+        "minItems": 1,
+        "description": "Array of target state indices to search for."
+      }
+    },
+    "defaults": {
+      "numQubits": 2,
+      "targets": [3]
+    },
+    "examples": [
+      {
+        "name": "2 qubits, target |11⟩",
+        "values": {
+          "numQubits": 2,
+          "targets": [3]
+        }
+      },
+      {
+        "name": "3 qubits, target |101⟩",
+        "values": {
+          "numQubits": 3,
+          "targets": [5]
+        }
+      },
+      {
+        "name": "2 qubits, 2 targets",
+        "values": {
+          "numQubits": 2,
+          "targets": [1, 3]
+        }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "// Grover's Search Algorithm\n1  INITIALIZE n qubits to |0...0⟩\n2  N ← 2^n, M ← number of targets\n3\n4  APPLY H to all qubits          // uniform superposition\n5  // Each state has amplitude 1/√N\n6\n7  R ← floor(π/4 × √(N/M))       // optimal iterations\n8  FOR iter ← 1 TO R:\n9    ORACLE: flip sign of target states\n10     ∀ target t: α_t ← −α_t\n11   DIFFUSION: reflect about mean\n12     mean ← (1/N) × Σ α_k\n13     ∀ k: α_k ← 2 × mean − α_k\n14\n15 MEASURE → target with high probability",
+      "python": "import math\n\ndef grovers_search(num_qubits: int, targets: list[int]) -> list[float]:\n    \"\"\"Grover's search algorithm simulation.\"\"\"\n    N = 1 << num_qubits\n    M = len(targets)\n    target_set = set(targets)\n\n    # Initialize uniform superposition\n    state = [1.0 / math.sqrt(N)] * N\n\n    # Optimal number of iterations\n    R = math.floor(math.pi / 4 * math.sqrt(N / M))\n\n    for _ in range(R):\n        # Oracle: negate target amplitudes\n        for t in target_set:\n            state[t] = -state[t]\n\n        # Diffusion: reflect about the mean\n        mean = sum(state) / N\n        state = [2 * mean - amp for amp in state]\n\n    # Measurement probabilities\n    probs = [amp ** 2 for amp in state]\n    return probs",
+      "javascript": "function groversSearch(numQubits, targets) {\n  const N = 1 << numQubits;\n  const M = targets.length;\n  const targetSet = new Set(targets);\n\n  // Initialize uniform superposition\n  const amp = 1 / Math.sqrt(N);\n  const state = Array(N).fill(amp);\n\n  // Optimal number of iterations\n  const R = Math.floor(Math.PI / 4 * Math.sqrt(N / M));\n\n  for (let iter = 0; iter < R; iter++) {\n    // Oracle: negate target amplitudes\n    for (const t of targetSet) {\n      state[t] = -state[t];\n    }\n\n    // Diffusion: reflect about the mean\n    const mean = state.reduce((s, a) => s + a, 0) / N;\n    for (let k = 0; k < N; k++) {\n      state[k] = 2 * mean - state[k];\n    }\n  }\n\n  // Measurement probabilities\n  return state.map(a => a * a);\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Oracle",
+        "description": "A quantum black-box operator that recognizes the target state(s) by flipping their phase: U_f|x⟩ = (−1)^{f(x)}|x⟩. The oracle encodes the search problem — it 'knows' which items are targets. Crucially, the oracle changes the phase but NOT the measurement probabilities."
+      },
+      {
+        "title": "Amplitude Amplification",
+        "description": "The core mechanism of Grover's algorithm. Each iteration consists of an oracle (phase flip) followed by diffusion (inversion about the mean). Together, they rotate the state vector in a 2D subspace toward the target states, increasing the target amplitude by approximately 2/√N per iteration."
+      },
+      {
+        "title": "Grover Diffusion Operator",
+        "description": "Also called 'inversion about the mean,' the diffusion operator reflects every amplitude about their average value: α'_k = 2⟨α⟩ − α_k. This transforms the negative amplitude (from the oracle) into constructive interference, boosting the target's probability while suppressing non-targets."
+      },
+      {
+        "title": "Quadratic Speedup",
+        "description": "Grover's algorithm finds a target in O(√N) queries, compared to O(N) for classical search. This is a quadratic speedup and is provably optimal for unstructured search — no quantum algorithm can do better. For N = 1,000,000 items, Grover's needs only ~785 iterations instead of up to 1,000,000 classical checks."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Overshooting (Too Many Iterations)",
+        "description": "If you apply too many Grover iterations, the state vector 'overshoots' the target and the success probability DECREASES. The algorithm is periodic with period ~π√(N/M)/2, so applying more iterations is not always better. You must stop at exactly R = ⌊π/4 × √(N/M)⌋ iterations."
+      },
+      {
+        "title": "Multiple Solutions Change Iteration Count",
+        "description": "When there are M > 1 target states, the optimal number of iterations drops to R = ⌊π/4 × √(N/M)⌋. With more targets, fewer iterations are needed. If M is unknown, quantum counting can estimate it first."
+      },
+      {
+        "title": "Precise Iteration Count Matters",
+        "description": "The success probability oscillates sinusoidally with the number of iterations. Even one extra iteration can significantly reduce the probability of finding the target. For 2 qubits with 1 target, exactly 1 iteration gives P = 1.0; 2 iterations would give P = 0."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "How many oracle calls does Grover's algorithm need to search N items?",
+        "options": ["O(N)", "O(N log N)", "O(√N)", "O(log N)"],
+        "correctIndex": 2,
+        "explanation": "Grover's algorithm achieves a quadratic speedup: it needs O(√N) oracle calls compared to O(N) for classical linear search. This is provably optimal for unstructured search."
+      },
+      {
+        "question": "After the oracle flips the target's phase, what happens to its measurement probability?",
+        "options": [
+          "It doubles",
+          "It drops to zero",
+          "It stays the same — only the phase changes",
+          "It becomes 1.0"
+        ],
+        "correctIndex": 2,
+        "explanation": "The oracle only flips the sign (phase) of the target amplitude: α → −α. Since probability is |α|², the sign change has no effect on probability. The magic happens in the NEXT step — the diffusion operator converts this phase difference into a probability difference."
+      },
+      {
+        "question": "What happens if you apply too many Grover iterations?",
+        "options": [
+          "The algorithm converges faster",
+          "The target probability stays at maximum",
+          "The target probability decreases (overshooting)",
+          "The quantum state collapses"
+        ],
+        "correctIndex": 2,
+        "explanation": "Grover's algorithm is periodic — the success probability oscillates sinusoidally. After the optimal number of iterations R ≈ π/4 × √(N/M), additional iterations rotate the state AWAY from the target, reducing the probability. Knowing when to stop is critical."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Grover's Algorithm — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Grover%27s_algorithm",
+        "type": "reference"
+      },
+      {
+        "title": "Qiskit Textbook: Grover's Algorithm",
+        "url": "https://qiskit.org/textbook/ch-algorithms/grover.html",
+        "type": "tutorial"
+      },
+      {
+        "title": "Original Paper: A Fast Quantum Mechanical Algorithm for Database Search (Grover, 1996)",
+        "url": "https://arxiv.org/abs/quant-ph/9605043",
+        "type": "paper"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "grover's algorithm visualization",
+      "quantum search algorithm",
+      "amplitude amplification",
+      "grover's search interactive",
+      "quantum computing search",
+      "oracle operator quantum",
+      "quantum speedup demonstration",
+      "grover diffusion operator",
+      "quantum unstructured search"
+    ],
+    "ogDescription": "Interactive visualization of Grover's quantum search algorithm. Watch amplitude amplification find a target in O(√N) steps through oracle phase flips and diffusion reflections."
+  },
+
+  "prerequisites": ["quantum-gates", "superposition-measurement"],
+  "related": ["superposition-measurement", "quantum-teleportation"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

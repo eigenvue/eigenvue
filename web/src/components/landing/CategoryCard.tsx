@@ -7,7 +7,7 @@
  * - Title, tagline, description
  * - Topic pills using category accent color
  * - Algorithm count badge
- * - "Coming Soon" overlay for unavailable categories (quantum in v1)
+ * - "Coming Soon" overlay for unavailable categories
  * - On hover: subtle lift (translateY), enhanced shadow with category glow
  *
  * The card is an <article> for semantic correctness.

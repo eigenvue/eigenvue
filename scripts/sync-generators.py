@@ -13,7 +13,7 @@ USAGE:
     python scripts/sync-generators.py --algorithm self-attention --tolerance 1e-6
 
 FLAGS:
-    --all               Sync all 17 algorithms.
+    --all               Sync all 22 algorithms.
     --algorithm ID      Sync only the specified algorithm.
     --tolerance FLOAT   Floating-point comparison tolerance (default: 1e-9).
     --strict            Fail on any mismatch (default behavior in CI).

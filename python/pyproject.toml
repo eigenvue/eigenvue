@@ -73,8 +73,8 @@ dev = [
 
 [project.urls]
 Homepage = "https://eigenvue.web.app/"
-Repository = "https://github.com/ashutoshm1771/eigenvue"
-"Bug Tracker" = "https://github.com/ashutoshm1771/eigenvue/issues"
+Repository = "https://github.com/eigenvue/eigenvue"
+"Bug Tracker" = "https://github.com/eigenvue/eigenvue/issues"
 
 # ── Build Configuration ──────────────────────────────────────────────────────
 

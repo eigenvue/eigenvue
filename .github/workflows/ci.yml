@@ -355,7 +355,7 @@ jobs:
 
       # -----------------------------------------------------------------------
       # GENERATOR SYNC: Runs BOTH TypeScript and Python generators for all
-      # 17 algorithms with all shared test fixture inputs. Compares:
+      # 22 algorithms with all shared test fixture inputs. Compares:
       #   - Step count (must be identical)
       #   - Step IDs (must be identical, in same order)
       #   - State values (must match within +-1e-9 float tolerance)

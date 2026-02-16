@@ -10,8 +10,7 @@
  * - Exactly one tab is active at a time (radio-button semantics).
  * - "All" shows algorithms from every category.
  * - Clicking an already-active tab does nothing (no toggle-off).
- * - "Quantum" tab is included but visually muted with a "Coming Soon" label
- *   (quantum has no algorithms in v1).
+ * - Tabs for unavailable categories are visually muted with a "Coming Soon" label.
  * - On mobile, the tab row scrolls horizontally when it overflows.
  *
  * ACCESSIBILITY:

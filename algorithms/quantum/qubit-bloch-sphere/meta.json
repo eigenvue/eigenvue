@@ -1,0 +1,192 @@
+{
+  "id": "qubit-bloch-sphere",
+  "name": "Qubit States & Bloch Sphere",
+  "category": "quantum",
+
+  "description": {
+    "short": "Visualize single-qubit states on the Bloch sphere interactively.",
+    "long": "A qubit is the quantum analog of a classical bit. While a classical bit is either 0 or 1, a qubit can exist in a superposition: |ψ⟩ = α₀|0⟩ + α₁|1⟩, where α₀ and α₁ are complex amplitudes satisfying |α₀|² + |α₁|² = 1. The Bloch sphere is a unit sphere where every point on the surface represents a valid single-qubit pure state. This visualization walks through fundamental qubit states (|0⟩, |1⟩, |+⟩, |−⟩) and shows how quantum gates rotate the state vector on the Bloch sphere."
+  },
+
+  "complexity": {
+    "time": "N/A (state representation)",
+    "space": "O(1) per qubit",
+    "level": "beginner"
+  },
+
+  "visual": {
+    "layout": "bloch-sphere",
+    "theme": {
+      "primary": "#00ffc8",
+      "secondary": "#0e7c6b"
+    },
+    "components": {
+      "sphereRadiusFraction": 0.35,
+      "showAmplitudeBars": true,
+      "showAxisLabels": true
+    }
+  },
+
+  "inputs": {
+    "schema": {
+      "stateSequence": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "label": { "type": "string", "description": "Human-readable label (e.g., \"|0⟩\", \"|+⟩\")" },
+            "amplitudes": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 4,
+              "maxItems": 4,
+              "description": "Flattened complex: [Re(α₀), Im(α₀), Re(α₁), Im(α₁)]"
+            },
+            "gate": { "type": "string", "description": "Optional gate name that produced this state" }
+          },
+          "required": ["label", "amplitudes"]
+        },
+        "minItems": 1,
+        "maxItems": 12,
+        "description": "Sequence of qubit states to visualize on the Bloch sphere."
+      }
+    },
+    "defaults": {
+      "stateSequence": [
+        { "label": "|0⟩", "amplitudes": [1, 0, 0, 0] },
+        { "label": "H|0⟩ = |+⟩", "amplitudes": [0.7071067811865476, 0, 0.7071067811865476, 0], "gate": "H" },
+        { "label": "S|+⟩ = |+i⟩", "amplitudes": [0.7071067811865476, 0, 0, 0.7071067811865476], "gate": "S" },
+        { "label": "H|+i⟩", "amplitudes": [0.5, 0.5, 0.5, -0.5], "gate": "H" },
+        { "label": "X|0⟩ = |1⟩", "amplitudes": [0, 0, 1, 0], "gate": "X" },
+        { "label": "H|1⟩ = |−⟩", "amplitudes": [0.7071067811865476, 0, -0.7071067811865476, 0], "gate": "H" }
+      ]
+    },
+    "examples": [
+      {
+        "name": "Standard states tour",
+        "values": {
+          "stateSequence": [
+            { "label": "|0⟩", "amplitudes": [1, 0, 0, 0] },
+            { "label": "H|0⟩ = |+⟩", "amplitudes": [0.7071067811865476, 0, 0.7071067811865476, 0], "gate": "H" },
+            { "label": "S|+⟩ = |+i⟩", "amplitudes": [0.7071067811865476, 0, 0, 0.7071067811865476], "gate": "S" },
+            { "label": "H|+i⟩", "amplitudes": [0.5, 0.5, 0.5, -0.5], "gate": "H" },
+            { "label": "X|0⟩ = |1⟩", "amplitudes": [0, 0, 1, 0], "gate": "X" },
+            { "label": "H|1⟩ = |−⟩", "amplitudes": [0.7071067811865476, 0, -0.7071067811865476, 0], "gate": "H" }
+          ]
+        }
+      },
+      {
+        "name": "Pauli gates from |0⟩",
+        "values": {
+          "stateSequence": [
+            { "label": "|0⟩", "amplitudes": [1, 0, 0, 0] },
+            { "label": "X|0⟩ = |1⟩", "amplitudes": [0, 0, 1, 0], "gate": "X" },
+            { "label": "Y|0⟩ = i|1⟩", "amplitudes": [0, 0, 0, 1], "gate": "Y" },
+            { "label": "Z|0⟩ = |0⟩", "amplitudes": [1, 0, 0, 0], "gate": "Z" }
+          ]
+        }
+      },
+      {
+        "name": "Rotation sequence",
+        "values": {
+          "stateSequence": [
+            { "label": "|0⟩", "amplitudes": [1, 0, 0, 0] },
+            { "label": "H|0⟩ = |+⟩", "amplitudes": [0.7071067811865476, 0, 0.7071067811865476, 0], "gate": "H" },
+            { "label": "T|+⟩", "amplitudes": [0.7071067811865476, 0, 0.5, 0.5], "gate": "T" }
+          ]
+        }
+      }
+    ]
+  },
+
+  "code": {
+    "implementations": {
+      "pseudocode": "// Qubit State Representation\n|ψ⟩ = α₀|0⟩ + α₁|1⟩\n\n// Constraint: |α₀|² + |α₁|² = 1\nP(|0⟩) = |α₀|²\nP(|1⟩) = |α₁|²\n\n// Bloch Sphere Coordinates\nθ = 2 × acos(|α₀|)\nφ = arg(α₁) − arg(α₀)\n\n// Cartesian (for rendering)\nx = sin(θ) × cos(φ)\ny = sin(θ) × sin(φ)\nz = cos(θ)",
+      "python": "import math\n\ndef qubit_state(alpha0: complex, alpha1: complex):\n    \"\"\"Represent a qubit state |ψ⟩ = α₀|0⟩ + α₁|1⟩\"\"\"\n    # Verify normalization\n    assert abs(abs(alpha0)**2 + abs(alpha1)**2 - 1.0) < 1e-9\n    return (alpha0, alpha1)\n\ndef bloch_angles(alpha0: complex, alpha1: complex):\n    \"\"\"Convert state to Bloch sphere angles (θ, φ)\"\"\"\n    theta = 2 * math.acos(min(1.0, abs(alpha0)))\n    if abs(alpha1) < 1e-10:\n        phi = 0\n    elif abs(alpha0) < 1e-10:\n        phi = math.atan2(alpha1.imag, alpha1.real)\n    else:\n        phi = math.atan2(alpha1.imag, alpha1.real) - math.atan2(alpha0.imag, alpha0.real)\n    return theta, phi % (2 * math.pi)",
+      "javascript": "// Qubit state: |ψ⟩ = α₀|0⟩ + α₁|1⟩\n// α₀, α₁ are complex numbers: [real, imaginary]\n\nfunction qubitState(alpha0, alpha1) {\n  // Verify normalization\n  const normSq = alpha0[0]**2 + alpha0[1]**2 + alpha1[0]**2 + alpha1[1]**2;\n  console.assert(Math.abs(normSq - 1.0) < 1e-9);\n  return [alpha0, alpha1];\n}\n\nfunction blochAngles(alpha0, alpha1) {\n  const theta = 2 * Math.acos(Math.min(1, Math.sqrt(alpha0[0]**2 + alpha0[1]**2)));\n  const phi = Math.atan2(alpha1[1], alpha1[0]) - Math.atan2(alpha0[1], alpha0[0]);\n  return { theta, phi: ((phi % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI) };\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Qubit",
+        "description": "The fundamental unit of quantum information, capable of existing in a superposition of |0⟩ and |1⟩."
+      },
+      {
+        "title": "Bloch Sphere",
+        "description": "A unit sphere where every point on the surface represents a valid single-qubit pure state. The north pole is |0⟩, the south pole is |1⟩, and the equator contains equal superpositions like |+⟩ and |−⟩."
+      },
+      {
+        "title": "Superposition",
+        "description": "A qubit in state α|0⟩ + β|1⟩ is in a superposition — it's not 'secretly' 0 or 1, but genuinely both until measured."
+      },
+      {
+        "title": "Measurement Probability",
+        "description": "When measured, the probability of getting |0⟩ is |α₀|² and |1⟩ is |α₁|², always summing to 1 (Born rule)."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Phase vs Probability",
+        "description": "Two states can have the same measurement probabilities but different phases (e.g., |+⟩ and |+i⟩ both give 50/50, but they differ on the Bloch sphere). Phase matters for interference."
+      },
+      {
+        "title": "Global Phase",
+        "description": "Multiplying a state by e^{iγ} doesn't change any observable — the Bloch sphere representation removes global phase."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "What is the probability of measuring |0⟩ for the state |+⟩ = (|0⟩ + |1⟩)/√2?",
+        "options": ["100%", "50%", "25%", "0%"],
+        "correctIndex": 1,
+        "explanation": "|α₀|² = |1/√2|² = 1/2 = 50%. The amplitudes are equal, so both outcomes are equally likely."
+      },
+      {
+        "question": "Where is the state |0⟩ located on the Bloch sphere?",
+        "options": ["North pole (top)", "South pole (bottom)", "On the equator", "At the center"],
+        "correctIndex": 0,
+        "explanation": "By convention, |0⟩ is at the north pole (z = +1) and |1⟩ is at the south pole (z = −1) of the Bloch sphere."
+      },
+      {
+        "question": "Can two different qubit states give identical measurement probabilities?",
+        "options": ["Yes — states can differ in phase", "No — probabilities uniquely determine the state", "Only if they are entangled", "Only for mixed states"],
+        "correctIndex": 0,
+        "explanation": "States like |+⟩ = (|0⟩+|1⟩)/√2 and |+i⟩ = (|0⟩+i|1⟩)/√2 both give 50/50 measurement probabilities, but they are different quantum states with different phases."
+      }
+    ],
+    "resources": [
+      {
+        "title": "Bloch Sphere — Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Bloch_sphere",
+        "type": "reference"
+      },
+      {
+        "title": "Qiskit Textbook: Single Qubit Gates",
+        "url": "https://qiskit.org/textbook/ch-states/single-qubit-gates.html",
+        "type": "tutorial"
+      }
+    ]
+  },
+
+  "seo": {
+    "keywords": [
+      "bloch sphere visualization",
+      "qubit state visualization",
+      "quantum computing basics",
+      "bloch sphere interactive",
+      "qubit superposition",
+      "quantum state representation",
+      "single qubit gates",
+      "quantum mechanics visualization"
+    ],
+    "ogDescription": "Interactive Bloch sphere visualization showing how single-qubit quantum states map to points on a sphere. Explore |0⟩, |1⟩, |+⟩, |−⟩ and watch quantum gates rotate the state."
+  },
+
+  "prerequisites": [],
+  "related": ["quantum-gates", "superposition-measurement"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}

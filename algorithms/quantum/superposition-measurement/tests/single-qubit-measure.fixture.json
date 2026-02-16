@@ -1,0 +1,29 @@
+{
+  "description": "Measure a single qubit in superposition |+⟩ — outcome predetermined as 0",
+  "inputs": {
+    "numQubits": 1,
+    "preparationGates": [
+      { "gate": "H", "qubits": [0] }
+    ],
+    "measurements": [
+      { "qubit": 0, "outcome": 0 }
+    ]
+  },
+  "expected": {
+    "terminalStepId": "measurement_result",
+    "keyStates": [
+      {
+        "stepId": "after_preparation",
+        "amplitudes": [[0.7071067811865476, 0], [0.7071067811865476, 0]],
+        "probabilities": [0.5, 0.5],
+        "comment": "H|0⟩ = (|0⟩ + |1⟩)/√2 — equal superposition"
+      },
+      {
+        "stepId": "after_measurement_0",
+        "amplitudes": [[1, 0], [0, 0]],
+        "measuredBits": [0],
+        "comment": "Collapse to |0⟩ with P=0.5"
+      }
+    ]
+  }
+}

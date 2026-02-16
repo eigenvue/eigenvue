@@ -45,9 +45,9 @@ describe("runner", () => {
       expect(() => steps("nonexistent")).toThrow(/nonexistent/);
     });
 
-    it("generates steps for all 17 algorithms with default inputs", () => {
+    it("generates steps for all 22 algorithms with default inputs", () => {
       const algorithms = list();
-      expect(algorithms).toHaveLength(17);
+      expect(algorithms).toHaveLength(22);
 
       for (const algo of algorithms) {
         const result = steps(algo.id);

@@ -11,9 +11,9 @@ from eigenvue.catalog import (
 
 
 class TestListAlgorithms:
-    def test_returns_17_algorithms(self) -> None:
+    def test_returns_22_algorithms(self) -> None:
         result = list_algorithms()
-        assert len(result) == 17
+        assert len(result) == 22
 
     def test_sorted_by_category_then_name(self) -> None:
         result = list_algorithms()

@@ -744,6 +744,184 @@ export interface ShowLayerNormAction extends VisualAction {
   readonly output: readonly number[];
 }
 
+// ── Quantum Actions ─────────────────────────────────────────────────────────
+
+/**
+ * A complex number represented as a 2-element tuple: [real, imaginary].
+ *
+ * CONVENTION:
+ *   complex(a, b) is stored as [a, b] and represents a + bi
+ *   where i = sqrt(-1).
+ */
+export type Complex = readonly [number, number];
+
+/**
+ * Apply a quantum gate to one or more qubits in a circuit diagram.
+ * The layout draws the gate symbol on the appropriate wire(s).
+ */
+export interface ApplyGateAction extends VisualAction {
+  readonly type: "applyGate";
+
+  /**
+   * Standard gate name. Must be one of the recognized gate identifiers:
+   *   Single-qubit: "X", "Y", "Z", "H", "S", "T", "Rz", "Rx", "Ry", "I"
+   *   Multi-qubit:  "CNOT", "CZ", "SWAP", "Toffoli" (CCNOT)
+   *   Measurement:  "M"
+   */
+  readonly gate: string;
+
+  /**
+   * 0-based indices of the target qubit(s).
+   * - Single-qubit gates: [targetQubit]
+   * - CNOT: [controlQubit, targetQubit]
+   * - Toffoli: [control1, control2, targetQubit]
+   * - SWAP: [qubit1, qubit2]
+   */
+  readonly qubits: readonly number[];
+
+  /**
+   * Optional rotation angle in radians for parameterized gates (Rx, Ry, Rz).
+   */
+  readonly angle?: number;
+}
+
+/**
+ * Display the full state vector of the quantum system.
+ * Each amplitude is a complex number. The number of amplitudes is 2^n
+ * where n is the number of qubits.
+ *
+ * MATHEMATICAL INVARIANT:
+ * Σ |amplitude_i|² = 1.0 within tolerance ±1e-9
+ */
+export interface ShowStateVectorAction extends VisualAction {
+  readonly type: "showStateVector";
+
+  /**
+   * Array of complex amplitudes in computational basis order (big-endian).
+   * For n qubits, this array has 2^n elements.
+   */
+  readonly amplitudes: readonly Complex[];
+
+  /** Number of qubits in the system. Must satisfy: amplitudes.length === 2 ** numQubits. */
+  readonly numQubits: number;
+}
+
+/**
+ * Show a point on the Bloch sphere representing a single-qubit pure state.
+ *
+ * MATHEMATICAL DEFINITION:
+ *   |ψ⟩ = cos(θ/2)|0⟩ + e^{iφ}sin(θ/2)|1⟩
+ *
+ * Bloch vector coordinates:
+ *   x = sin(θ) × cos(φ), y = sin(θ) × sin(φ), z = cos(θ)
+ */
+export interface RotateBlochSphereAction extends VisualAction {
+  readonly type: "rotateBlochSphere";
+
+  /** Polar angle θ (theta) in radians, range [0, π]. */
+  readonly theta: number;
+
+  /** Azimuthal angle φ (phi) in radians, range [0, 2π). */
+  readonly phi: number;
+
+  /** Optional label for the state (e.g., "|ψ⟩", "|+⟩"). */
+  readonly label?: string;
+}
+
+/**
+ * Show measurement probabilities for each computational basis state.
+ *
+ * MATHEMATICAL INVARIANT:
+ * Σ probabilities[i] = 1.0 within tolerance ±1e-9
+ */
+export interface ShowProbabilitiesAction extends VisualAction {
+  readonly type: "showProbabilities";
+
+  /** Probability of measuring each basis state. Each value is |amplitude_i|². */
+  readonly probabilities: readonly number[];
+
+  /** Labels for each basis state (e.g., ["|00⟩", "|01⟩", "|10⟩", "|11⟩"]). */
+  readonly labels: readonly string[];
+}
+
+/**
+ * Collapse the quantum state by performing a measurement.
+ */
+export interface CollapseStateAction extends VisualAction {
+  readonly type: "collapseState";
+
+  /** 0-based index of the qubit being measured. */
+  readonly qubit: number;
+
+  /** The measurement outcome: 0 or 1. */
+  readonly result: 0 | 1;
+
+  /** Probability that this specific outcome would occur. */
+  readonly probability: number;
+}
+
+/**
+ * Show entanglement between two qubits with a visual connection.
+ */
+export interface ShowEntanglementAction extends VisualAction {
+  readonly type: "showEntanglement";
+
+  /** 0-based index of the first entangled qubit. */
+  readonly qubit1: number;
+
+  /** 0-based index of the second entangled qubit. */
+  readonly qubit2: number;
+
+  /** Type of entangled state for educational labeling. */
+  readonly bellState?:
+    | "bell-phi-plus"
+    | "bell-phi-minus"
+    | "bell-psi-plus"
+    | "bell-psi-minus"
+    | "other";
+}
+
+/**
+ * Highlight a specific qubit wire in the circuit diagram.
+ */
+export interface HighlightQubitWireAction extends VisualAction {
+  readonly type: "highlightQubitWire";
+
+  /** 0-based index of the qubit wire to highlight. */
+  readonly qubitIndex: number;
+
+  /** Highlight color. @default "#00ffc8" (quantum accent) */
+  readonly color?: string;
+}
+
+/**
+ * Show classical bits resulting from measurement, displayed below the circuit.
+ */
+export interface ShowClassicalBitsAction extends VisualAction {
+  readonly type: "showClassicalBits";
+
+  /** Array of classical bit values. Each is 0, 1, or null (unmeasured). */
+  readonly bits: readonly (0 | 1 | null)[];
+}
+
+/**
+ * Show the unitary matrix of a gate being applied.
+ */
+export interface ShowGateMatrixAction extends VisualAction {
+  readonly type: "showGateMatrix";
+
+  /** Gate identifier (e.g., "H", "CNOT"). */
+  readonly gate: string;
+
+  /**
+   * The unitary matrix as a 2D array of complex numbers.
+   *
+   * MATHEMATICAL INVARIANT (unitarity):
+   *   U × U† = I  (within tolerance ±1e-9 per element)
+   */
+  readonly matrix: readonly (readonly Complex[])[];
+}
+
 // ── Union of All Known Action Types ──────────────────────────────────────────
 
 /**
@@ -800,7 +978,17 @@ export type KnownVisualAction =
   | ShowLandscapePositionAction
   | ShowDescentStepAction
   | ShowTrajectoryAction
-  | ShowMomentumAction;
+  | ShowMomentumAction
+  // Phase 14 additions — Quantum:
+  | ApplyGateAction
+  | ShowStateVectorAction
+  | RotateBlochSphereAction
+  | ShowProbabilitiesAction
+  | CollapseStateAction
+  | ShowEntanglementAction
+  | HighlightQubitWireAction
+  | ShowClassicalBitsAction
+  | ShowGateMatrixAction;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STEP

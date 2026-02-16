@@ -63,7 +63,7 @@ export function HeroSection() {
               <Button
                 variant="secondary"
                 size="lg"
-                href="https://github.com/ashutoshm1771/eigenvue"
+                href="https://github.com/eigenvue/eigenvue"
                 target="_blank"
                 rel="noopener noreferrer"
               >

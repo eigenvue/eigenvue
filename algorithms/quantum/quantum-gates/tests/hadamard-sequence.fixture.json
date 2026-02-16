@@ -1,0 +1,25 @@
+{
+  "description": "Double Hadamard returns to original state — H² = I",
+  "inputs": {
+    "numQubits": 1,
+    "gates": [
+      { "gate": "H", "qubits": [0] },
+      { "gate": "H", "qubits": [0] }
+    ]
+  },
+  "expected": {
+    "terminalStepId": "apply_gate_1",
+    "keyStates": [
+      {
+        "stepId": "apply_gate_0",
+        "amplitudes": [[0.7071067811865476, 0], [0.7071067811865476, 0]],
+        "comment": "H|0⟩ = |+⟩"
+      },
+      {
+        "stepId": "apply_gate_1",
+        "amplitudes": [[1, 0], [0, 0]],
+        "comment": "H(H|0⟩) = |0⟩ since H² = I"
+      }
+    ]
+  }
+}

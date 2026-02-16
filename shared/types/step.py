@@ -27,6 +27,39 @@ from dataclasses import dataclass, field, asdict
 from typing import Any, Literal
 
 # ─────────────────────────────────────────────────────────────────────────────
+# COMPLEX NUMBER TYPE (Phase 14 — Quantum)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# A complex number is represented as a tuple of (real, imaginary).
+# This matches the TypeScript Complex type: [number, number].
+# PARITY CRITICAL: Both languages use [real, imaginary] tuples.
+Complex = tuple[float, float]
+"""Complex number as (real, imaginary) tuple, matching TypeScript [number, number]."""
+
+# ─────────────────────────────────────────────────────────────────────────────
+# QUANTUM VISUAL ACTION TYPES (Phase 14)
+# ─────────────────────────────────────────────────────────────────────────────
+# Quantum visual actions use the existing VisualAction(type=..., params={...})
+# pattern. The type strings are camelCase for JSON wire format parity:
+#
+#   "applyGate"          — Apply a quantum gate. params: gate, qubits, angle?
+#   "showStateVector"    — Show state vector. params: amplitudes, numQubits
+#   "rotateBlochSphere"  — Show Bloch sphere point. params: theta, phi, label?
+#   "showProbabilities"  — Show probabilities. params: probabilities, labels
+#   "collapseState"      — Collapse on measurement. params: qubit, result, probability
+#   "showEntanglement"   — Show entanglement. params: qubit1, qubit2, bellState?
+#   "highlightQubitWire" — Highlight wire. params: qubitIndex, color?
+#   "showClassicalBits"  — Show classical bits. params: bits
+#   "showGateMatrix"     — Show gate matrix. params: gate, matrix
+#
+# Example usage in Python generators:
+#   VisualAction(type="applyGate", params={"gate": "H", "qubits": [0]})
+#   VisualAction(type="showStateVector", params={
+#       "amplitudes": [[0.707, 0.0], [0.707, 0.0]],
+#       "numQubits": 1,
+#   })
+
+# ─────────────────────────────────────────────────────────────────────────────
 # STEP FORMAT VERSION
 # ─────────────────────────────────────────────────────────────────────────────
 

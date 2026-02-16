@@ -296,6 +296,64 @@ const ALGORITHM_REGISTRY: Record<string, RegistryEntry> = {
       ),
     precomputed: null,
   },
+
+  // ── Phase 14: Quantum Computing Algorithms ──────────────────────────────────
+
+  "qubit-bloch-sphere": {
+    meta: () =>
+      import("@/../../algorithms/quantum/qubit-bloch-sphere/meta.json").then(
+        (m) => m.default as AlgorithmMeta,
+      ),
+    generator: () =>
+      import("@/../../algorithms/quantum/qubit-bloch-sphere/generator").then(
+        (m) => m.default as GeneratorDefinition<Record<string, unknown>>,
+      ),
+    precomputed: null,
+  },
+  "quantum-gates": {
+    meta: () =>
+      import("@/../../algorithms/quantum/quantum-gates/meta.json").then(
+        (m) => m.default as AlgorithmMeta,
+      ),
+    generator: () =>
+      import("@/../../algorithms/quantum/quantum-gates/generator").then(
+        (m) => m.default as GeneratorDefinition<Record<string, unknown>>,
+      ),
+    precomputed: null,
+  },
+  "superposition-measurement": {
+    meta: () =>
+      import("@/../../algorithms/quantum/superposition-measurement/meta.json").then(
+        (m) => m.default as AlgorithmMeta,
+      ),
+    generator: () =>
+      import("@/../../algorithms/quantum/superposition-measurement/generator").then(
+        (m) => m.default as GeneratorDefinition<Record<string, unknown>>,
+      ),
+    precomputed: null,
+  },
+  "grovers-search": {
+    meta: () =>
+      import("@/../../algorithms/quantum/grovers-search/meta.json").then(
+        (m) => m.default as AlgorithmMeta,
+      ),
+    generator: () =>
+      import("@/../../algorithms/quantum/grovers-search/generator").then(
+        (m) => m.default as GeneratorDefinition<Record<string, unknown>>,
+      ),
+    precomputed: null,
+  },
+  "quantum-teleportation": {
+    meta: () =>
+      import("@/../../algorithms/quantum/quantum-teleportation/meta.json").then(
+        (m) => m.default as AlgorithmMeta,
+      ),
+    generator: () =>
+      import("@/../../algorithms/quantum/quantum-teleportation/generator").then(
+        (m) => m.default as GeneratorDefinition<Record<string, unknown>>,
+      ),
+    precomputed: null,
+  },
 };
 
 // ─── Public API ──────────────────────────────────────────────────────────────

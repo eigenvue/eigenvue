@@ -38,6 +38,13 @@ import backpropagationGenerator from "@/algorithms/deep-learning/backpropagation
 import convolutionGenerator from "@/algorithms/deep-learning/convolution/generator";
 import gradientDescentGenerator from "@/algorithms/deep-learning/gradient-descent/generator";
 
+// Quantum
+import qubitBlochSphereGenerator from "@/algorithms/quantum/qubit-bloch-sphere/generator";
+import quantumGatesGenerator from "@/algorithms/quantum/quantum-gates/generator";
+import superpositionMeasurementGenerator from "@/algorithms/quantum/superposition-measurement/generator";
+import groversSearchGenerator from "@/algorithms/quantum/grovers-search/generator";
+import quantumTeleportationGenerator from "@/algorithms/quantum/quantum-teleportation/generator";
+
 // ── Registry Map ─────────────────────────────────────────────────────────────
 
 // Each generator has its own specific input type (e.g., BinarySearchInputs,
@@ -68,6 +75,12 @@ const REGISTRY: ReadonlyMap<string, AnyGenerator> = new Map<string, AnyGenerator
   ["backpropagation", backpropagationGenerator as AnyGenerator],
   ["convolution", convolutionGenerator as AnyGenerator],
   ["gradient-descent", gradientDescentGenerator as AnyGenerator],
+  // Quantum
+  ["qubit-bloch-sphere", qubitBlochSphereGenerator as AnyGenerator],
+  ["quantum-gates", quantumGatesGenerator as AnyGenerator],
+  ["superposition-measurement", superpositionMeasurementGenerator as AnyGenerator],
+  ["grovers-search", groversSearchGenerator as AnyGenerator],
+  ["quantum-teleportation", quantumTeleportationGenerator as AnyGenerator],
 ]);
 
 /**

@@ -1,4 +1,4 @@
-"""Tests for all 17 algorithm generators.
+"""Tests for all 22 algorithm generators.
 
 Every generator must:
 1. Run without error using default inputs from meta.json.

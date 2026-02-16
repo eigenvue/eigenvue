@@ -23,3 +23,8 @@ import "./neuron-diagram";
 import "./layer-network";
 import "./convolution-grid";
 import "./loss-landscape";
+
+// Phase 14: Quantum layouts.
+import "./amplitude-bars";
+import "./circuit-wires";
+import "./bloch-sphere";
