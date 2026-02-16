@@ -72,7 +72,7 @@ export default createGenerator<DijkstraInputs>({
       state: {
         nodes,
         edges,
-        visited: [...visited],
+        visited: Array.from(visited).sort(),
         distances: { ...distDisplay },
         dataStructure: {
           type: "priority-queue",
@@ -111,7 +111,7 @@ export default createGenerator<DijkstraInputs>({
         state: {
           nodes,
           edges,
-          visited: [...visited],
+          visited: Array.from(visited).sort(),
           distances: { ...distDisplay },
           current: u,
           dataStructure: {
@@ -122,7 +122,7 @@ export default createGenerator<DijkstraInputs>({
         },
         visualActions: [
           { type: "setCurrentNode", nodeId: u },
-          ...([...visited].map((id) => ({
+          ...(Array.from(visited).sort().map((id) => ({
             type: "visitNode" as const,
             nodeId: id,
             color: id === startNode ? "start" : "visited",
@@ -154,7 +154,7 @@ export default createGenerator<DijkstraInputs>({
           state: {
             nodes,
             edges,
-            visited: [...visited],
+            visited: Array.from(visited).sort(),
             distances: { ...distDisplay },
             path,
             predecessors: { ...predecessor },
@@ -198,7 +198,7 @@ export default createGenerator<DijkstraInputs>({
           state: {
             nodes,
             edges,
-            visited: [...visited],
+            visited: Array.from(visited).sort(),
             distances: { ...distDisplay },
             current: u,
             relaxing: { from: u, to: v, weight, newDist },
@@ -206,7 +206,7 @@ export default createGenerator<DijkstraInputs>({
           visualActions: [
             { type: "setCurrentNode", nodeId: u },
             { type: "highlightEdge", from: u, to: v, color: improved ? "highlight" : "default" },
-            ...([...visited].map((id) => ({
+            ...(Array.from(visited).sort().map((id) => ({
               type: "visitNode" as const,
               nodeId: id,
               color: id === startNode ? "start" : "visited",
@@ -235,7 +235,7 @@ export default createGenerator<DijkstraInputs>({
             state: {
               nodes,
               edges,
-              visited: [...visited],
+              visited: Array.from(visited).sort(),
               distances: { ...distDisplay },
               current: u,
               dataStructure: {
@@ -248,7 +248,7 @@ export default createGenerator<DijkstraInputs>({
               { type: "setCurrentNode", nodeId: u },
               { type: "updateDistance", nodeId: v, value: newDist },
               { type: "highlightEdge", from: u, to: v, color: "highlight" },
-              ...([...visited].map((id) => ({
+              ...(Array.from(visited).sort().map((id) => ({
                 type: "visitNode" as const,
                 nodeId: id,
                 color: id === startNode ? "start" : "visited",
@@ -276,11 +276,11 @@ export default createGenerator<DijkstraInputs>({
         state: {
           nodes,
           edges,
-          visited: [...visited],
+          visited: Array.from(visited).sort(),
           distances: { ...distDisplay },
         },
         visualActions: [
-          ...([...visited].map((id) => ({
+          ...(Array.from(visited).sort().map((id) => ({
             type: "visitNode" as const,
             nodeId: id,
             color: id === startNode ? "start" : "visited",
@@ -305,12 +305,12 @@ export default createGenerator<DijkstraInputs>({
         state: {
           nodes,
           edges,
-          visited: [...visited],
+          visited: Array.from(visited).sort(),
           distances: { ...distDisplay },
           predecessors: { ...predecessor },
         },
         visualActions: [
-          ...([...visited].map((id) => ({
+          ...(Array.from(visited).sort().map((id) => ({
             type: "visitNode" as const,
             nodeId: id,
             color: id === startNode ? "start" : "visited",
