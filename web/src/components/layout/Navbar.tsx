@@ -25,6 +25,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 /** Navigation items — single source of truth for both desktop and mobile. */
 const NAV_ITEMS = [
   { label: "Algorithms", href: "/algorithms" },
+  { label: "Editor", href: "/editor", badge: "New" as const },
   { label: "Docs", href: "/docs" },
   { label: "About", href: "/about" },
   { label: "Contribute", href: "/contribute" },
@@ -98,9 +99,14 @@ export function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition-colors duration-fast hover:bg-background-hover hover:text-text-primary"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition-colors duration-fast hover:bg-background-hover hover:text-text-primary"
               >
                 {item.label}
+                {"badge" in item && item.badge && (
+                  <span className="bg-gradient-to-r from-purple-500 to-cyan-500 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full leading-none">
+                    {item.badge}
+                  </span>
+                )}
               </Link>
             ))}
           </div>

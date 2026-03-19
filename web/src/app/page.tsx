@@ -9,8 +9,9 @@
  * 2. Stats Strip (key metrics)
  * 3. Category Cards (four domains)
  * 4. Features (platform capabilities)
- * 5. Code Teaser (Python package)
- * 6. CTA (final call to action)
+ * 5. Editor Teaser (custom algorithm editor)
+ * 6. Code Teaser (Python package)
+ * 7. CTA (final call to action)
  *
  * The Navbar and Footer are rendered by the root layout (layout.tsx),
  * not by this page. The Starfield is also in the root layout.
@@ -20,6 +21,7 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { StatsStrip } from "@/components/landing/StatsStrip";
 import { CategoryCardsSection } from "@/components/landing/CategoryCardsSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { EditorTeaser } from "@/components/landing/EditorTeaser";
 import { CodeTeaser } from "@/components/landing/CodeTeaser";
 import { CTASection } from "@/components/landing/CTASection";
 
@@ -30,6 +32,7 @@ export default function LandingPage() {
       <StatsStrip />
       <CategoryCardsSection />
       <FeaturesSection />
+      <EditorTeaser />
       <CodeTeaser />
       <CTASection />
     </>

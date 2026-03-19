@@ -62,6 +62,40 @@ const nextConfig: NextConfig = {
           },
         },
       };
+
+      /**
+       * Monaco Editor Webpack Configuration
+       *
+       * Monaco uses web workers for language services. The monaco-editor-webpack-plugin
+       * handles bundling these workers correctly for Next.js.
+       *
+       * Only the JavaScript language service is enabled. Other languages
+       * (TypeScript, CSS, HTML, etc.) are NOT needed and would bloat the bundle.
+       */
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
+      config.plugins.push(
+        new MonacoWebpackPlugin({
+          languages: ["javascript"],
+          features: [
+            "bracketMatching",
+            "clipboard",
+            "contextmenu",
+            "find",
+            "folding",
+            "hover",
+            "indentation",
+            "lineSelection",
+            "links",
+            "multicursor",
+            "parameterHints",
+            "smartSelect",
+            "suggest",
+            "wordHighlighter",
+          ],
+          filename: "static/[name].worker.js",
+        }),
+      );
     }
     return config;
   },

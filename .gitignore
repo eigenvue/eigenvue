@@ -49,6 +49,9 @@ paper.md
 paper.bib
 CITATION.cff
 
+# Astro build output
+docs/.astro/
+
 # Dev tools
 .claude/
 

@@ -1,0 +1,139 @@
+---
+title: Custom Algorithms
+description: Write your own algorithm visualizations using the Eigenvue editor.
+---
+
+# Custom Algorithms
+
+The Eigenvue editor lets you write JavaScript code that produces step-by-step algorithm visualizations. Your code runs in a secure sandbox and uses the same rendering engine behind all 22 built-in algorithms.
+
+## Getting Started
+
+1. Navigate to [/editor](/editor).
+2. You'll see the **Blank Template** loaded with a single "Hello, Eigenvue!" step.
+3. Click **Run** (or press `Ctrl+Enter`) to execute the code.
+4. The visualization appears on the right panel with playback controls.
+
+## The `step()` Function
+
+Every call to `step()` creates one frame in your visualization:
+
+```javascript
+step({
+  title: "Step Title",
+  explanation: "What is happening in this step.",
+  state: { array: [...myArray], target },
+  visualActions: [
+    { type: "highlightElement", index: 3, color: "accent" },
+  ],
+  isTerminal: false, // Set true on the LAST step
+});
+```
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `title` | `string` | Yes | Short heading (≤ 200 characters) |
+| `explanation` | `string` | Yes | Plain-language narration |
+| `state` | `object` | Yes | Snapshot of algorithm variables (must be JSON-serializable) |
+| `visualActions` | `array` | Yes | Rendering instructions for the selected layout |
+| `isTerminal` | `boolean` | No | Set `true` on your final step (default: `false`) |
+| `phase` | `string` | No | Optional grouping label (e.g., "initialization") |
+
+### Important Rules
+
+- **Always copy mutable data** in your state:
+  - Good: `state: { array: [...myArray] }`
+  - Bad: `state: { array: myArray }` (shares reference)
+- **Mark your last step** with `isTerminal: true`
+- **State must be JSON-serializable** — no functions, circular references, or `undefined` values
+
+## Choosing a Layout
+
+Click the **Layout** selector in the toolbar to choose from 13 layouts:
+
+### Classical
+- **Array with Pointers** — horizontal array with movable pointers
+- **Array Comparison** — array with swap animations
+- **Graph Network** — nodes and edges
+
+### Deep Learning
+- **Neuron Diagram** — single neuron internals
+- **Layer Network** — multi-layer neural network
+- **Convolution Grid** — sliding kernel on a grid
+- **Loss Landscape** — optimization trajectory
+
+### Generative AI
+- **Token Sequence** — token row with attention arcs
+- **Attention Heatmap** — attention weight matrix
+- **Layer Diagram** — sublayer data flow
+
+### Quantum
+- **Bloch Sphere** — qubit state visualization
+- **Circuit Wires** — quantum gate circuit
+- **Amplitude Bars** — state vector bar chart
+
+Each layout responds to specific visual action types. Unrecognized actions are silently ignored.
+
+## The `utils` Object
+
+Utility functions are available via the `utils` argument:
+
+```javascript
+// Deep copy a value
+const copy = utils.deepClone(myObject);
+
+// Generate a range of numbers
+const nums = utils.range(0, 10);       // [0, 1, 2, ..., 9]
+const odds = utils.range(1, 20, 2);    // [1, 3, 5, ..., 19]
+
+// Create a matrix
+const grid = utils.createMatrix(3, 4, 0); // 3×4 matrix of zeros
+
+// Deterministic shuffle
+utils.shuffle(myArray, 42);  // Same seed → same result
+
+// Random integer
+const n = utils.randomInt(1, 100, 42);
+
+// Format numbers
+utils.formatNumber(3.14159, 2);  // "3.14"
+```
+
+## Templates
+
+Click **Templates** in the toolbar to browse 6 starter templates:
+
+1. **Blank Template** — minimal starting point
+2. **Linear Search** — array scanning with pointers
+3. **Bubble Sort** — comparison-based sorting
+4. **BFS Traversal** — graph exploration
+5. **Forward Pass** — neural network signal propagation
+6. **Simple Attention** — self-attention weight computation
+
+Templates are starting points — modify them freely!
+
+## Sharing
+
+Click **Share** to copy a URL that encodes your code and layout. Anyone opening the URL will see your exact editor state. Large code is automatically compressed.
+
+## Error Handling
+
+When your code fails, the **Error Panel** shows:
+- **Error type** (Syntax, Runtime, Timeout, Validation)
+- **Error message** with the relevant line number
+- **Suggestion** for how to fix the issue
+
+Common errors:
+- **Timeout** — your code runs for more than 5 seconds (check for infinite loops)
+- **Step limit exceeded** — more than 500 `step()` calls (reduce input size)
+- **Missing `isTerminal`** — your last step needs `isTerminal: true`
+
+## Limitations
+
+- **5-second timeout** — code must complete within 5 seconds
+- **500 step limit** — maximum number of `step()` calls
+- **1 MB state limit** — per-step state size limit
+- **No network access** — `fetch`, `XMLHttpRequest`, `WebSocket`, etc. are blocked
+- **No DOM access** — `document`, `window`, and `navigator` are not available

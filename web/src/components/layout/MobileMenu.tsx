@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/Button";
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  items: ReadonlyArray<{ label: string; href: string }>;
+  items: ReadonlyArray<{ label: string; href: string; badge?: string }>;
 }
 
 export function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) {
@@ -74,9 +74,14 @@ export function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) {
               key={item.href}
               href={item.href}
               onClick={onClose}
-              className="rounded-lg px-4 py-3 text-base font-medium text-text-secondary transition-colors duration-fast hover:bg-background-hover hover:text-text-primary"
+              className="flex items-center gap-2 rounded-lg px-4 py-3 text-base font-medium text-text-secondary transition-colors duration-fast hover:bg-background-hover hover:text-text-primary"
             >
               {item.label}
+              {item.badge && (
+                <span className="bg-gradient-to-r from-purple-500 to-cyan-500 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full leading-none">
+                  {item.badge}
+                </span>
+              )}
             </Link>
           ))}
           <div className="mt-4 border-t border-border pt-4">

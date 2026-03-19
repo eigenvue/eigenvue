@@ -1,0 +1,214 @@
+---
+title: Editor API Reference
+description: Complete API reference for the Eigenvue custom algorithm editor.
+---
+
+# Editor API Reference
+
+Technical reference for the sandbox API available to custom algorithms in the Eigenvue editor.
+
+## `step(input)`
+
+Creates a visualization step. Each call adds one frame to the animation.
+
+```typescript
+step(input: UserStepInput): void
+```
+
+### `UserStepInput`
+
+| Field | Type | Required | Constraints |
+|-------|------|----------|-------------|
+| `title` | `string` | Yes | Non-empty, ≤ 200 characters |
+| `explanation` | `string` | Yes | Any string |
+| `state` | `Record<string, unknown>` | Yes | Must be JSON-serializable, ≤ 1 MB per step |
+| `visualActions` | `VisualAction[]` | Yes | Array of objects, each with a string `type` property |
+| `isTerminal` | `boolean` | No | Default: `false`. Must be `true` on the last step |
+| `phase` | `string` | No | Optional grouping label |
+
+### Throws
+
+- `"Step limit exceeded"` — more than 500 `step()` calls (configurable)
+- `"title must be a non-empty string"` — empty title
+- `"title exceeds 200 characters"` — title too long
+- `"explanation must be a string"` — non-string explanation
+- `"state is not JSON-serializable"` — state contains functions, circular refs, etc.
+- `"state size exceeds limit"` — serialized state > 1 MB
+- `"visualActions must be an array"` — non-array visual actions
+- `"must be an object with a string type property"` — malformed visual action
+
+## `utils.deepClone(value)`
+
+Create a deep copy of a JSON-serializable value via `JSON.parse(JSON.stringify(value))`.
+
+```typescript
+utils.deepClone<T>(value: T): T
+```
+
+**Throws** if the value is not JSON-serializable (functions, circular references).
+
+## `utils.range(start, end, step?)`
+
+Generate an array of sequential numbers.
+
+```typescript
+utils.range(start: number, end: number, step?: number): number[]
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `start` | — | First value (inclusive) |
+| `end` | — | Last value (exclusive) |
+| `step` | `1` | Increment between values |
+
+**Examples:**
+```javascript
+utils.range(0, 5)        // [0, 1, 2, 3, 4]
+utils.range(2, 10, 3)    // [2, 5, 8]
+utils.range(5, 0, -1)    // [5, 4, 3, 2, 1]
+```
+
+**Throws** if `step` is 0. Safety limit: 100,000 elements.
+
+## `utils.createMatrix(rows, cols, fill?)`
+
+Create a 2D array with specified dimensions.
+
+```typescript
+utils.createMatrix<T>(rows: number, cols: number, fill?: T): T[][]
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `rows` | — | Number of rows |
+| `cols` | — | Number of columns |
+| `fill` | `0` | Initial value for every cell |
+
+**Invariant:** Each row is an independent array (no shared references).
+
+## `utils.shuffle(array, seed?)`
+
+Shuffle an array in place using the Fisher-Yates algorithm with a seeded PRNG.
+
+```typescript
+utils.shuffle<T>(array: T[], seed?: number): T[]
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `array` | — | The array to shuffle (mutated in place) |
+| `seed` | `42` | Integer seed for the PRNG |
+
+**Determinism guarantee:** Same seed + same input → same output.
+
+## `utils.randomInt(min, max, seed?)`
+
+Generate a deterministic random integer.
+
+```typescript
+utils.randomInt(min: number, max: number, seed?: number): number
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `min` | — | Minimum value (inclusive) |
+| `max` | — | Maximum value (inclusive) |
+| `seed` | `42` | Integer seed for the PRNG |
+
+**Invariant:** `min ≤ result ≤ max`. Same seed → same result.
+
+## `utils.formatNumber(value, decimals?)`
+
+Format a number with fixed decimal places.
+
+```typescript
+utils.formatNumber(value: number, decimals?: number): string
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `value` | — | The number to format |
+| `decimals` | `2` | Number of decimal places |
+
+## `console`
+
+A captured console is available. Logs are collected (not sent to the browser console).
+
+```typescript
+console.log(...args: unknown[]): void
+console.warn(...args: unknown[]): void
+console.error(...args: unknown[]): void
+console.info(...args: unknown[]): void
+```
+
+## Visual Action Reference
+
+Actions by layout. Unrecognized actions are silently ignored.
+
+### Array with Pointers (`array-with-pointers`)
+
+| Action | Properties |
+|--------|-----------|
+| `highlightElement` | `index`, `color?` |
+| `movePointer` | `id`, `to` |
+| `highlightRange` | `from`, `to`, `color?` |
+| `dimRange` | `from`, `to` |
+| `markFound` | `index` |
+| `markNotFound` | — |
+| `showMessage` | `text`, `messageType?` |
+
+### Array Comparison (`array-comparison`)
+
+| Action | Properties |
+|--------|-----------|
+| `highlightElement` | `index`, `color?` |
+| `compareElements` | `i`, `j`, `result` |
+| `swapElements` | `i`, `j` |
+| `highlightRange` | `from`, `to` |
+| `dimRange` | `from`, `to` |
+| `showMessage` | `text`, `messageType?` |
+
+### Graph Network (`graph-network`)
+
+| Action | Properties |
+|--------|-----------|
+| `visitNode` | `nodeId`, `color?` |
+| `highlightEdge` | `from`, `to`, `color?` |
+| `updateNodeValue` | `nodeId`, `value` |
+| `showMessage` | `text`, `messageType?` |
+
+### Layer Network (`layer-network`)
+
+| Action | Properties |
+|--------|-----------|
+| `activateNeuron` | `layer`, `index`, `value` |
+| `propagateSignal` | `fromLayer`, `toLayer` |
+| `showGradient` | `layer`, `values` |
+| `showMessage` | `text`, `messageType?` |
+
+### Attention Heatmap (`attention-heatmap`)
+
+| Action | Properties |
+|--------|-----------|
+| `highlightToken` | `index`, `color?` |
+| `showAttentionWeights` | `queryIdx`, `weights` |
+| `showMessage` | `text`, `messageType?` |
+
+### Circuit Wires (`circuit-wires`)
+
+| Action | Properties |
+|--------|-----------|
+| `applyGate` | gate details |
+| `showStateVector` | state vector data |
+| `collapseState` | collapse details |
+| `showMessage` | `text`, `messageType?` |
+
+## Sandbox Limits
+
+| Limit | Default | Description |
+|-------|---------|-------------|
+| Execution timeout | 5,000 ms | Maximum wall-clock time |
+| Step count | 500 | Maximum `step()` calls |
+| State size (per step) | 1 MB | Maximum serialized state |
+| Total payload | 10 MB | Total size of all steps |
+| Blocked APIs | — | `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`, `BroadcastChannel`, `importScripts`, `indexedDB`, `caches`, `navigator`, `RTCPeerConnection`, `RTCDataChannel` |
