@@ -42,7 +42,7 @@ export function InstallBadge({ command, packageName, prompt = "$" }: InstallBadg
     >
       <span className="text-text-tertiary select-none">{prompt}</span>
       <span className="text-text-primary">{command}</span>
-      <span className="gradient-text font-semibold">{packageName}</span>
+      <span className="accent-text font-semibold">{packageName}</span>
       {/* Copy icon / check icon */}
       <span className="ml-1 text-text-tertiary transition-colors duration-fast group-hover:text-text-secondary">
         {copied ? (
@@ -56,7 +56,7 @@ export function InstallBadge({ command, packageName, prompt = "$" }: InstallBadg
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
-            className="text-quantum"
+            className="text-teal-500"
           >
             <polyline points="20 6 9 17 4 12" />
           </svg>

@@ -40,10 +40,14 @@ import { SITE_URL, SITE_NAME } from "@/lib/seo";
 const THEME_INIT_SCRIPT = `
 (function(){
   try {
-    if (localStorage.getItem('theme') === 'light') {
-      document.documentElement.classList.add('light');
+    var t = localStorage.getItem('theme');
+    if (t === 'dark') {
+      return;
     }
-  } catch(e) {}
+    document.documentElement.classList.add('light');
+  } catch(e) {
+    document.documentElement.classList.add('light');
+  }
 })();
 `;
 
@@ -73,7 +77,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#06080f",
+  themeColor: "#f6f5f1",
 };
 
 // ─── Global Metadata ──────────────────────────────────────────────────────────

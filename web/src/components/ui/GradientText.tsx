@@ -1,7 +1,7 @@
 /**
- * GradientText — inline gradient-colored text wrapper.
+ * GradientText — inline accent-colored text wrapper.
  *
- * Applies the primary gradient (purple → cyan) as text color.
+ * Applies the brand accent color to text.
  * Used for emphasis within headings and body text.
  */
 
@@ -11,5 +11,5 @@ interface GradientTextProps {
 }
 
 export function GradientText({ children, className = "" }: GradientTextProps) {
-  return <span className={`gradient-text ${className}`}>{children}</span>;
+  return <span className={`accent-text ${className}`}>{children}</span>;
 }

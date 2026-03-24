@@ -86,9 +86,9 @@ export function Navbar() {
               subtle brand mark. It's purely decorative (aria-hidden).
             */}
             <span className="text-text-primary">Eigen</span>
-            <span className="gradient-text">vue</span>
+            <span className="accent-text">vue</span>
             <span
-              className="ml-0.5 inline-block h-1.5 w-1.5 rounded-full bg-gradient-to-r from-gradient-from to-gradient-to"
+              className="ml-0.5 inline-block h-1.5 w-1.5 rounded-full bg-accent"
               aria-hidden="true"
             />
           </Link>
@@ -103,7 +103,7 @@ export function Navbar() {
               >
                 {item.label}
                 {"badge" in item && item.badge && (
-                  <span className="bg-gradient-to-r from-purple-500 to-cyan-500 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full leading-none">
+                  <span className="bg-accent text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full leading-none">
                     {item.badge}
                   </span>
                 )}

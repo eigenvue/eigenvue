@@ -61,7 +61,7 @@ export function PlaybackControls({ state, controls, totalSteps }: PlaybackContro
       <button
         onClick={controls.togglePlay}
         aria-label={isPlaying ? "Pause" : "Play"}
-        className="p-2 px-3 rounded-md bg-gradient-to-r from-gradient-from to-gradient-to text-white hover:opacity-90 transition-opacity"
+        className="p-2 px-3 rounded-md bg-btn-primary text-white hover:bg-btn-primary-hover transition-colors"
       >
         {isPlaying ? "⏸" : "▶"}
       </button>

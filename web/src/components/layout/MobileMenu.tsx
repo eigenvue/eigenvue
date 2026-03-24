@@ -78,7 +78,7 @@ export function MobileMenu({ isOpen, onClose, items }: MobileMenuProps) {
             >
               {item.label}
               {item.badge && (
-                <span className="bg-gradient-to-r from-purple-500 to-cyan-500 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full leading-none">
+                <span className="bg-accent text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full leading-none">
                   {item.badge}
                 </span>
               )}

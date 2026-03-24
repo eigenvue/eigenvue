@@ -202,8 +202,8 @@ export function HeroVisualization() {
       /** Center glow: soft radial gradient at convergence point. */
       const glowRadius = Math.min(width, height) * 0.08;
       const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowRadius);
-      gradient.addColorStop(0, "rgba(139, 92, 246, 0.25)");
-      gradient.addColorStop(0.5, "rgba(6, 182, 212, 0.1)");
+      gradient.addColorStop(0, "rgba(13, 148, 136, 0.25)");
+      gradient.addColorStop(0.5, "rgba(15, 118, 110, 0.1)");
       gradient.addColorStop(1, "transparent");
       ctx.beginPath();
       ctx.arc(cx, cy, glowRadius, 0, Math.PI * 2);

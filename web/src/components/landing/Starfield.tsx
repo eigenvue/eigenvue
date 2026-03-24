@@ -37,12 +37,12 @@ const MAX_STARS = 200;
 const STARS_PER_MILLION_PX = 100;
 
 /** Minimum and maximum star radius in CSS pixels. */
-const MIN_RADIUS = 0.3;
-const MAX_RADIUS = 1.5;
+const MIN_RADIUS = 0.4;
+const MAX_RADIUS = 1.8;
 
 /** Minimum and maximum star opacity (0-1). */
 const MIN_OPACITY = 0.15;
-const MAX_OPACITY = 0.6;
+const MAX_OPACITY = 0.55;
 
 /**
  * Speed range in pixels per second.

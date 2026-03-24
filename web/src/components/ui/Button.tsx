@@ -2,7 +2,7 @@
  * Button — the primary interactive element.
  *
  * Variants:
- * - primary: gradient background (purple → cyan), white text. For main CTAs.
+ * - primary: solid teal background, white text. For main CTAs.
  * - secondary: transparent with border, text-secondary. For secondary actions.
  * - ghost: no border, subtle hover background. For nav links and tertiary actions.
  *
@@ -39,11 +39,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  */
 const variantStyles: Record<ButtonVariant, string> = {
   primary: [
-    "bg-gradient-to-r from-gradient-from via-gradient-via to-gradient-to",
+    "bg-btn-primary",
     "text-white font-semibold",
-    "shadow-md hover:shadow-lg",
-    "hover:brightness-110",
-    "active:brightness-95 active:shadow-inset",
+    "shadow-sm hover:shadow-md",
+    "hover:bg-btn-primary-hover",
+    "active:shadow-inset",
     "transition-all duration-normal",
   ].join(" "),
   secondary: [

@@ -1,63 +1,320 @@
 /**
- * HeroSection — the above-the-fold hero with headline, subtitle, CTAs,
- * and the animated convergence visualization.
+ * HeroSection — above-the-fold hero with asymmetric editorial layout.
  *
  * Layout:
- * - Mobile: stacked (text top, viz below)
- * - Desktop: side-by-side (text left 45%, viz right 55%)
- *
- * The hero occupies at least the full viewport height, with content
- * vertically centered, and enough top padding to clear the fixed navbar.
+ * - Left column: headline, subtitle, CTAs, install badges, trust signal
+ * - Right column: stacked deck of algorithm preview cards
+ * - Key metrics strip below spanning full width
  */
+
+"use client";
 
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
-import { HeroVisualization } from "@/components/landing/HeroVisualization";
 import { InstallBadge } from "@/components/landing/PipInstallBadge";
+
+const METRICS = [
+  { value: "22+", label: "Interactive Visualizations" },
+  { value: "4", label: "Algorithm Domains" },
+  { value: "MIT", label: "Open Source License" },
+  { value: "pip + npm", label: "Install Anywhere" },
+];
+
+/* ─── Card 1 (front): Grover's Quantum Search ─── */
+
+function QuantumCard() {
+  return (
+    <div className="overflow-hidden rounded-xl border border-border bg-background-surface shadow-card">
+      <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+        <div className="flex gap-1.5">
+          <div className="h-2.5 w-2.5 rounded-full bg-red-400/40" />
+          <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/40" />
+          <div className="h-2.5 w-2.5 rounded-full bg-green-400/40" />
+        </div>
+        <span className="ml-2 font-mono text-xs text-text-tertiary">
+          eigenvue — Grover&#39;s Search
+        </span>
+        <span className="ml-auto rounded-full bg-quantum-muted px-2 py-0.5 text-[10px] font-mono font-medium text-quantum">
+          Quantum
+        </span>
+      </div>
+
+      <div className="p-4">
+        {/* Quantum circuit mockup */}
+        <div className="mb-3 text-[10px] font-medium uppercase tracking-wider text-text-tertiary">
+          Quantum Circuit — 3 Qubits
+        </div>
+        <div className="space-y-2">
+          {/* Qubit lines */}
+          {["q₀", "q₁", "q₂"].map((qubit, qi) => (
+            <div key={qubit} className="flex items-center gap-1">
+              <span className="w-5 font-mono text-[10px] text-text-tertiary">{qubit}</span>
+              <div className="flex flex-1 items-center">
+                {/* Wire */}
+                <div className="relative flex flex-1 items-center">
+                  <div className="absolute inset-x-0 h-px bg-border" />
+                  {/* Gates */}
+                  <div className="relative flex w-full justify-around">
+                    {qi === 0 && (
+                      <>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-quantum bg-quantum/10 font-mono text-[10px] font-bold text-quantum">
+                          H
+                        </div>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-border bg-background-elevated font-mono text-[10px] text-text-secondary">
+                          X
+                        </div>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-quantum bg-quantum/10 font-mono text-[10px] font-bold text-quantum">
+                          H
+                        </div>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-border bg-background-elevated font-mono text-[10px] text-text-secondary">
+                          M
+                        </div>
+                      </>
+                    )}
+                    {qi === 1 && (
+                      <>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-quantum bg-quantum/10 font-mono text-[10px] font-bold text-quantum">
+                          H
+                        </div>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-border bg-background-elevated font-mono text-[10px] text-text-secondary">
+                          X
+                        </div>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-quantum bg-quantum/10 font-mono text-[10px] font-bold text-quantum">
+                          H
+                        </div>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-border bg-background-elevated font-mono text-[10px] text-text-secondary">
+                          M
+                        </div>
+                      </>
+                    )}
+                    {qi === 2 && (
+                      <>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-border bg-background-elevated font-mono text-[10px] text-text-secondary">
+                          X
+                        </div>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-deeplearning bg-deeplearning/10 font-mono text-[10px] font-bold text-deeplearning">
+                          O
+                        </div>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-border bg-background-elevated font-mono text-[10px] text-text-secondary">
+                          X
+                        </div>
+                        <div className="flex h-7 w-7 items-center justify-center rounded border border-border bg-background-elevated font-mono text-[10px] text-text-secondary">
+                          M
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Step info */}
+        <div className="mt-4 flex items-start gap-2 rounded-lg bg-quantum/5 px-3 py-2">
+          <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-quantum/15 text-quantum text-[9px] font-bold">
+            2
+          </span>
+          <p className="text-xs text-text-secondary">
+            <span className="font-medium text-text-primary">Apply Oracle:</span> The oracle flips
+            the phase of the target state |101⟩, marking it for amplification.
+          </p>
+        </div>
+
+        {/* Controls */}
+        <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+          <div className="flex items-center gap-1">
+            <div className="flex h-6 w-6 items-center justify-center rounded text-text-tertiary">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                aria-hidden="true"
+              >
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </div>
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-btn-primary text-white">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <polygon points="5 3 19 12 5 21" />
+              </svg>
+            </div>
+            <div className="flex h-6 w-6 items-center justify-center rounded text-text-tertiary">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                aria-hidden="true"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
+          </div>
+          <span className="font-mono text-[10px] text-text-disabled">Step 2 / 5</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Stacked Deck ─── */
+
+function ProductPreviewDeck() {
+  return (
+    <div
+      className="relative overflow-visible"
+      style={{ marginBottom: "48px", marginRight: "32px" }}
+    >
+      {/* Subtle glow behind the deck */}
+      <div
+        className="pointer-events-none absolute -inset-8 rounded-2xl opacity-[0.07] blur-3xl"
+        style={{ background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)" }}
+        aria-hidden="true"
+      />
+
+      {/* Card 3 (deepest) — Neural Net */}
+      <div
+        className="absolute inset-0 overflow-hidden rounded-xl border border-border bg-background-surface shadow-card opacity-50"
+        style={{ transform: "translate(32px, 48px)", zIndex: 1 }}
+        aria-hidden="true"
+      >
+        <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+          <div className="flex gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-full bg-red-400/40" />
+            <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/40" />
+            <div className="h-2.5 w-2.5 rounded-full bg-green-400/40" />
+          </div>
+          <span className="ml-2 font-mono text-xs text-text-tertiary">
+            eigenvue — Backpropagation
+          </span>
+          <span className="ml-auto rounded-full bg-deeplearning-muted px-2 py-0.5 text-[10px] font-mono font-medium text-deeplearning">
+            Deep Learning
+          </span>
+        </div>
+      </div>
+
+      {/* Card 2 (middle) — Self-Attention */}
+      <div
+        className="absolute inset-0 overflow-hidden rounded-xl border border-border bg-background-surface shadow-card opacity-70"
+        style={{ transform: "translate(16px, 24px)", zIndex: 2 }}
+        aria-hidden="true"
+      >
+        <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+          <div className="flex gap-1.5">
+            <div className="h-2.5 w-2.5 rounded-full bg-red-400/40" />
+            <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/40" />
+            <div className="h-2.5 w-2.5 rounded-full bg-green-400/40" />
+          </div>
+          <span className="ml-2 font-mono text-xs text-text-tertiary">
+            eigenvue — Self-Attention
+          </span>
+          <span className="ml-auto rounded-full bg-genai-muted px-2 py-0.5 text-[10px] font-mono font-medium text-genai">
+            GenAI
+          </span>
+        </div>
+      </div>
+
+      {/* Card 1 (front) — Quantum: fully visible */}
+      <div className="relative" style={{ zIndex: 3 }}>
+        <QuantumCard />
+      </div>
+    </div>
+  );
+}
 
 export function HeroSection() {
   return (
     <section
-      className="relative flex min-h-screen items-center pt-16"
+      className="relative flex min-h-screen flex-col justify-center overflow-hidden pt-20 pb-12"
       aria-labelledby="hero-heading"
     >
-      {/*
-        Gradient overlay at top — a subtle purple-to-transparent radial glow
-        that bleeds from behind the hero visualization. Purely decorative.
-      */}
-      <div
-        className="pointer-events-none absolute top-0 right-0 h-[600px] w-[600px] -translate-y-1/4 translate-x-1/4 rounded-full opacity-20 blur-[120px]"
-        style={{
-          background: "radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 70%)",
-        }}
-        aria-hidden="true"
-      />
-
       <Container className="relative z-10">
-        <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           {/* ─── Text Column ─── */}
-          <div className="max-w-xl">
+          <div>
+            {/* Contextual badge */}
+            <div className="mb-6 inline-flex items-center rounded-full border border-border bg-background-surface/60 px-3.5 py-1 text-xs font-medium text-text-secondary backdrop-blur-sm sm:text-sm">
+              <span
+                className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-green-500"
+                aria-hidden="true"
+              />
+              Open-source · Free forever
+            </div>
+
             <h1
               id="hero-heading"
-              className="text-4xl font-bold tracking-tight text-text-primary md:text-5xl lg:text-6xl"
+              className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl md:text-5xl lg:text-6xl"
             >
-              See How
-              <br />
-              <span className="gradient-text">AI Thinks</span>
+              See How <span className="accent-text">AI Thinks</span>
               <br />
               &amp; Quantum Computes
             </h1>
 
-            <p className="mt-6 text-lg text-text-secondary md:text-xl">
-              Interactive dissection of deep learning, generative AI, and quantum algorithms
+            <p className="mt-5 max-w-lg text-base text-text-secondary sm:text-lg">
+              Interactive, step-by-step dissection of deep learning, generative AI, and quantum
+              algorithms. Watch every computation unfold — from binary search to self-attention.
             </p>
 
+            {/* Domain highlights — visual chips with count */}
+            <div className="mt-7 grid grid-cols-2 gap-2.5 max-w-md">
+              {[
+                {
+                  label: "Classical",
+                  count: "7 algos",
+                  borderColor: "border-classical/30",
+                  textColor: "text-classical",
+                  bg: "bg-classical-muted",
+                },
+                {
+                  label: "Deep Learning",
+                  count: "5 algos",
+                  borderColor: "border-deeplearning/30",
+                  textColor: "text-deeplearning",
+                  bg: "bg-deeplearning-muted",
+                },
+                {
+                  label: "Generative AI",
+                  count: "5 algos",
+                  borderColor: "border-genai/30",
+                  textColor: "text-genai",
+                  bg: "bg-genai-muted",
+                },
+                {
+                  label: "Quantum",
+                  count: "5 algos",
+                  borderColor: "border-quantum/30",
+                  textColor: "text-quantum",
+                  bg: "bg-quantum-muted",
+                },
+              ].map((d) => (
+                <div
+                  key={d.label}
+                  className={`flex items-center gap-2.5 rounded-lg border ${d.borderColor} ${d.bg} px-3 py-2`}
+                >
+                  <span
+                    className={`h-2 w-2 rounded-full ${d.textColor} bg-current shrink-0`}
+                    aria-hidden="true"
+                  />
+                  <div className="min-w-0">
+                    <div className={`text-xs font-semibold ${d.textColor}`}>{d.label}</div>
+                    <div className="text-[10px] text-text-tertiary">{d.count}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             {/* CTA buttons */}
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Button variant="primary" size="lg" href="/algorithms">
                 Explore Algorithms
                 <span aria-hidden="true" className="ml-1">
-                  →
+                  &#x2192;
                 </span>
               </Button>
               <Button
@@ -69,97 +326,37 @@ export function HeroSection() {
               >
                 View on GitHub
                 <span aria-hidden="true" className="ml-1">
-                  ↗
+                  &#x2197;
                 </span>
               </Button>
             </div>
 
             {/* Install badges */}
-            <div className="mt-6 flex flex-wrap items-center gap-3">
+            <div className="mt-6 flex flex-wrap gap-3">
               <InstallBadge command="pip install" packageName="eigenvue" />
               <InstallBadge command="npm install" packageName="eigenvue" />
             </div>
 
-            {/* PyPI, npm & Docs links */}
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                href="https://pypi.org/project/eigenvue/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  aria-hidden="true"
-                  className="shrink-0"
-                >
-                  <path d="M7.932.5c-.4.007-.809.039-1.16.09C5.6.787 5.42 1.07 5.42 1.74v2.03h2.57v.68H4.66c-.78 0-1.46.47-1.67 1.36-.25 1.03-.26 1.67 0 2.74.19.8.64 1.36 1.42 1.36h.92V8.23c0-.88.76-1.66 1.67-1.66h2.56c.75 0 1.34-.62 1.34-1.36V2.35c0-.73-.62-1.27-1.34-1.4-.46-.08-.93-.12-1.34-.13l-.24-.01zM5.26 1.67c.28 0 .5.23.5.51a.51.51 0 01-.5.51.51.51 0 01-.5-.51c0-.28.23-.51.5-.51z" />
-                  <path d="M11.77 4.45v1.63c0 .92-.78 1.72-1.67 1.72H7.54c-.74 0-1.34.63-1.34 1.37v2.56c0 .73.64 1.16 1.34 1.37.84.25 1.65.29 2.56 0 .61-.2 1.34-.6 1.34-1.37V10.1H8.87v-.68h3.9c.78 0 1.07-.54 1.34-1.36.28-.84.27-1.66 0-2.74-.19-.78-.56-1.36-1.34-1.36h-1zm-1.34 6.63c.28 0 .5.23.5.51a.51.51 0 01-.5.51.51.51 0 01-.5-.51c0-.28.23-.51.5-.51z" />
-                </svg>
-                PyPI
-                <span aria-hidden="true" className="ml-0.5">
-                  ↗
-                </span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                href="https://www.npmjs.com/package/eigenvue"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  aria-hidden="true"
-                  className="shrink-0"
-                >
-                  <path d="M0 0v16h16V0H0zm13.2 13.2H9.67V5.6H6.33v7.6H2.8V2.8h10.4v10.4z" />
-                </svg>
-                npm
-                <span aria-hidden="true" className="ml-0.5">
-                  ↗
-                </span>
-              </Button>
-              <Button variant="ghost" size="sm" href="/docs">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                  className="shrink-0"
-                >
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                </svg>
-                Documentation
-                <span aria-hidden="true" className="ml-0.5">
-                  →
-                </span>
-              </Button>
-            </div>
-
-            {/* Trust signal: subtle line about the project */}
-            <p className="mt-5 text-sm text-text-tertiary">
-              Free &amp; open source · No account required · MIT Licensed
+            {/* Trust signal */}
+            <p className="mt-4 text-xs text-text-tertiary sm:text-sm">
+              No account required · MIT Licensed · Python &amp; JavaScript
             </p>
           </div>
 
-          {/* ─── Visualization Column ─── */}
+          {/* ─── Stacked Card Deck ─── */}
           <div className="relative flex items-center justify-center">
-            <HeroVisualization />
+            <ProductPreviewDeck />
           </div>
+        </div>
+
+        {/* ─── Metrics strip ─── */}
+        <div className="mt-16 grid grid-cols-2 gap-y-6 border-t border-border pt-8 sm:grid-cols-4">
+          {METRICS.map((metric) => (
+            <div key={metric.label}>
+              <div className="font-mono text-2xl font-bold text-text-primary">{metric.value}</div>
+              <div className="mt-0.5 text-xs text-text-tertiary">{metric.label}</div>
+            </div>
+          ))}
         </div>
       </Container>
     </section>

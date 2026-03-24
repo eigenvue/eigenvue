@@ -21,7 +21,7 @@ export function CTASection() {
           className="h-[400px] w-[600px] rounded-full opacity-30 blur-[100px]"
           style={{
             background:
-              "radial-gradient(ellipse, rgba(139,92,246,0.3) 0%, rgba(6,182,212,0.15) 50%, transparent 80%)",
+              "radial-gradient(ellipse, rgba(13,148,136,0.2) 0%, rgba(15,118,110,0.08) 50%, transparent 80%)",
           }}
         />
       </div>
@@ -29,7 +29,7 @@ export function CTASection() {
       <Container className="relative z-10">
         <div className="mx-auto max-w-2xl text-center">
           <h2 id="cta-heading" className="text-3xl font-bold text-text-primary md:text-4xl">
-            Start <span className="gradient-text">Exploring</span> Now
+            Start <span className="accent-text">Exploring</span> Now
           </h2>
           <p className="mt-4 text-lg text-text-secondary">
             No account needed. No installation required. Pick an algorithm and start learning.

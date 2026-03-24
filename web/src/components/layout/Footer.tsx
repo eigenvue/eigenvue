@@ -35,7 +35,7 @@ export function Footer() {
           {/* Brand column */}
           <div>
             <div className="text-lg font-bold text-text-primary">
-              Eigen<span className="gradient-text">vue</span>
+              Eigen<span className="accent-text">vue</span>
             </div>
             <p className="mt-2 text-sm text-text-tertiary">
               The visual learning platform for algorithms, AI, and quantum computing.

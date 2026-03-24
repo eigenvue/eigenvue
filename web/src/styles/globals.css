@@ -33,20 +33,20 @@
    */
   :root {
     /* ── Backgrounds ── */
-    --bg-page: #06080f;
-    --bg-surface: #0c1021;
-    --bg-elevated: #131830;
-    --bg-hover: #1a2040;
+    --bg-page: #0a0f0e;
+    --bg-surface: #111916;
+    --bg-elevated: #182420;
+    --bg-hover: #1f2e29;
 
     /* ── Text ── */
-    --text-primary: #f0f2f8;
-    --text-secondary: #a0a8c0;
-    --text-tertiary: #6b7394;
-    --text-disabled: #3d4460;
+    --text-primary: #e8ece9;
+    --text-secondary: #9ca8a2;
+    --text-tertiary: #687872;
+    --text-disabled: #3d4a45;
 
     /* ── Borders ── */
-    --border-default: rgba(160, 168, 192, 0.1);
-    --border-hover: rgba(160, 168, 192, 0.2);
+    --border-default: rgba(156, 168, 162, 0.1);
+    --border-hover: rgba(156, 168, 162, 0.2);
 
     /* ── Category accents ── */
     --classical: #38bdf8;
@@ -54,33 +54,33 @@
     --classical-dark: #0284c7;
     --classical-muted: rgba(56, 189, 248, 0.08);
 
-    --deeplearning: #8b5cf6;
-    --deeplearning-light: #a78bfa;
-    --deeplearning-dark: #6d28d9;
-    --deeplearning-muted: rgba(139, 92, 246, 0.08);
+    --deeplearning: #a78bfa;
+    --deeplearning-light: #c4b5fd;
+    --deeplearning-dark: #7c3aed;
+    --deeplearning-muted: rgba(167, 139, 250, 0.08);
 
-    --genai: #f472b6;
-    --genai-light: #f9a8d4;
-    --genai-dark: #db2777;
-    --genai-muted: rgba(244, 114, 182, 0.08);
+    --genai: #f0abfc;
+    --genai-light: #f5d0fe;
+    --genai-dark: #d946ef;
+    --genai-muted: rgba(240, 171, 252, 0.08);
 
-    --quantum: #00ffc8;
-    --quantum-light: #5cffe0;
-    --quantum-dark: #00b894;
-    --quantum-muted: rgba(0, 255, 200, 0.08);
+    --quantum: #2dd4bf;
+    --quantum-light: #5eead4;
+    --quantum-dark: #0d9488;
+    --quantum-muted: rgba(45, 212, 191, 0.08);
 
     /* ── Surface effects ── */
-    --glass-bg: rgba(12, 16, 33, 0.7);
-    --glass-border: rgba(160, 168, 192, 0.08);
-    --gradient-border-bg: #0c1021;
+    --glass-bg: rgba(10, 15, 14, 0.75);
+    --glass-border: rgba(156, 168, 162, 0.08);
+    --gradient-border-bg: #111916;
 
     /* ── Scrollbar ── */
-    --scrollbar-thumb: rgba(160, 168, 192, 0.15);
-    --scrollbar-thumb-hover: rgba(160, 168, 192, 0.3);
+    --scrollbar-thumb: rgba(156, 168, 162, 0.15);
+    --scrollbar-thumb-hover: rgba(156, 168, 162, 0.3);
 
     /* ── Selection ── */
-    --selection-bg: rgba(139, 92, 246, 0.3);
-    --selection-color: #f0f2f8;
+    --selection-bg: rgba(13, 148, 136, 0.3);
+    --selection-color: #e8ece9;
 
     /* ── Difficulty levels ── */
     --difficulty-beginner: #34d399;
@@ -92,9 +92,15 @@
     --difficulty-expert: #f87171;
     --difficulty-expert-bg: rgba(248, 113, 113, 0.1);
 
+    /* ── Accent (brand) ── */
+    --accent: #5eead4;
+    --accent-hover: #2dd4bf;
+    --btn-primary: #0d9488;
+    --btn-primary-hover: #0f766e;
+
     /* ── Starfield ── */
     --starfield-opacity: 1;
-    --starfield-color: 240, 242, 248;
+    --starfield-color: 232, 236, 233;
   }
 
   /**
@@ -102,18 +108,18 @@
    * All accent colors are darkened for proper contrast on light backgrounds.
    */
   :root.light {
-    --bg-page: #f8f9fc;
-    --bg-surface: #ffffff;
-    --bg-elevated: #f0f1f5;
-    --bg-hover: #e4e5eb;
+    --bg-page: #f6f5f1;
+    --bg-surface: #fefefe;
+    --bg-elevated: #efeee9;
+    --bg-hover: #e5e3dd;
 
-    --text-primary: #111827;
-    --text-secondary: #4b5563;
-    --text-tertiary: #6b7280;
-    --text-disabled: #d1d5db;
+    --text-primary: #1a1d1b;
+    --text-secondary: #4a524d;
+    --text-tertiary: #6b7370;
+    --text-disabled: #c5c9c7;
 
-    --border-default: rgba(0, 0, 0, 0.1);
-    --border-hover: rgba(0, 0, 0, 0.18);
+    --border-default: rgba(0, 0, 0, 0.08);
+    --border-hover: rgba(0, 0, 0, 0.15);
 
     --classical: #0369a1;
     --classical-light: #38bdf8;
@@ -125,25 +131,25 @@
     --deeplearning-dark: #5b21b6;
     --deeplearning-muted: rgba(124, 58, 237, 0.06);
 
-    --genai: #db2777;
-    --genai-light: #f472b6;
-    --genai-dark: #9d174d;
-    --genai-muted: rgba(219, 39, 119, 0.06);
+    --genai: #c026d3;
+    --genai-light: #d946ef;
+    --genai-dark: #9333ea;
+    --genai-muted: rgba(192, 38, 211, 0.06);
 
-    --quantum: #059669;
-    --quantum-light: #10b981;
-    --quantum-dark: #047857;
-    --quantum-muted: rgba(5, 150, 105, 0.06);
+    --quantum: #0d9488;
+    --quantum-light: #14b8a6;
+    --quantum-dark: #0f766e;
+    --quantum-muted: rgba(13, 148, 136, 0.06);
 
-    --glass-bg: rgba(255, 255, 255, 0.75);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --gradient-border-bg: #ffffff;
+    --glass-bg: rgba(246, 245, 241, 0.8);
+    --glass-border: rgba(0, 0, 0, 0.06);
+    --gradient-border-bg: #fefefe;
 
-    --scrollbar-thumb: rgba(0, 0, 0, 0.15);
-    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+    --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
 
-    --selection-bg: rgba(139, 92, 246, 0.2);
-    --selection-color: #111827;
+    --selection-bg: rgba(13, 148, 136, 0.2);
+    --selection-color: #1a1d1b;
 
     --difficulty-beginner: #059669;
     --difficulty-beginner-bg: rgba(5, 150, 105, 0.1);
@@ -154,8 +160,13 @@
     --difficulty-expert: #dc2626;
     --difficulty-expert-bg: rgba(220, 38, 38, 0.1);
 
-    --starfield-opacity: 0.15;
-    --starfield-color: 80, 90, 130;
+    --accent: #0f766e;
+    --accent-hover: #115e59;
+    --btn-primary: #0f766e;
+    --btn-primary-hover: #115e59;
+
+    --starfield-opacity: 1;
+    --starfield-color: 55, 65, 58;
   }
 
   /**
@@ -204,7 +215,7 @@
    * This ring must be visible against all backgrounds in the app.
    */
   :focus-visible {
-    outline: 2px solid #8b5cf6;
+    outline: 2px solid #0d9488;
     outline-offset: 2px;
   }
 
@@ -254,11 +265,16 @@
 /* ─── 4. Component Layer ─── */
 @layer components {
   /**
-   * .gradient-text: applies the primary gradient (purple → cyan) as text color.
-   * Used for headings and emphasis text.
+   * .accent-text: applies the brand accent color to text.
+   * Used for emphasis within headings and body text.
    */
+  .accent-text {
+    color: var(--accent);
+  }
+
+  /** Legacy alias — maps to accent-text for backward compatibility. */
   .gradient-text {
-    @apply bg-gradient-to-r from-gradient-from via-gradient-via to-gradient-to bg-clip-text text-transparent;
+    color: var(--accent);
   }
 
   /**
@@ -276,7 +292,8 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+    background: var(--accent);
+    opacity: 0.3;
     mask:
       linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);

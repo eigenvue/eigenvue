@@ -1,39 +1,30 @@
 /**
  * Landing Page — composes all sections in order.
  *
- * This file contains no logic — it's purely compositional.
- * Each section is a self-contained component imported from /components/landing/.
- *
  * Section order:
- * 1. Hero (full viewport)
- * 2. Stats Strip (key metrics)
- * 3. Category Cards (four domains)
- * 4. Features (platform capabilities)
- * 5. Editor Teaser (custom algorithm editor)
- * 6. Code Teaser (Python package)
- * 7. CTA (final call to action)
- *
- * The Navbar and Footer are rendered by the root layout (layout.tsx),
- * not by this page. The Starfield is also in the root layout.
+ * 1. Hero (asymmetric layout with product preview)
+ * 2. How It Works (3-step workflow strip)
+ * 3. Features (alternating left/right showcase with visual mockups)
+ * 4. Category Cards (four algorithm domains)
+ * 5. Integration (editor + Python/npm packages)
+ * 6. CTA (final call to action)
  */
 
 import { HeroSection } from "@/components/landing/HeroSection";
-import { StatsStrip } from "@/components/landing/StatsStrip";
-import { CategoryCardsSection } from "@/components/landing/CategoryCardsSection";
+import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
-import { EditorTeaser } from "@/components/landing/EditorTeaser";
-import { CodeTeaser } from "@/components/landing/CodeTeaser";
+import { CategoryCardsSection } from "@/components/landing/CategoryCardsSection";
+import { IntegrationSection } from "@/components/landing/IntegrationSection";
 import { CTASection } from "@/components/landing/CTASection";
 
 export default function LandingPage() {
   return (
     <>
       <HeroSection />
-      <StatsStrip />
-      <CategoryCardsSection />
+      <HowItWorksSection />
       <FeaturesSection />
-      <EditorTeaser />
-      <CodeTeaser />
+      <CategoryCardsSection />
+      <IntegrationSection />
       <CTASection />
     </>
   );

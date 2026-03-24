@@ -65,7 +65,7 @@ export function CodeTeaser() {
               id="code-teaser-heading"
               className="text-3xl font-bold text-text-primary md:text-4xl"
             >
-              Works Where <span className="gradient-text">You Work</span>
+              Works Where <span className="accent-text">You Work</span>
             </h2>
             <p className="mt-4 text-lg text-text-secondary">
               Install the Python package and use the same visualizations in Jupyter notebooks,

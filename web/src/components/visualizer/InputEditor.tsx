@@ -190,7 +190,7 @@ export function InputEditor({ meta, currentInputs, onRun }: InputEditorProps) {
       {/* Run button */}
       <button
         onClick={handleRun}
-        className="w-full py-2 text-sm font-medium rounded-md bg-gradient-to-r from-gradient-from to-gradient-to text-white hover:opacity-90 transition-opacity"
+        className="w-full py-2 text-sm font-medium rounded-md bg-btn-primary text-white hover:bg-btn-primary-hover transition-colors"
       >
         Run Algorithm
       </button>

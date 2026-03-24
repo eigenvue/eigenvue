@@ -17,13 +17,13 @@ const CODE_LINES: Array<Array<[string, string]>> = [
   [
     ["const", "text-purple-400"],
     [" array = [", "text-text-primary"],
-    ["14, 27, 3, 42, 8", "text-cyan-400"],
+    ["14, 27, 3, 42, 8", "text-teal-400"],
     ["];", "text-text-primary"],
   ],
   [
     ["const", "text-purple-400"],
     [" target = ", "text-text-primary"],
-    ["42", "text-cyan-400"],
+    ["42", "text-teal-400"],
     [";", "text-text-primary"],
   ],
   [["", "text-text-primary"]],
@@ -32,16 +32,16 @@ const CODE_LINES: Array<Array<[string, string]>> = [
     [" (", "text-text-tertiary"],
     ["let", "text-purple-400"],
     [" i = ", "text-text-primary"],
-    ["0", "text-cyan-400"],
+    ["0", "text-teal-400"],
     ["; i < array.length; i++) {", "text-text-primary"],
   ],
   [
-    ["  step", "text-pink-400"],
+    ["  step", "text-emerald-400"],
     ["({", "text-text-tertiary"],
   ],
   [
     ["    title: ", "text-text-primary"],
-    ["`Check index ${i}`", "text-sky-400"],
+    ["`Check index ${i}`", "text-teal-300"],
     [",", "text-text-tertiary"],
   ],
   [
@@ -52,7 +52,7 @@ const CODE_LINES: Array<Array<[string, string]>> = [
   [
     ["    visualActions: ", "text-text-primary"],
     ["[{ type: ", "text-text-primary"],
-    ['"highlightElement"', "text-sky-400"],
+    ['"highlightElement"', "text-teal-300"],
     [", index: i }]", "text-text-primary"],
   ],
   [
@@ -108,11 +108,11 @@ export function EditorTeaser() {
               id="editor-teaser-heading"
               className="text-3xl font-bold text-text-primary md:text-4xl"
             >
-              Build Your Own <span className="gradient-text">Algorithms</span>
+              Build Your Own <span className="accent-text">Algorithms</span>
             </h2>
             <p className="mt-4 text-lg text-text-secondary">
               Write JavaScript code using the{" "}
-              <code className="rounded bg-background-elevated px-1.5 py-0.5 font-mono text-sm text-cyan-400">
+              <code className="rounded bg-background-elevated px-1.5 py-0.5 font-mono text-sm text-teal-400">
                 step()
               </code>{" "}
               API and see your algorithm come to life. Choose from 13 built-in layouts spanning
@@ -120,19 +120,19 @@ export function EditorTeaser() {
             </p>
             <ul className="mt-6 space-y-2 text-text-secondary">
               <li className="flex items-center gap-2">
-                <span className="text-cyan-400" aria-hidden="true">
+                <span className="text-teal-400" aria-hidden="true">
                   &#x2713;
                 </span>
                 Sandboxed execution with real-time visualization
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-cyan-400" aria-hidden="true">
+                <span className="text-teal-400" aria-hidden="true">
                   &#x2713;
                 </span>
                 6 starter templates across all domains
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-cyan-400" aria-hidden="true">
+                <span className="text-teal-400" aria-hidden="true">
                   &#x2713;
                 </span>
                 Share your creations via URL

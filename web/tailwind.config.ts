@@ -78,14 +78,19 @@ const config: Config = {
           DEFAULT: "var(--border-default)",
           hover: "var(--border-hover)",
           /** Focus border: accent-colored, for keyboard navigation. */
-          focus: "#8b5cf6",
+          focus: "#0d9488",
         },
 
-        /** Gradient endpoints for the primary CTA gradient (purple → cyan). */
-        gradient: {
-          from: "#8b5cf6",
-          via: "#a855f7",
-          to: "#06b6d4",
+        /** Brand accent color — theme-aware via CSS variables. */
+        accent: {
+          DEFAULT: "var(--accent)",
+          hover: "var(--accent-hover)",
+        },
+
+        /** Primary button background — theme-aware. */
+        "btn-primary": {
+          DEFAULT: "var(--btn-primary)",
+          hover: "var(--btn-primary-hover)",
         },
 
         /** Difficulty level colors — theme-aware via CSS variables. */
