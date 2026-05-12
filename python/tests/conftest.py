@@ -11,6 +11,7 @@ CLASSICAL_IDS = [
     "bubble-sort",
     "quicksort",
     "merge-sort",
+    "heap-sort",
     "bfs",
     "dfs",
     "dijkstra",

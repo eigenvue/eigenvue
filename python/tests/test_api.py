@@ -21,9 +21,9 @@ class TestList:
         result = eigenvue.list()
         assert isinstance(result, list)
 
-    def test_list_has_22_algorithms(self) -> None:
+    def test_list_has_23_algorithms(self) -> None:
         result = eigenvue.list()
-        assert len(result) == 22
+        assert len(result) == 23
 
     def test_list_returns_algorithm_info(self) -> None:
         result = eigenvue.list()
@@ -32,7 +32,7 @@ class TestList:
 
     def test_list_filter_classical(self) -> None:
         result = eigenvue.list(category="classical")
-        assert len(result) == 7
+        assert len(result) == 8
         assert all(a.category == "classical" for a in result)
 
     def test_list_filter_generative_ai(self) -> None:

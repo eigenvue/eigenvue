@@ -10,14 +10,14 @@ describe("catalog", () => {
       expect(result.length).toBeGreaterThan(0);
     });
 
-    it("returns exactly 22 algorithms", () => {
+    it("returns exactly 23 algorithms", () => {
       const result = list();
-      expect(result).toHaveLength(22);
+      expect(result).toHaveLength(23);
     });
 
-    it("returns 7 classical algorithms", () => {
+    it("returns 8 classical algorithms", () => {
       const result = list({ category: "classical" });
-      expect(result).toHaveLength(7);
+      expect(result).toHaveLength(8);
       for (const algo of result) {
         expect(algo.category).toBe("classical");
       }

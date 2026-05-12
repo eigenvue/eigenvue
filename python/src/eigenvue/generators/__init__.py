@@ -28,6 +28,7 @@ _REGISTRY_MAP: dict[str, tuple[str, str]] = {
     "bubble-sort": ("eigenvue.generators.classical.bubble_sort", "generate"),
     "quicksort": ("eigenvue.generators.classical.quicksort", "generate"),
     "merge-sort": ("eigenvue.generators.classical.merge_sort", "generate"),
+    "heap-sort": ("eigenvue.generators.classical.heap_sort", "generate"),
     "bfs": ("eigenvue.generators.classical.bfs", "generate"),
     "dfs": ("eigenvue.generators.classical.dfs", "generate"),
     "dijkstra": ("eigenvue.generators.classical.dijkstra", "generate"),

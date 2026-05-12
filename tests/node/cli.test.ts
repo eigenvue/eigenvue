@@ -57,13 +57,13 @@ describe("CLI", () => {
   it("lists all algorithms", () => {
     const output = runCli("list");
     expect(output).toContain("binary-search");
-    expect(output).toContain("22 algorithm(s) found.");
+    expect(output).toContain("23 algorithm(s) found.");
   });
 
   it("filters by category", () => {
     const output = runCli("list --category classical");
     expect(output).toContain("binary-search");
-    expect(output).toContain("7 algorithm(s) found.");
+    expect(output).toContain("8 algorithm(s) found.");
     // Should not contain deep-learning algorithms
     expect(output).not.toContain("backpropagation");
   });

@@ -20,6 +20,7 @@ import binarySearchGenerator from "@/algorithms/classical/binary-search/generato
 import bubbleSortGenerator from "@/algorithms/classical/bubble-sort/generator";
 import quicksortGenerator from "@/algorithms/classical/quicksort/generator";
 import mergeSortGenerator from "@/algorithms/classical/merge-sort/generator";
+import heapSortGenerator from "@/algorithms/classical/heap-sort/generator";
 import bfsGenerator from "@/algorithms/classical/bfs/generator";
 import dfsGenerator from "@/algorithms/classical/dfs/generator";
 import dijkstraGenerator from "@/algorithms/classical/dijkstra/generator";
@@ -60,6 +61,7 @@ const REGISTRY: ReadonlyMap<string, AnyGenerator> = new Map<string, AnyGenerator
   ["bubble-sort", bubbleSortGenerator as AnyGenerator],
   ["quicksort", quicksortGenerator as AnyGenerator],
   ["merge-sort", mergeSortGenerator as AnyGenerator],
+  ["heap-sort", heapSortGenerator as AnyGenerator],
   ["bfs", bfsGenerator as AnyGenerator],
   ["dfs", dfsGenerator as AnyGenerator],
   ["dijkstra", dijkstraGenerator as AnyGenerator],

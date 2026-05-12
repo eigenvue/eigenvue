@@ -48,6 +48,7 @@ ALL_ALGORITHMS: list[tuple[str, str]] = [
     ("classical", "bubble-sort"),
     ("classical", "quicksort"),
     ("classical", "merge-sort"),
+    ("classical", "heap-sort"),
     ("classical", "bfs"),
     ("classical", "dfs"),
     ("classical", "dijkstra"),

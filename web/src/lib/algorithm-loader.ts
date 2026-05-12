@@ -151,6 +151,17 @@ const ALGORITHM_REGISTRY: Record<string, RegistryEntry> = {
       ),
     precomputed: null,
   },
+  "heap-sort": {
+    meta: () =>
+      import("@/../../algorithms/classical/heap-sort/meta.json").then(
+        (m) => m.default as AlgorithmMeta,
+      ),
+    generator: () =>
+      import("@/../../algorithms/classical/heap-sort/generator").then(
+        (m) => m.default as GeneratorDefinition<Record<string, unknown>>,
+      ),
+    precomputed: null,
+  },
   bfs: {
     meta: () =>
       import("@/../../algorithms/classical/bfs/meta.json").then((m) => m.default as AlgorithmMeta),

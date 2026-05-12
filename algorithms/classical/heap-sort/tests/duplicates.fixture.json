@@ -1,0 +1,40 @@
+{
+  "description": "All-equal input — every compare results in 'no swap' (strict > on largest-child selection); algorithm terminates correctly though heap sort is not stable.",
+  "inputs": { "array": [5, 5, 5, 5, 5] },
+  "expected": {
+    "stepCount": 23,
+    "terminalStepId": "sorted",
+    "sortedArray": [5, 5, 5, 5, 5],
+    "stepIds": [
+      "initialize",
+      "heapify_start",
+      "heapify_node",
+      "siftdown_compare",
+      "heapify_node",
+      "siftdown_compare",
+      "heap_built",
+      "extract_swap",
+      "extract_shrink",
+      "extract_siftdown",
+      "siftdown_compare",
+      "extract_swap",
+      "extract_shrink",
+      "extract_siftdown",
+      "siftdown_compare",
+      "extract_swap",
+      "extract_shrink",
+      "extract_siftdown",
+      "siftdown_compare",
+      "extract_swap",
+      "extract_shrink",
+      "extract_siftdown",
+      "sorted"
+    ],
+    "keyStates": [
+      { "stepIndex": 0, "field": "array", "value": [5, 5, 5, 5, 5] },
+      { "stepIndex": 6, "field": "array", "value": [5, 5, 5, 5, 5] },
+      { "stepIndex": 22, "field": "array", "value": [5, 5, 5, 5, 5] },
+      { "stepIndex": 22, "field": "sortedSuffix", "value": [0, 1, 2, 3, 4] }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "description": "Single-element input — trivially a max-heap and already sorted; algorithm terminates at step 0.",
+  "inputs": { "array": [42] },
+  "expected": {
+    "stepCount": 1,
+    "terminalStepId": "sorted",
+    "sortedArray": [42],
+    "stepIds": ["sorted"],
+    "keyStates": [
+      { "stepIndex": 0, "field": "array", "value": [42] },
+      { "stepIndex": 0, "field": "phase", "value": "done" },
+      { "stepIndex": 0, "field": "sortedSuffix", "value": [0] }
+    ]
+  }
+}

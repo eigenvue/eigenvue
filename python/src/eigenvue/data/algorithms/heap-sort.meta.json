@@ -1,0 +1,109 @@
+{
+  "id": "heap-sort",
+  "name": "Heap Sort",
+  "category": "classical",
+  "description": {
+    "short": "In-place comparison sort using a max-heap.",
+    "long": "Heap Sort first turns the input array into a max-heap, then repeatedly swaps the root (the current maximum) with the last element of the heap region, shrinks the heap by one, and restores the heap property with sift-down. It runs in O(n log n) in every case — best, average, and worst — uses only O(1) auxiliary space, and is in-place but not stable."
+  },
+  "complexity": {
+    "time": "O(n log n)",
+    "space": "O(1)",
+    "level": "intermediate"
+  },
+  "visual": {
+    "layout": "array-comparison",
+    "theme": { "primary": "#38bdf8", "secondary": "#c084fc" },
+    "components": {}
+  },
+  "inputs": {
+    "schema": {
+      "array": {
+        "type": "array",
+        "items": { "type": "number" },
+        "minItems": 1,
+        "maxItems": 16,
+        "description": "The array to sort."
+      }
+    },
+    "defaults": { "array": [3, 1, 4, 1, 5, 9, 2, 6] },
+    "examples": [
+      { "name": "Default unsorted", "values": { "array": [3, 1, 4, 1, 5, 9, 2, 6] } },
+      { "name": "Reverse sorted (worst build)", "values": { "array": [9, 8, 7, 6, 5, 4, 3, 2, 1] } },
+      { "name": "Already sorted", "values": { "array": [1, 2, 3, 4, 5, 6, 7, 8] } },
+      { "name": "All duplicates", "values": { "array": [5, 5, 5, 5, 5] } },
+      { "name": "Single element", "values": { "array": [42] } }
+    ]
+  },
+  "code": {
+    "implementations": {
+      "pseudocode": "function heapSort(array):\n  n = length(array)\n  buildMaxHeap(array, n)\n  for heapSize = n down to 2:\n    swap array[0] and array[heapSize - 1]\n    heapSize = heapSize - 1\n    maxHeapify(array, 0, heapSize)\n\nfunction buildMaxHeap(array, n):\n  for i = floor(n / 2) - 1 down to 0:\n    maxHeapify(array, i, n)\n\nfunction maxHeapify(array, i, heapSize):\n  left  = 2 * i + 1\n  right = 2 * i + 2\n  largest = i\n  if left  < heapSize and array[left]  > array[largest]:\n    largest = left\n  if right < heapSize and array[right] > array[largest]:\n    largest = right\n  if largest != i:\n    swap array[i] and array[largest]\n    maxHeapify(array, largest, heapSize)",
+      "python": "def heap_sort(array: list[int]) -> None:\n    n = len(array)\n    build_max_heap(array, n)\n    heap_size = n\n    while heap_size > 1:\n        array[0], array[heap_size - 1] = array[heap_size - 1], array[0]\n        heap_size -= 1\n        max_heapify(array, 0, heap_size)\n\ndef build_max_heap(array: list[int], n: int) -> None:\n    for i in range(n // 2 - 1, -1, -1):\n        max_heapify(array, i, n)\n\ndef max_heapify(array: list[int], i: int, heap_size: int) -> None:\n    left = 2 * i + 1\n    right = 2 * i + 2\n    largest = i\n    if left < heap_size and array[left] > array[largest]:\n        largest = left\n    if right < heap_size and array[right] > array[largest]:\n        largest = right\n    if largest != i:\n        array[i], array[largest] = array[largest], array[i]\n        max_heapify(array, largest, heap_size)",
+      "javascript": "function heapSort(array) {\n  const n = array.length;\n  buildMaxHeap(array, n);\n  for (let heapSize = n; heapSize > 1; heapSize--) {\n    [array[0], array[heapSize - 1]] = [array[heapSize - 1], array[0]];\n    maxHeapify(array, 0, heapSize - 1);\n  }\n}\n\nfunction buildMaxHeap(array, n) {\n  for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {\n    maxHeapify(array, i, n);\n  }\n}\n\nfunction maxHeapify(array, i, heapSize) {\n  const left = 2 * i + 1;\n  const right = 2 * i + 2;\n  let largest = i;\n  if (left < heapSize && array[left] > array[largest]) largest = left;\n  if (right < heapSize && array[right] > array[largest]) largest = right;\n  if (largest !== i) {\n    [array[i], array[largest]] = [array[largest], array[i]];\n    maxHeapify(array, largest, heapSize);\n  }\n}"
+    },
+    "defaultLanguage": "pseudocode"
+  },
+  "education": {
+    "keyConcepts": [
+      {
+        "title": "Max-heap as an implicit tree",
+        "description": "A max-heap is a complete binary tree where every parent is at least as large as its children. We store it inside the input array using index arithmetic — no pointers, no extra nodes. For a node at index i, its parent is at (i−1)/2, its left child at 2i+1, and its right child at 2i+2."
+      },
+      {
+        "title": "Building the heap takes linear time",
+        "description": "It feels like O(n log n) — n nodes, each with a log-n sift — but the work telescopes. Nodes near the leaves vastly outnumber those near the root, and they sift down through far fewer levels. Summing 2^d · (h − d) across depths d gives O(n), not O(n log n). This is the counterintuitive result every learner should sit with."
+      },
+      {
+        "title": "Sort by repeatedly extracting the max",
+        "description": "After build, array[0] is the maximum. Swap it with array[heapSize − 1], shrink heapSize by one, and sift the new root down to restore the heap. The last position is now permanently sorted. Repeat n−1 times and the array is fully sorted in ascending order."
+      }
+    ],
+    "pitfalls": [
+      {
+        "title": "Confusing min-heap and max-heap",
+        "description": "Ascending heap-sort uses a max-heap: the largest element bubbles to the root, then gets placed at the end. If you build a min-heap instead, the same algorithm produces a descending sort. The choice of heap kind, not the algorithm structure, fixes the order."
+      },
+      {
+        "title": "Heap sort is in-place but not stable",
+        "description": "Each extraction moves array[0] across the array to the back, jumping over many positions. Equal elements can end up in a different relative order than they started in. If stability matters (e.g., sorting records by a secondary key), use merge sort instead."
+      }
+    ],
+    "quiz": [
+      {
+        "question": "For a complete binary tree of n nodes, the maximum height (number of edges from root to a leaf) is:",
+        "options": ["n", "log₂ n", "n / 2", "√n"],
+        "correctIndex": 1,
+        "explanation": "A complete binary tree with n nodes has height ⌊log₂ n⌋. Each sift-down therefore performs at most O(log n) comparisons, which is what makes each extract-max O(log n)."
+      },
+      {
+        "question": "Why is BUILD-MAX-HEAP O(n) and not O(n log n)?",
+        "options": [
+          "It only touches half of the nodes.",
+          "Most nodes live near the bottom and have short sift paths; the work, summed across depths, is bounded by a geometric series that telescopes to O(n).",
+          "It uses fewer comparisons than HEAPSORT does in total.",
+          "Linear-time build requires an O(n) auxiliary array."
+        ],
+        "correctIndex": 1,
+        "explanation": "There are 2^d nodes at depth d, and each sifts down at most (h − d) levels. The sum Σ 2^d · (h − d) is a geometric-like series that converges to O(n) total work, not O(n log n)."
+      }
+    ],
+    "resources": [
+      { "title": "Wikipedia: Heapsort", "url": "https://en.wikipedia.org/wiki/Heapsort", "type": "article" },
+      { "title": "Wikipedia: Binary heap", "url": "https://en.wikipedia.org/wiki/Binary_heap", "type": "article" }
+    ]
+  },
+  "seo": {
+    "keywords": [
+      "heap sort visualization",
+      "heapsort step by step",
+      "max-heap algorithm",
+      "build-max-heap linear time",
+      "in-place sorting algorithm"
+    ],
+    "ogDescription": "Step through Heap Sort: build a max-heap from an array, then repeatedly extract the maximum to grow a sorted suffix in place."
+  },
+  "prerequisites": [],
+  "related": ["quicksort", "merge-sort", "bubble-sort"],
+  "author": "eigenvue",
+  "version": "1.0.0"
+}
