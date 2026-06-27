@@ -1,0 +1,3035 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for backpropagation (default inputs) 1`] = `
+{
+  "algorithmId": "backpropagation",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 14,
+      },
+      "primitiveCount": 14,
+      "sceneHash": "4b293228",
+      "stepId": "forward-start",
+    },
+    {
+      "byType": {
+        "unknown": 14,
+      },
+      "primitiveCount": 14,
+      "sceneHash": "3ebcbf64",
+      "stepId": "forward-layer-1",
+    },
+    {
+      "byType": {
+        "unknown": 14,
+      },
+      "primitiveCount": 14,
+      "sceneHash": "aa3f2371",
+      "stepId": "forward-layer-2",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "27d957d6",
+      "stepId": "compute-loss",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "83cf70f3",
+      "stepId": "backward-output",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "23b5e3d1",
+      "stepId": "backward-hidden-1",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "b9135399",
+      "stepId": "update-weights-1",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "bde33b99",
+      "stepId": "update-weights-2",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "bde33b99",
+      "stepId": "complete",
+    },
+  ],
+  "layout": "layer-network",
+  "stepCount": 9,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for bfs (default inputs) 1`] = `
+{
+  "algorithmId": "bfs",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "cb92c8a3",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 14,
+      },
+      "primitiveCount": 14,
+      "sceneHash": "6e5c1a50",
+      "stepId": "dequeue",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "63556444",
+      "stepId": "visit_neighbor",
+    },
+    {
+      "byType": {
+        "unknown": 16,
+      },
+      "primitiveCount": 16,
+      "sceneHash": "367af8ae",
+      "stepId": "visit_neighbor",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "a9b9ea00",
+      "stepId": "dequeue",
+    },
+    {
+      "byType": {
+        "unknown": 16,
+      },
+      "primitiveCount": 16,
+      "sceneHash": "41356f63",
+      "stepId": "visit_neighbor",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "f4dc92f5",
+      "stepId": "visit_neighbor",
+    },
+    {
+      "byType": {
+        "unknown": 16,
+      },
+      "primitiveCount": 16,
+      "sceneHash": "9eb8456a",
+      "stepId": "dequeue",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "6b08f573",
+      "stepId": "visit_neighbor",
+    },
+    {
+      "byType": {
+        "unknown": 13,
+      },
+      "primitiveCount": 13,
+      "sceneHash": "52c2941e",
+      "stepId": "target_found",
+    },
+  ],
+  "layout": "graph-network",
+  "stepCount": 10,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for binary-search (default inputs) 1`] = `
+{
+  "algorithmId": "binary-search",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 12,
+      },
+      "primitiveCount": 12,
+      "sceneHash": "6224521d",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 13,
+      },
+      "primitiveCount": 13,
+      "sceneHash": "d51453ee",
+      "stepId": "calculate_mid",
+    },
+    {
+      "byType": {
+        "unknown": 13,
+      },
+      "primitiveCount": 13,
+      "sceneHash": "abcadd60",
+      "stepId": "search_right",
+    },
+    {
+      "byType": {
+        "unknown": 13,
+      },
+      "primitiveCount": 13,
+      "sceneHash": "b84b03c5",
+      "stepId": "calculate_mid",
+    },
+    {
+      "byType": {
+        "unknown": 13,
+      },
+      "primitiveCount": 13,
+      "sceneHash": "9b733dc7",
+      "stepId": "search_left",
+    },
+    {
+      "byType": {
+        "unknown": 13,
+      },
+      "primitiveCount": 13,
+      "sceneHash": "afccba2f",
+      "stepId": "calculate_mid",
+    },
+    {
+      "byType": {
+        "unknown": 13,
+      },
+      "primitiveCount": 13,
+      "sceneHash": "ae4320c2",
+      "stepId": "search_right",
+    },
+    {
+      "byType": {
+        "unknown": 13,
+      },
+      "primitiveCount": 13,
+      "sceneHash": "da05c33e",
+      "stepId": "calculate_mid",
+    },
+    {
+      "byType": {
+        "unknown": 13,
+      },
+      "primitiveCount": 13,
+      "sceneHash": "43839519",
+      "stepId": "found",
+    },
+  ],
+  "layout": "array-with-pointers",
+  "stepCount": 9,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for bubble-sort (default inputs) 1`] = `
+{
+  "algorithmId": "bubble-sort",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "0f6c4ccb",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "0f6c4ccb",
+      "stepId": "pass_start",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "770a6268",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "4a1a58a0",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "b3bfb490",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "83f65a3c",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "a7c16048",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "6b675180",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "3f4b37e0",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "fdcbb2b8",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "b591a4b4",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "2df36910",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "2c22c0c7",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "24a310fb",
+      "stepId": "pass_start",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "85e0dbe8",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "5adf7ee4",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "3daa3684",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "b4a40548",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "e86dfb68",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "22432b90",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "db7837a0",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "57d52554",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "1a6c8736",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "db33eabf",
+      "stepId": "pass_start",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "21df3004",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "c264756c",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "1d0d1030",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "6f276620",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "eac29968",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "c7b4aabc",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "cdbbf356",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "ca5d9799",
+      "stepId": "pass_start",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "4ffdad9e",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "6b0062ec",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "f7f73a48",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "81782e4e",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "1f903b21",
+      "stepId": "pass_start",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "fe256910",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "d0d3ce1c",
+      "stepId": "swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "f0a8db9a",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "eef4296b",
+      "stepId": "pass_start",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "2cbc66aa",
+      "stepId": "compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "8ea4bafa",
+      "stepId": "early_termination",
+    },
+  ],
+  "layout": "array-comparison",
+  "stepCount": 43,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for convolution (default inputs) 1`] = `
+{
+  "algorithmId": "convolution",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 34,
+      },
+      "primitiveCount": 34,
+      "sceneHash": "5b5186b2",
+      "stepId": "show-input",
+    },
+    {
+      "byType": {
+        "unknown": 39,
+      },
+      "primitiveCount": 39,
+      "sceneHash": "160cf05d",
+      "stepId": "conv-0-0",
+    },
+    {
+      "byType": {
+        "unknown": 39,
+      },
+      "primitiveCount": 39,
+      "sceneHash": "5d7408b6",
+      "stepId": "conv-0-1",
+    },
+    {
+      "byType": {
+        "unknown": 39,
+      },
+      "primitiveCount": 39,
+      "sceneHash": "9c07693c",
+      "stepId": "conv-0-2",
+    },
+    {
+      "byType": {
+        "unknown": 39,
+      },
+      "primitiveCount": 39,
+      "sceneHash": "e846e0c7",
+      "stepId": "conv-1-0",
+    },
+    {
+      "byType": {
+        "unknown": 39,
+      },
+      "primitiveCount": 39,
+      "sceneHash": "2b913c3e",
+      "stepId": "conv-1-1",
+    },
+    {
+      "byType": {
+        "unknown": 39,
+      },
+      "primitiveCount": 39,
+      "sceneHash": "ba0c3741",
+      "stepId": "conv-1-2",
+    },
+    {
+      "byType": {
+        "unknown": 39,
+      },
+      "primitiveCount": 39,
+      "sceneHash": "a3f648e8",
+      "stepId": "conv-2-0",
+    },
+    {
+      "byType": {
+        "unknown": 39,
+      },
+      "primitiveCount": 39,
+      "sceneHash": "1c61c701",
+      "stepId": "conv-2-1",
+    },
+    {
+      "byType": {
+        "unknown": 39,
+      },
+      "primitiveCount": 39,
+      "sceneHash": "2c074fc7",
+      "stepId": "conv-2-2",
+    },
+    {
+      "byType": {
+        "unknown": 34,
+      },
+      "primitiveCount": 34,
+      "sceneHash": "571e43d8",
+      "stepId": "complete",
+    },
+  ],
+  "layout": "convolution-grid",
+  "stepCount": 11,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for dfs (default inputs) 1`] = `
+{
+  "algorithmId": "dfs",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 14,
+      },
+      "primitiveCount": 14,
+      "sceneHash": "1286ab3e",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 14,
+      },
+      "primitiveCount": 14,
+      "sceneHash": "0b945419",
+      "stepId": "visit_node",
+    },
+    {
+      "byType": {
+        "unknown": 16,
+      },
+      "primitiveCount": 16,
+      "sceneHash": "f84ad2fd",
+      "stepId": "push_neighbors",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "06c1b940",
+      "stepId": "visit_node",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "b694126b",
+      "stepId": "push_neighbors",
+    },
+    {
+      "byType": {
+        "unknown": 16,
+      },
+      "primitiveCount": 16,
+      "sceneHash": "158c13b9",
+      "stepId": "visit_node",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "0ba1a0bd",
+      "stepId": "visit_node",
+    },
+    {
+      "byType": {
+        "unknown": 16,
+      },
+      "primitiveCount": 16,
+      "sceneHash": "2307e365",
+      "stepId": "push_neighbors",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "3d720c25",
+      "stepId": "visit_node",
+    },
+    {
+      "byType": {
+        "unknown": 13,
+      },
+      "primitiveCount": 13,
+      "sceneHash": "56c6a9fa",
+      "stepId": "target_found",
+    },
+  ],
+  "layout": "graph-network",
+  "stepCount": 10,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for dijkstra (default inputs) 1`] = `
+{
+  "algorithmId": "dijkstra",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 14,
+      },
+      "primitiveCount": 14,
+      "sceneHash": "83e0644f",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 14,
+      },
+      "primitiveCount": 14,
+      "sceneHash": "7c0d4a6f",
+      "stepId": "extract_min",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "5b788e2b",
+      "stepId": "relax_edge",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "b8635aa8",
+      "stepId": "distance_updated",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "77a28b67",
+      "stepId": "relax_edge",
+    },
+    {
+      "byType": {
+        "unknown": 16,
+      },
+      "primitiveCount": 16,
+      "sceneHash": "ad4a8bfd",
+      "stepId": "distance_updated",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "386f21bb",
+      "stepId": "extract_min",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "b46857c6",
+      "stepId": "relax_edge",
+    },
+    {
+      "byType": {
+        "unknown": 16,
+      },
+      "primitiveCount": 16,
+      "sceneHash": "7fdd9f0f",
+      "stepId": "distance_updated",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "15553970",
+      "stepId": "relax_edge",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "8e98b369",
+      "stepId": "distance_updated",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "f14f2544",
+      "stepId": "relax_edge",
+    },
+    {
+      "byType": {
+        "unknown": 18,
+      },
+      "primitiveCount": 18,
+      "sceneHash": "66cef1c5",
+      "stepId": "distance_updated",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "c9254d46",
+      "stepId": "extract_min",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "498fd16d",
+      "stepId": "relax_edge",
+    },
+    {
+      "byType": {
+        "unknown": 18,
+      },
+      "primitiveCount": 18,
+      "sceneHash": "fd7ffcce",
+      "stepId": "distance_updated",
+    },
+    {
+      "byType": {
+        "unknown": 16,
+      },
+      "primitiveCount": 16,
+      "sceneHash": "601a8af2",
+      "stepId": "extract_min",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "8f5c72a8",
+      "stepId": "relax_edge",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "6cb88e3c",
+      "stepId": "distance_updated",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "028d4378",
+      "stepId": "extract_min",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "9212599d",
+      "stepId": "target_found",
+    },
+  ],
+  "layout": "graph-network",
+  "stepCount": 21,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for feedforward-network (default inputs) 1`] = `
+{
+  "algorithmId": "feedforward-network",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 18,
+      },
+      "primitiveCount": 18,
+      "sceneHash": "a2652f51",
+      "stepId": "architecture",
+    },
+    {
+      "byType": {
+        "unknown": 18,
+      },
+      "primitiveCount": 18,
+      "sceneHash": "ab0ed812",
+      "stepId": "propagate-1",
+    },
+    {
+      "byType": {
+        "unknown": 18,
+      },
+      "primitiveCount": 18,
+      "sceneHash": "750d920c",
+      "stepId": "propagate-2",
+    },
+    {
+      "byType": {
+        "unknown": 18,
+      },
+      "primitiveCount": 18,
+      "sceneHash": "0cdf431f",
+      "stepId": "output",
+    },
+  ],
+  "layout": "layer-network",
+  "stepCount": 4,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for gradient-descent (default inputs) 1`] = `
+{
+  "algorithmId": "gradient-descent",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 2512,
+      },
+      "primitiveCount": 2512,
+      "sceneHash": "23982bf9",
+      "stepId": "initial",
+    },
+    {
+      "byType": {
+        "unknown": 2513,
+      },
+      "primitiveCount": 2513,
+      "sceneHash": "66abeed5",
+      "stepId": "step-1",
+    },
+    {
+      "byType": {
+        "unknown": 2514,
+      },
+      "primitiveCount": 2514,
+      "sceneHash": "a1c12643",
+      "stepId": "step-2",
+    },
+    {
+      "byType": {
+        "unknown": 2515,
+      },
+      "primitiveCount": 2515,
+      "sceneHash": "e1c30af9",
+      "stepId": "step-3",
+    },
+    {
+      "byType": {
+        "unknown": 2516,
+      },
+      "primitiveCount": 2516,
+      "sceneHash": "da49d090",
+      "stepId": "step-4",
+    },
+    {
+      "byType": {
+        "unknown": 2517,
+      },
+      "primitiveCount": 2517,
+      "sceneHash": "07ebe6b0",
+      "stepId": "step-5",
+    },
+    {
+      "byType": {
+        "unknown": 2518,
+      },
+      "primitiveCount": 2518,
+      "sceneHash": "de7bc209",
+      "stepId": "step-6",
+    },
+    {
+      "byType": {
+        "unknown": 2519,
+      },
+      "primitiveCount": 2519,
+      "sceneHash": "807347b5",
+      "stepId": "step-7",
+    },
+    {
+      "byType": {
+        "unknown": 2520,
+      },
+      "primitiveCount": 2520,
+      "sceneHash": "75e964cd",
+      "stepId": "step-8",
+    },
+    {
+      "byType": {
+        "unknown": 2521,
+      },
+      "primitiveCount": 2521,
+      "sceneHash": "435d3094",
+      "stepId": "step-9",
+    },
+    {
+      "byType": {
+        "unknown": 2522,
+      },
+      "primitiveCount": 2522,
+      "sceneHash": "9a1f1ead",
+      "stepId": "step-10",
+    },
+    {
+      "byType": {
+        "unknown": 2523,
+      },
+      "primitiveCount": 2523,
+      "sceneHash": "6ffa2e8b",
+      "stepId": "step-11",
+    },
+    {
+      "byType": {
+        "unknown": 2524,
+      },
+      "primitiveCount": 2524,
+      "sceneHash": "30b7aa35",
+      "stepId": "step-12",
+    },
+    {
+      "byType": {
+        "unknown": 2525,
+      },
+      "primitiveCount": 2525,
+      "sceneHash": "3cc35fa8",
+      "stepId": "step-13",
+    },
+    {
+      "byType": {
+        "unknown": 2526,
+      },
+      "primitiveCount": 2526,
+      "sceneHash": "a65dcffe",
+      "stepId": "step-14",
+    },
+    {
+      "byType": {
+        "unknown": 2527,
+      },
+      "primitiveCount": 2527,
+      "sceneHash": "4bc4defc",
+      "stepId": "step-15",
+    },
+    {
+      "byType": {
+        "unknown": 2528,
+      },
+      "primitiveCount": 2528,
+      "sceneHash": "8ec517db",
+      "stepId": "step-16",
+    },
+    {
+      "byType": {
+        "unknown": 2529,
+      },
+      "primitiveCount": 2529,
+      "sceneHash": "99e16e04",
+      "stepId": "step-17",
+    },
+    {
+      "byType": {
+        "unknown": 2530,
+      },
+      "primitiveCount": 2530,
+      "sceneHash": "03bd59f0",
+      "stepId": "step-18",
+    },
+    {
+      "byType": {
+        "unknown": 2531,
+      },
+      "primitiveCount": 2531,
+      "sceneHash": "1b40a64e",
+      "stepId": "step-19",
+    },
+    {
+      "byType": {
+        "unknown": 2532,
+      },
+      "primitiveCount": 2532,
+      "sceneHash": "49087fc2",
+      "stepId": "step-20",
+    },
+  ],
+  "layout": "loss-landscape",
+  "stepCount": 21,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for grovers-search (default inputs) 1`] = `
+{
+  "algorithmId": "grovers-search",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 26,
+      },
+      "primitiveCount": 26,
+      "sceneHash": "a6d996b6",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 26,
+      },
+      "primitiveCount": 26,
+      "sceneHash": "227530ef",
+      "stepId": "hadamard_all",
+    },
+    {
+      "byType": {
+        "unknown": 26,
+      },
+      "primitiveCount": 26,
+      "sceneHash": "227530ef",
+      "stepId": "oracle_1",
+    },
+    {
+      "byType": {
+        "unknown": 26,
+      },
+      "primitiveCount": 26,
+      "sceneHash": "9ef5ea12",
+      "stepId": "diffusion_1",
+    },
+    {
+      "byType": {
+        "unknown": 26,
+      },
+      "primitiveCount": 26,
+      "sceneHash": "9ef5ea12",
+      "stepId": "measure",
+    },
+  ],
+  "layout": "amplitude-bars",
+  "stepCount": 5,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for heap-sort (default inputs) 1`] = `
+{
+  "algorithmId": "heap-sort",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "5dd810e0",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "5dd810e0",
+      "stepId": "heapify_start",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "b060df23",
+      "stepId": "heapify_node",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "1fd9eb30",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "58889fe2",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "eef2eb9f",
+      "stepId": "heapify_node",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "f4fefce6",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "820f53bd",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "3c34cc7c",
+      "stepId": "heapify_node",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "093dcc72",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "a1848487",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "3b153d46",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "80569769",
+      "stepId": "heapify_node",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "78a89630",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "f528f496",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "00874d62",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "4a64f3f5",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "c0b14a06",
+      "stepId": "heap_built",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "c8e7f512",
+      "stepId": "extract_swap",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "9e49dd9c",
+      "stepId": "extract_shrink",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "10fd2573",
+      "stepId": "extract_siftdown",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "72277f2e",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "f26c47aa",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "68be44b0",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "25820c3c",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "0cf9c46b",
+      "stepId": "extract_swap",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "744da204",
+      "stepId": "extract_shrink",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "6c3f2abd",
+      "stepId": "extract_siftdown",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "f4ea8ab2",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "3a5bb232",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "b5ad8fe0",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "443ad519",
+      "stepId": "extract_swap",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "3efb17e2",
+      "stepId": "extract_shrink",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "fc54ec21",
+      "stepId": "extract_siftdown",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "8638c9d0",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "22c8bd10",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "6f569f44",
+      "stepId": "extract_swap",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "81cab45a",
+      "stepId": "extract_shrink",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "4f32ef07",
+      "stepId": "extract_siftdown",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "cdccb292",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "52b5947c",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "8ac31d5b",
+      "stepId": "extract_swap",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "2c7f2a88",
+      "stepId": "extract_shrink",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "c939ea7f",
+      "stepId": "extract_siftdown",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "51192db2",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "66ebf506",
+      "stepId": "siftdown_swap",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "5707be2e",
+      "stepId": "extract_swap",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "995c3d16",
+      "stepId": "extract_shrink",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "bf6c063f",
+      "stepId": "extract_siftdown",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "9c48ce07",
+      "stepId": "siftdown_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "441ce8f9",
+      "stepId": "extract_swap",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "4f6c1502",
+      "stepId": "extract_shrink",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "a64f182d",
+      "stepId": "extract_siftdown",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "b471fdfe",
+      "stepId": "sorted",
+    },
+  ],
+  "layout": "array-comparison",
+  "stepCount": 54,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for merge-sort (default inputs) 1`] = `
+{
+  "algorithmId": "merge-sort",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "9a786791",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "9a786791",
+      "stepId": "round_start",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "fa707f84",
+      "stepId": "merge_start",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "a0b997bb",
+      "stepId": "merge_pick_right",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "678f0b21",
+      "stepId": "merge_complete",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "f98d138c",
+      "stepId": "merge_start",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "cda96b6f",
+      "stepId": "merge_pick_right",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "ee34051d",
+      "stepId": "merge_complete",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "4ba83904",
+      "stepId": "merge_start",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "f2fd8872",
+      "stepId": "merge_pick_left",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "c3e05aba",
+      "stepId": "merge_complete",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "eb9ddf17",
+      "stepId": "round_start",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "24ada4d3",
+      "stepId": "merge_start",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "a27c1a43",
+      "stepId": "merge_pick_right",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "1d3b304e",
+      "stepId": "merge_pick_left",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "71261892",
+      "stepId": "merge_pick_left",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "57e17423",
+      "stepId": "merge_complete",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "2cf310f2",
+      "stepId": "merge_start",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "644e2121",
+      "stepId": "merge_pick_left",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "eed6419c",
+      "stepId": "merge_pick_right",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "82b3e09e",
+      "stepId": "merge_complete",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "2d7f6a61",
+      "stepId": "round_start",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "f693fe42",
+      "stepId": "merge_start",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "1a161e2a",
+      "stepId": "merge_pick_left",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "f78e36f9",
+      "stepId": "merge_pick_right",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "a3e52e7f",
+      "stepId": "merge_pick_right",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "200d9311",
+      "stepId": "merge_pick_left",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "1e5e35f5",
+      "stepId": "merge_pick_left",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "0b249fef",
+      "stepId": "merge_pick_left",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "fff15ea4",
+      "stepId": "merge_complete",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "3ca97e25",
+      "stepId": "complete",
+    },
+  ],
+  "layout": "array-comparison",
+  "stepCount": 31,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for multi-head-attention (default inputs) 1`] = `
+{
+  "algorithmId": "multi-head-attention",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "e15aca8f",
+      "stepId": "show-input",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "aa82eae4",
+      "stepId": "explain-heads",
+    },
+    {
+      "byType": {
+        "unknown": 12,
+      },
+      "primitiveCount": 12,
+      "sceneHash": "bcddf099",
+      "stepId": "head-0-projections",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "deeb6931",
+      "stepId": "head-0-scores",
+    },
+    {
+      "byType": {
+        "unknown": 27,
+      },
+      "primitiveCount": 27,
+      "sceneHash": "e9eeade4",
+      "stepId": "head-0-softmax",
+    },
+    {
+      "byType": {
+        "unknown": 27,
+      },
+      "primitiveCount": 27,
+      "sceneHash": "e9eeade4",
+      "stepId": "head-0-output",
+    },
+    {
+      "byType": {
+        "unknown": 12,
+      },
+      "primitiveCount": 12,
+      "sceneHash": "544bbbb7",
+      "stepId": "head-1-projections",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "58b13fbe",
+      "stepId": "head-1-scores",
+    },
+    {
+      "byType": {
+        "unknown": 27,
+      },
+      "primitiveCount": 27,
+      "sceneHash": "c8b13f6f",
+      "stepId": "head-1-softmax",
+    },
+    {
+      "byType": {
+        "unknown": 27,
+      },
+      "primitiveCount": 27,
+      "sceneHash": "c8b13f6f",
+      "stepId": "head-1-output",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "fd757456",
+      "stepId": "concatenate",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "cb2364ad",
+      "stepId": "final-projection",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "6fbcfaf6",
+      "stepId": "complete",
+    },
+  ],
+  "layout": "attention-heatmap",
+  "stepCount": 13,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for perceptron (default inputs) 1`] = `
+{
+  "algorithmId": "perceptron",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "91edf8da",
+      "stepId": "show-inputs",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "91edf8da",
+      "stepId": "show-weights",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "7f5e115e",
+      "stepId": "weighted-inputs",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "1de2a4f7",
+      "stepId": "pre-activation",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "dcc3cc27",
+      "stepId": "activation",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "b58d65cb",
+      "stepId": "output",
+    },
+  ],
+  "layout": "neuron-diagram",
+  "stepCount": 6,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for quantum-gates (default inputs) 1`] = `
+{
+  "algorithmId": "quantum-gates",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "5d6ea645",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "5d6ea645",
+      "stepId": "apply_gate_0",
+    },
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "5d6ea645",
+      "stepId": "apply_gate_1",
+    },
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "5d6ea645",
+      "stepId": "apply_gate_2",
+    },
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "5d6ea645",
+      "stepId": "apply_gate_3",
+    },
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "5d6ea645",
+      "stepId": "apply_gate_4",
+    },
+  ],
+  "layout": "circuit-wires",
+  "stepCount": 6,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for quantum-teleportation (default inputs) 1`] = `
+{
+  "algorithmId": "quantum-teleportation",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 6,
+      },
+      "primitiveCount": 6,
+      "sceneHash": "3f6aca4d",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 6,
+      },
+      "primitiveCount": 6,
+      "sceneHash": "3f6aca4d",
+      "stepId": "bell_hadamard",
+    },
+    {
+      "byType": {
+        "unknown": 6,
+      },
+      "primitiveCount": 6,
+      "sceneHash": "3f6aca4d",
+      "stepId": "bell_cnot",
+    },
+    {
+      "byType": {
+        "unknown": 6,
+      },
+      "primitiveCount": 6,
+      "sceneHash": "3f6aca4d",
+      "stepId": "alice_cnot",
+    },
+    {
+      "byType": {
+        "unknown": 6,
+      },
+      "primitiveCount": 6,
+      "sceneHash": "3f6aca4d",
+      "stepId": "alice_hadamard",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "d47b0a1f",
+      "stepId": "measure_qubit0",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "c8335022",
+      "stepId": "measure_qubit1",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "c8335022",
+      "stepId": "bob_correction",
+    },
+    {
+      "byType": {
+        "unknown": 11,
+      },
+      "primitiveCount": 11,
+      "sceneHash": "c8335022",
+      "stepId": "verification",
+    },
+  ],
+  "layout": "circuit-wires",
+  "stepCount": 9,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for qubit-bloch-sphere (default inputs) 1`] = `
+{
+  "algorithmId": "qubit-bloch-sphere",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 212,
+      },
+      "primitiveCount": 212,
+      "sceneHash": "206698fe",
+      "stepId": "introduction",
+    },
+    {
+      "byType": {
+        "unknown": 212,
+      },
+      "primitiveCount": 212,
+      "sceneHash": "206698fe",
+      "stepId": "show_state_0",
+    },
+    {
+      "byType": {
+        "unknown": 213,
+      },
+      "primitiveCount": 213,
+      "sceneHash": "f37e76dc",
+      "stepId": "show_state_1",
+    },
+    {
+      "byType": {
+        "unknown": 213,
+      },
+      "primitiveCount": 213,
+      "sceneHash": "b7bb0ed9",
+      "stepId": "show_state_2",
+    },
+    {
+      "byType": {
+        "unknown": 213,
+      },
+      "primitiveCount": 213,
+      "sceneHash": "9fd0cfcd",
+      "stepId": "show_state_3",
+    },
+    {
+      "byType": {
+        "unknown": 213,
+      },
+      "primitiveCount": 213,
+      "sceneHash": "1ca13981",
+      "stepId": "show_state_4",
+    },
+    {
+      "byType": {
+        "unknown": 213,
+      },
+      "primitiveCount": 213,
+      "sceneHash": "ecceebec",
+      "stepId": "show_state_5",
+    },
+  ],
+  "layout": "bloch-sphere",
+  "stepCount": 7,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for quicksort (default inputs) 1`] = `
+{
+  "algorithmId": "quicksort",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "4b0543cd",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "3cf05952",
+      "stepId": "select_pivot",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "3f3bd055",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "1166a6cb",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "764e1611",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "dddf0a2a",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "fd3465c2",
+      "stepId": "partition_swap",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "32165ef8",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "5981d870",
+      "stepId": "partition_swap",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "b245389b",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "0352e54f",
+      "stepId": "pivot_placed",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "cd89ca1c",
+      "stepId": "select_pivot",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "679ab968",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "a00681bb",
+      "stepId": "pivot_placed",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "6cc16826",
+      "stepId": "select_pivot",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "996f10fe",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "edec584c",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "b8102dd7",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "41933217",
+      "stepId": "pivot_placed",
+    },
+    {
+      "byType": {
+        "unknown": 10,
+      },
+      "primitiveCount": 10,
+      "sceneHash": "35314e3a",
+      "stepId": "select_pivot",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "b78b15fd",
+      "stepId": "partition_compare",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "a230b773",
+      "stepId": "pivot_placed",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "3ca97e25",
+      "stepId": "complete",
+    },
+  ],
+  "layout": "array-comparison",
+  "stepCount": 23,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for self-attention (default inputs) 1`] = `
+{
+  "algorithmId": "self-attention",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "93b675fe",
+      "stepId": "show-input",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "4bd98672",
+      "stepId": "compute-q",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "5633e51e",
+      "stepId": "compute-k",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "433363b6",
+      "stepId": "compute-v",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "bf929b1e",
+      "stepId": "compute-scores",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "66b78960",
+      "stepId": "scale-scores",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "d5c857ff",
+      "stepId": "apply-softmax",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "2badc3b4",
+      "stepId": "per-query-attention",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "94153192",
+      "stepId": "per-query-attention",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "05871330",
+      "stepId": "per-query-attention",
+    },
+    {
+      "byType": {
+        "unknown": 17,
+      },
+      "primitiveCount": 17,
+      "sceneHash": "d5c857ff",
+      "stepId": "complete",
+    },
+  ],
+  "layout": "attention-heatmap",
+  "stepCount": 11,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for superposition-measurement (default inputs) 1`] = `
+{
+  "algorithmId": "superposition-measurement",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "5d6ea645",
+      "stepId": "initialize",
+    },
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "5d6ea645",
+      "stepId": "prepare_gate_0",
+    },
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "5d6ea645",
+      "stepId": "prepare_gate_1",
+    },
+    {
+      "byType": {
+        "unknown": 8,
+      },
+      "primitiveCount": 8,
+      "sceneHash": "2a6b103f",
+      "stepId": "measure_qubit_0",
+    },
+    {
+      "byType": {
+        "unknown": 9,
+      },
+      "primitiveCount": 9,
+      "sceneHash": "3c1f3ed3",
+      "stepId": "measure_qubit_1",
+    },
+  ],
+  "layout": "circuit-wires",
+  "stepCount": 5,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for token-embeddings (default inputs) 1`] = `
+{
+  "algorithmId": "token-embeddings",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 3,
+      },
+      "primitiveCount": 3,
+      "sceneHash": "24d4439b",
+      "stepId": "show-tokens",
+    },
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "9f99e1ee",
+      "stepId": "lookup-embedding",
+    },
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "4ef1f54d",
+      "stepId": "lookup-embedding",
+    },
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "d67dacda",
+      "stepId": "lookup-embedding",
+    },
+    {
+      "byType": {
+        "unknown": 12,
+      },
+      "primitiveCount": 12,
+      "sceneHash": "68dc43d3",
+      "stepId": "cosine-similarity",
+    },
+    {
+      "byType": {
+        "unknown": 12,
+      },
+      "primitiveCount": 12,
+      "sceneHash": "c9c4832a",
+      "stepId": "cosine-similarity",
+    },
+    {
+      "byType": {
+        "unknown": 12,
+      },
+      "primitiveCount": 12,
+      "sceneHash": "ef2e83a4",
+      "stepId": "cosine-similarity",
+    },
+    {
+      "byType": {
+        "unknown": 15,
+      },
+      "primitiveCount": 15,
+      "sceneHash": "2877de04",
+      "stepId": "complete",
+    },
+  ],
+  "layout": "token-sequence",
+  "stepCount": 8,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for tokenization-bpe (default inputs) 1`] = `
+{
+  "algorithmId": "tokenization-bpe",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 6,
+      },
+      "primitiveCount": 6,
+      "sceneHash": "129093a4",
+      "stepId": "character-split",
+    },
+    {
+      "byType": {
+        "unknown": 7,
+      },
+      "primitiveCount": 7,
+      "sceneHash": "aa403663",
+      "stepId": "merge-apply",
+    },
+    {
+      "byType": {
+        "unknown": 5,
+      },
+      "primitiveCount": 5,
+      "sceneHash": "8a547b5a",
+      "stepId": "merge-result",
+    },
+    {
+      "byType": {
+        "unknown": 6,
+      },
+      "primitiveCount": 6,
+      "sceneHash": "87ab6f0a",
+      "stepId": "merge-apply",
+    },
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "d6f68f6e",
+      "stepId": "merge-result",
+    },
+    {
+      "byType": {
+        "unknown": 5,
+      },
+      "primitiveCount": 5,
+      "sceneHash": "0cefed5f",
+      "stepId": "merge-apply",
+    },
+    {
+      "byType": {
+        "unknown": 3,
+      },
+      "primitiveCount": 3,
+      "sceneHash": "cacf7956",
+      "stepId": "merge-result",
+    },
+    {
+      "byType": {
+        "unknown": 4,
+      },
+      "primitiveCount": 4,
+      "sceneHash": "2b7d45b6",
+      "stepId": "merge-apply",
+    },
+    {
+      "byType": {
+        "unknown": 2,
+      },
+      "primitiveCount": 2,
+      "sceneHash": "3ffb6728",
+      "stepId": "merge-result",
+    },
+    {
+      "byType": {
+        "unknown": 3,
+      },
+      "primitiveCount": 3,
+      "sceneHash": "7e7556fd",
+      "stepId": "merge-apply",
+    },
+    {
+      "byType": {
+        "unknown": 1,
+      },
+      "primitiveCount": 1,
+      "sceneHash": "57231be3",
+      "stepId": "merge-result",
+    },
+    {
+      "byType": {
+        "unknown": 1,
+      },
+      "primitiveCount": 1,
+      "sceneHash": "57231be3",
+      "stepId": "complete",
+    },
+  ],
+  "layout": "token-sequence",
+  "stepCount": 12,
+}
+`;
+
+exports[`scene-graph visual snapshots > renders a stable scene graph for transformer-block (default inputs) 1`] = `
+{
+  "algorithmId": "transformer-block",
+  "canvasSize": {
+    "height": 600,
+    "width": 960,
+  },
+  "frames": [
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "8c039d67",
+      "stepId": "show-input",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "6dfe8fab",
+      "stepId": "self-attention-start",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "6dfe8fab",
+      "stepId": "self-attention-result",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "423a5a9e",
+      "stepId": "residual-1",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "423a5a9e",
+      "stepId": "layer-norm-1",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "ef7521ab",
+      "stepId": "ffn-start",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "ef7521ab",
+      "stepId": "ffn-expand",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "ef7521ab",
+      "stepId": "ffn-compress",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "810fcc16",
+      "stepId": "residual-2",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "810fcc16",
+      "stepId": "layer-norm-2",
+    },
+    {
+      "byType": {
+        "unknown": 19,
+      },
+      "primitiveCount": 19,
+      "sceneHash": "7a25de9f",
+      "stepId": "complete",
+    },
+  ],
+  "layout": "layer-diagram",
+  "stepCount": 11,
+}
+`;

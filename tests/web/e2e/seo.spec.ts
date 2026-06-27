@@ -125,9 +125,11 @@ test.describe("Algorithm Page SEO (/algo/binary-search)", () => {
     const heading = page.locator("h2", { hasText: "About Binary Search" });
     await expect(heading).toBeVisible();
 
-    // Check for complexity information.
-    const timeComplexity = page.locator("text=O(log n)");
-    await expect(timeComplexity).toBeVisible();
+    // Check for complexity information within the crawlable About section.
+    // (The complexity also appears elsewhere on the page, so scope to the
+    // labelled region to keep this assertion unambiguous.)
+    const about = page.getByLabel("About Binary Search");
+    await expect(about.getByText("O(log n)", { exact: true }).first()).toBeVisible();
   });
 });
 

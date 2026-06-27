@@ -1,0 +1,63 @@
+# ─── End-to-End / Visual Browser Tests ───────────────────────────────────────
+#
+# Runs Playwright against a production build of the web app, exercising the REAL
+# Canvas rendering engine in a real browser:
+#   - tests/web/e2e/visual.spec.ts — every algorithm renders to a non-blank
+#     canvas with no uncaught errors; playback/step/language interactions drive
+#     the rendering.
+#   - tests/web/e2e/seo.spec.ts    — crawlable metadata on key pages.
+#
+# The deterministic, cross-platform scene-graph snapshots run in the main CI
+# pipeline's web unit-test job; this workflow adds the real-pixel browser layer.
+
+name: E2E
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "algorithms/**"
+      - "tests/web/e2e/**"
+  pull_request:
+    paths:
+      - "web/**"
+      - "algorithms/**"
+      - "tests/web/e2e/**"
+
+jobs:
+  e2e:
+    name: "E2E: Visual & Browser Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: cd web && npm ci
+
+      # Installs the Chromium build matching the pinned @playwright/test version,
+      # plus the required system libraries.
+      - name: Install Playwright Chromium
+        run: cd web && npx playwright install --with-deps chromium
+
+      # Production build served by `next start` (started by the Playwright
+      # webServer config). Mirrors the Lighthouse workflow.
+      - name: Build
+        run: cd web && npm run build
+
+      - name: Run Playwright tests
+        run: cd web && npm run test:e2e
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: web/playwright-report/
+          retention-days: 14
