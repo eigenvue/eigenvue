@@ -44,10 +44,14 @@ def bundle_metadata() -> None:
 
 
 def bundle_web_assets() -> None:
-    """Copy the minimal web visualizer into the node package data directory.
+    """Copy the standalone web visualizer into the node package data directory.
 
     The visualizer files (index.html, styles.css, visualizer.js) are shared
-    with the Python package. The source of truth is python/src/eigenvue/data/web/.
+    with the Python package. The source of truth is python/src/eigenvue/data/web/,
+    where ``visualizer.js`` is the bundled Canvas rendering engine produced by
+    ``scripts/build-standalone-viewer.mjs`` (run ``npm run build:viewer`` in web/).
+    This is the same engine the web app uses, so ``show()`` renders real,
+    animated visualizations rather than a JSON dump.
     """
     src = REPO_ROOT / "python" / "src" / "eigenvue" / "data" / "web"
     dest = DATA_DIR / "web"

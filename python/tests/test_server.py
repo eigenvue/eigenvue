@@ -22,7 +22,8 @@ class TestServerRoutes:
     def test_index_returns_html(self, client) -> None:
         response = client.get("/")
         assert response.status_code == 200
-        assert b"<!DOCTYPE html>" in response.data
+        # The doctype is case-insensitive in HTML5; Prettier emits it lowercase.
+        assert b"<!doctype html>" in response.data.lower()
 
     def test_api_steps_returns_json(self, client) -> None:
         response = client.get("/api/steps")

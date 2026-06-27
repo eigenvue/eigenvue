@@ -73,10 +73,28 @@ def bundle_precomputed() -> None:
 
 
 def bundle_web_assets() -> None:
-    """Create the minimal web visualizer in the package data directory."""
+    """Ensure the standalone web visualizer is present in the package data dir.
+
+    The viewer assets (index.html, styles.css, visualizer.js) live in this
+    directory and are committed to the repository. ``visualizer.js`` is the
+    bundled Canvas rendering engine produced by
+    ``scripts/build-standalone-viewer.mjs`` (``npm run build:viewer`` in web/).
+    This function only verifies their presence — it does not regenerate them,
+    so the Python wheel can be built without a JavaScript toolchain.
+    """
     dest = DATA_DIR / "web"
     dest.mkdir(parents=True, exist_ok=True)
-    print("  Web assets directory ready.")
+
+    required = ["index.html", "styles.css", "visualizer.js"]
+    missing = [name for name in required if not (dest / name).is_file()]
+    if missing:
+        print(
+            "  WARNING: missing viewer asset(s): "
+            + ", ".join(missing)
+            + " — run 'npm run build:viewer' in web/ to generate them."
+        )
+    else:
+        print(f"  Web assets present: {', '.join(required)}.")
 
 
 def vendor_step_types() -> None:

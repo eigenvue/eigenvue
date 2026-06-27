@@ -166,6 +166,28 @@ jobs:
         run: cd python && pip install -e ".[dev]"
 
       # -----------------------------------------------------------------------
+      # STANDALONE VIEWER FRESHNESS: Rebuild the bundled Canvas renderer that
+      # ships in the Python and Node packages, then fail if the committed copy
+      # is out of date.
+      #
+      # `python/src/eigenvue/data/web/` is the tracked source of truth; the Node
+      # package's `data/` is generated from it at build time (and gitignored).
+      # esbuild output is deterministic for the pinned version, so this catches
+      # the case where the rendering engine changed but `npm run build:viewer`
+      # was not re-run and committed. Packaging itself never needs this build —
+      # the committed bundle is the source of truth — this is purely a guard.
+      # -----------------------------------------------------------------------
+      - name: Rebuild standalone viewer (drift check)
+        run: cd web && npm run build:viewer
+
+      - name: Verify committed viewer bundle is up to date
+        run: |
+          if ! git diff --exit-code -- python/src/eigenvue/data/web; then
+            echo "::error::Standalone viewer bundle is stale. Run 'npm run build:viewer' in web/, then commit python/src/eigenvue/data/web/."
+            exit 1
+          fi
+
+      # -----------------------------------------------------------------------
       # PRE-COMPUTATION: Run all 17 Python generators with all example inputs.
       # Outputs JSON step files to web/public/precomputed/<algorithm-id>/.
       #

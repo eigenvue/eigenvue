@@ -12,7 +12,8 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "build:viewer": "node ../scripts/build-standalone-viewer.mjs"
   },
   "dependencies": {
     "@vercel/og": "^0.8.6",
@@ -36,6 +37,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.4",
     "cross-env": "^10.1.0",
+    "esbuild": "0.27.3",
     "eslint": "^9",
     "eslint-config-next": "15.5.12",
     "eslint-config-prettier": "^10.1.8",

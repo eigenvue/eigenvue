@@ -52,6 +52,11 @@ Each step includes state data, visual actions, and code highlights that you can 
 
 ### Open Interactive Visualization
 
+`show()` serves the same interactive, animated Canvas visualization as
+[eigenvue.web.app](https://eigenvue.web.app) — step-by-step playback,
+synchronized code highlighting, and a live state inspector — from a local-only
+server, and opens it in your browser.
+
 ```typescript
 import { show } from "eigenvue";
 
