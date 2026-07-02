@@ -37,6 +37,7 @@ import type { AlgorithmMeta } from "@/lib/algorithm-loader";
 import { parseUrlState, updateUrlState } from "@/lib/url-state";
 import { useAlgorithm } from "@/hooks/useAlgorithm";
 import { usePlayback } from "@/hooks/usePlayback";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 // Phase 4 component:
 // DESIGN DECISION: The Phase 4 VisualizationPanel uses `currentStep` prop (number index),
@@ -94,6 +95,14 @@ export function VisualizerShell({ algorithmId, meta }: VisualizerShellProps) {
   );
 
   const currentStep = stepSequence?.steps[playbackState.currentIndex] ?? null;
+
+  // ── Motion preference ───────────────────────────────────────────────
+  // Honour the OS-level "reduce motion" setting: when enabled, transitions
+  // are applied instantly (durationMs 0) instead of the 400 ms canvas
+  // animation. The CSS @media rule cannot reach the canvas's RAF loop, so
+  // this must be wired explicitly. See useReducedMotion.
+  const prefersReducedMotion = useReducedMotion();
+  const animationDurationMs = prefersReducedMotion ? 0 : undefined;
 
   // ── Keyboard shortcuts ──────────────────────────────────────────────
   useEffect(() => {
@@ -180,6 +189,7 @@ export function VisualizerShell({ algorithmId, meta }: VisualizerShellProps) {
             currentStep={playbackState.currentIndex}
             layoutName={meta.visual.layout}
             layoutConfig={meta.visual.components}
+            animationDurationMs={animationDurationMs}
           />
         </div>
 

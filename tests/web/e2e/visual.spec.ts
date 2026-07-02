@@ -229,3 +229,32 @@ test.describe("playback interactions update the visualization", () => {
       .not.toBe(initialCode);
   });
 });
+
+// ─── Reduced motion ───────────────────────────────────────────────────────────
+
+test.describe("respects prefers-reduced-motion", () => {
+  test("renders and steps correctly with reduced motion enabled", async ({
+    page,
+  }) => {
+    // Must be set before navigation so the first render honours it.
+    await page.emulateMedia({ reducedMotion: "reduce" });
+
+    const canvas = await gotoAlgorithmAndWaitForPaint(page, "binary-search");
+    const stats = await readCanvasStats(canvas);
+    expect(
+      stats.distinctColors,
+      "canvas still renders under reduced motion",
+    ).toBeGreaterThanOrEqual(3);
+
+    // With animation disabled, stepping still updates the rendered frame.
+    const before = (await readCanvasStats(canvas)).signature;
+    await page.getByRole("button", { name: "Next step" }).click();
+    await expect(page.getByLabel(/Step 2 of \d+/)).toBeVisible();
+    await expect
+      .poll(async () => (await readCanvasStats(canvas)).signature, {
+        message: "stepping should update the canvas under reduced motion",
+        timeout: 10_000,
+      })
+      .not.toBe(before);
+  });
+});

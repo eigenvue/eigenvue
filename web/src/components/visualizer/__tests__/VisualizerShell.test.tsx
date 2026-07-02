@@ -14,7 +14,7 @@
  * See Phase5_Implementation.md Part S — Testing Strategy.
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import type { AlgorithmMeta } from "@/lib/algorithm-loader";
 
@@ -25,10 +25,23 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(""),
 }));
 
-// Mock the Phase 4 VisualizationPanel (requires canvas).
+// Mock the Phase 4 VisualizationPanel (requires canvas). Surfaces the
+// animationDurationMs prop so reduced-motion wiring can be asserted.
 vi.mock("@/engine/VisualizationPanel", () => ({
-  VisualizationPanel: ({ currentStep }: { currentStep: number }) => (
-    <div data-testid="visualization-panel" data-step={currentStep}>
+  VisualizationPanel: ({
+    currentStep,
+    animationDurationMs,
+  }: {
+    currentStep: number;
+    animationDurationMs?: number;
+  }) => (
+    <div
+      data-testid="visualization-panel"
+      data-step={currentStep}
+      data-animation-duration={
+        animationDurationMs === undefined ? "default" : String(animationDurationMs)
+      }
+    >
       Canvas Mock
     </div>
   ),
@@ -252,5 +265,43 @@ describe("VisualizerShell — Keyboard Shortcuts", () => {
       // Component should still be stable.
       expect(screen.getByRole("toolbar")).toBeInTheDocument();
     }
+  });
+});
+
+describe("VisualizerShell — Reduced Motion", () => {
+  const originalMatchMedia = window.matchMedia;
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
+  });
+
+  function setReducedMotion(matches: boolean): void {
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches,
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })) as unknown as typeof window.matchMedia;
+  }
+
+  function animationDuration(): string | null {
+    return screen.getByTestId("visualization-panel").getAttribute("data-animation-duration");
+  }
+
+  it("animates normally with no reduced-motion preference", () => {
+    setReducedMotion(false);
+    render(<VisualizerShell algorithmId="binary-search" meta={TEST_META} />);
+    // Passing no animationDurationMs lets the panel use its 400 ms default.
+    expect(animationDuration()).toBe("default");
+  });
+
+  it("disables the canvas animation when the user prefers reduced motion", () => {
+    setReducedMotion(true);
+    render(<VisualizerShell algorithmId="binary-search" meta={TEST_META} />);
+    expect(animationDuration()).toBe("0");
   });
 });

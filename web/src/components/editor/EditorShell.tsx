@@ -33,6 +33,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useEditorState } from "@/hooks/useEditorState";
 import { usePlayback } from "@/hooks/usePlayback";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { MonacoEditor } from "./MonacoEditor";
 import { EditorToolbar } from "./EditorToolbar";
 import { ErrorPanel } from "./ErrorPanel";
@@ -82,6 +83,8 @@ export function EditorShell() {
   const [state, actions] = useEditorState();
   const totalSteps = state.steps?.length ?? 0;
   const [playback, playbackControls] = usePlayback(totalSteps);
+  // Honour the OS-level "reduce motion" setting for the canvas animation.
+  const prefersReducedMotion = useReducedMotion();
   const [isTemplateDrawerOpen, setIsTemplateDrawerOpen] = useState(false);
   const [mobileTab, setMobileTab] = useState<MobileTab>("code");
   const [splitPercent, setSplitPercent] = useState(() => {
@@ -266,6 +269,7 @@ export function EditorShell() {
                 steps={state.steps}
                 currentStep={playback.currentIndex}
                 layoutName={state.layoutId}
+                animationDurationMs={prefersReducedMotion ? 0 : undefined}
                 className="h-full"
               />
             ) : (
